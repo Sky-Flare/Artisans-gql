@@ -9,7 +9,7 @@ module.exports = {
     logger: 'advanced-console',
     logging: 'all',
     cache: true,
-    dropSchema: false,
+    dropSchema: true,
     entities: ['dist/entities/*.js'],
 };
 //# sourceMappingURL=ormconfig.js.map

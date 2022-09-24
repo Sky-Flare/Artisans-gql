@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateUserInput = exports.User = void 0;
 const type_graphql_1 = require("type-graphql");
 const typeorm_1 = require("typeorm");
+const class_validator_1 = require("class-validator");
 let User = class User extends typeorm_1.BaseEntity {
 };
 __decorate([
@@ -20,7 +21,7 @@ __decorate([
     __metadata("design:type", Number)
 ], User.prototype, "id", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
+    (0, type_graphql_1.Field)({ nullable: false }),
     (0, typeorm_1.Column)({ type: 'varchar' }),
     __metadata("design:type", String)
 ], User.prototype, "firstName", void 0);
@@ -41,8 +42,8 @@ __decorate([
 ], User.prototype, "adress", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    (0, typeorm_1.Column)({ type: 'varchar' }),
-    __metadata("design:type", String)
+    (0, typeorm_1.Column)({ type: 'integer' }),
+    __metadata("design:type", Number)
 ], User.prototype, "zipCode", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
@@ -50,7 +51,6 @@ __decorate([
     __metadata("design:type", String)
 ], User.prototype, "city", void 0);
 __decorate([
-    (0, type_graphql_1.Field)(),
     (0, typeorm_1.Column)({ type: 'varchar' }),
     __metadata("design:type", String)
 ], User.prototype, "password", void 0);
@@ -82,6 +82,7 @@ __decorate([
 ], CreateUserInput.prototype, "firstName", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
+    (0, class_validator_1.IsEmail)(),
     __metadata("design:type", String)
 ], CreateUserInput.prototype, "email", void 0);
 __decorate([
@@ -90,7 +91,7 @@ __decorate([
 ], CreateUserInput.prototype, "adress", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
-    __metadata("design:type", String)
+    __metadata("design:type", Number)
 ], CreateUserInput.prototype, "zipCode", void 0);
 __decorate([
     (0, type_graphql_1.Field)(),
@@ -104,4 +105,4 @@ CreateUserInput = __decorate([
     (0, type_graphql_1.InputType)({ description: 'New user data' })
 ], CreateUserInput);
 exports.CreateUserInput = CreateUserInput;
-//# sourceMappingURL=User.js.map
+//# sourceMappingURL=user.js.map

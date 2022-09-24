@@ -1,35 +1,43 @@
-import { Resolver, Query, Mutation, Arg } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  UseMiddleware,
+  Ctx,
+  FieldResolver,
+  Root,
+  ResolverInterface,
+} from 'type-graphql';
+import { IsEmail, validate } from 'class-validator';
+
 import { Service } from 'typedi';
-import { AppDataSource } from '../app-data-source';
-import { User } from '../entities/User';
-import { CreateUserInput } from '../entities/User';
+import { AppDataSource } from '../../app-data-source';
+import { User } from '../../entities/User';
+import { CreateUserInput } from '../../entities/User';
+import { hash } from 'bcryptjs';
+import { isAuth } from '../middlewares/auth';
+import { MyContext } from '../myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
 
-@Resolver()
+@Resolver((of) => User)
 @Service()
 export class UserResolver {
   @Query(() => [User])
+  @UseMiddleware(isAuth)
   public async users(): Promise<User[]> {
     return await UserRepository.find({});
   }
 
-  @Mutation((_type) => User)
-  public async createUser(
-    @Arg('input') inputData?: CreateUserInput
-  ): Promise<User> {
-    const userRepository = AppDataSource.getRepository(User);
-    const user = userRepository.create({
-      lastName: inputData.lastName,
-      firstName: inputData.firstName,
-      email: inputData.email,
-      adress: inputData.adress,
-      zipCode: inputData.zipCode,
-      city: inputData.city,
-      password: inputData.password,
-    });
-    await userRepository.save(user);
-    return user;
+  @Query(() => User, { nullable: true })
+  @UseMiddleware(isAuth)
+  async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
+    if (!ctx.req) {
+      return undefined;
+    }
+
+    return User.findOne({ where: { id: Number(ctx.payload.userId) } });
   }
 
   @Mutation(() => User)

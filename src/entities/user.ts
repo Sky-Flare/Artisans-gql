@@ -8,6 +8,7 @@ import {
   UpdateDateColumn,
   BaseEntity,
 } from 'typeorm';
+import { IsEmail, validate } from 'class-validator';
 
 @ObjectType()
 @Entity()
@@ -17,7 +18,7 @@ export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
-  @Field()
+  @Field({ nullable: false })
   @Column({ type: 'varchar' })
   public firstName!: string;
 
@@ -34,14 +35,13 @@ export class User extends BaseEntity {
   public adress!: string;
 
   @Field()
-  @Column({ type: 'varchar' })
-  public zipCode!: string;
+  @Column({ type: 'integer' })
+  public zipCode!: number;
 
   @Field()
   @Column({ type: 'varchar' })
   public city!: string;
 
-  @Field()
   @Column({ type: 'varchar' })
   public password!: string;
 
@@ -63,13 +63,14 @@ export class CreateUserInput implements Partial<User> {
   public firstName!: string;
 
   @Field()
+  @IsEmail()
   public email!: string;
 
   @Field()
   public adress!: string;
 
   @Field()
-  public zipCode!: string;
+  public zipCode!: number;
 
   @Field()
   public city!: string;

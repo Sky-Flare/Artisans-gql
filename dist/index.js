@@ -26,7 +26,6 @@ app_data_source_1.AppDataSource.initialize()
     .catch((err) => {
     console.error('Error during Data Source initialization', err);
 });
-// register 3rd party IOC container
 const bootstrap = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const schema = yield (0, schema_1.default)(typedi_1.Container);

@@ -24,9 +24,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserResolver = void 0;
 const type_graphql_1 = require("type-graphql");
 const typedi_1 = require("typedi");
-const app_data_source_1 = require("../app-data-source");
-const User_1 = require("../entities/User");
-const User_2 = require("../entities/User");
+const app_data_source_1 = require("../../app-data-source");
+const User_1 = require("../../entities/User");
+const User_2 = require("../../entities/User");
+const auth_1 = require("../middlewares/auth");
 const UserRepository = app_data_source_1.AppDataSource.getRepository(User_1.User);
 let UserResolver = class UserResolver {
     users() {
@@ -34,20 +35,12 @@ let UserResolver = class UserResolver {
             return yield UserRepository.find({});
         });
     }
-    createUser(inputData) {
+    me(ctx) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userRepository = app_data_source_1.AppDataSource.getRepository(User_1.User);
-            const user = userRepository.create({
-                lastName: inputData.lastName,
-                firstName: inputData.firstName,
-                email: inputData.email,
-                adress: inputData.adress,
-                zipCode: inputData.zipCode,
-                city: inputData.city,
-                password: inputData.password,
-            });
-            yield userRepository.save(user);
-            return user;
+            if (!ctx.req) {
+                return undefined;
+            }
+            return User_1.User.findOne({ where: { id: Number(ctx.payload.userId) } });
         });
     }
     updateUser(id, data) {
@@ -74,17 +67,19 @@ let UserResolver = class UserResolver {
 };
 __decorate([
     (0, type_graphql_1.Query)(() => [User_1.User]),
+    (0, type_graphql_1.UseMiddleware)(auth_1.isAuth),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "users", null);
 __decorate([
-    (0, type_graphql_1.Mutation)((_type) => User_1.User),
-    __param(0, (0, type_graphql_1.Arg)('input')),
+    (0, type_graphql_1.Query)(() => User_1.User, { nullable: true }),
+    (0, type_graphql_1.UseMiddleware)(auth_1.isAuth),
+    __param(0, (0, type_graphql_1.Ctx)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [User_2.CreateUserInput]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", Promise)
-], UserResolver.prototype, "createUser", null);
+], UserResolver.prototype, "me", null);
 __decorate([
     (0, type_graphql_1.Mutation)(() => User_1.User),
     __param(0, (0, type_graphql_1.Arg)('id')),
@@ -101,7 +96,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "deleteUser", null);
 UserResolver = __decorate([
-    (0, type_graphql_1.Resolver)(),
+    (0, type_graphql_1.Resolver)((of) => User_1.User),
     (0, typedi_1.Service)()
 ], UserResolver);
 exports.UserResolver = UserResolver;
