@@ -5,17 +5,11 @@ import {
   Arg,
   UseMiddleware,
   Ctx,
-  FieldResolver,
-  Root,
-  ResolverInterface,
 } from 'type-graphql';
-import { IsEmail, validate } from 'class-validator';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
-import { User } from '../../entities/User';
-import { CreateUserInput } from '../../entities/User';
-import { hash } from 'bcryptjs';
+import { User, CreateUserInput } from '../../entities/user';
 import { isAuth } from '../middlewares/auth';
 import { MyContext } from '../myContext';
 
@@ -33,7 +27,9 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
   async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
-    if (!ctx.req) {
+    console.log('😍', ctx.payload);
+
+    if (!ctx.payload.userId) {
       return undefined;
     }
 
