@@ -30,14 +30,20 @@ export class RegistrerResolver {
       zipCode: inputData.zipCode,
       city: inputData.city,
       password: await hash(inputData.password, 13),
+      role: inputData.role,
     });
+
     return await userRepository
       .save(user)
       .then(() => {
         return {
-          accessToken: sign({ userId: user.id }, process.env.JWT_SECRET, {
-            expiresIn: '15m',
-          }),
+          accessToken: sign(
+            { userId: user.id, role: user.role },
+            process.env.JWT_SECRET,
+            {
+              expiresIn: '15m',
+            }
+          ),
         };
       })
       .catch((e) => {
@@ -63,9 +69,13 @@ export class RegistrerResolver {
     }
 
     return {
-      accessToken: sign({ userId: user.id }, process.env.JWT_SECRET, {
-        expiresIn: '15m',
-      }),
+      accessToken: sign(
+        { userId: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        {
+          expiresIn: '15m',
+        }
+      ),
     };
   }
 }

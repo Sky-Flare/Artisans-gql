@@ -5,12 +5,12 @@ import {
   Arg,
   UseMiddleware,
   Ctx,
+  Authorized,
 } from 'type-graphql';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
 import { User, CreateUserInput } from '../../entities/user';
-import { isAuth } from '../middlewares/auth';
 import { MyContext } from '../myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
@@ -19,13 +19,13 @@ const UserRepository = AppDataSource.getRepository(User);
 @Service()
 export class UserResolver {
   @Query(() => [User])
-  @UseMiddleware(isAuth)
+  @Authorized('ADMIN')
   public async users(): Promise<User[]> {
     return await UserRepository.find({});
   }
 
   @Query(() => User, { nullable: true })
-  @UseMiddleware(isAuth)
+  @Authorized()
   async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
     if (!ctx.payload.userId) {
       return null;

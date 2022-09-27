@@ -8,7 +8,18 @@ import {
   UpdateDateColumn,
   BaseEntity,
 } from 'typeorm';
-import { IsEmail, validate } from 'class-validator';
+import { IsEmail } from 'class-validator';
+
+import { registerEnumType } from 'type-graphql';
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  CLIENT = 'CLIENT',
+  ARTISANT = 'ARTISANT',
+}
+registerEnumType(Role, {
+  name: 'Role',
+});
 
 @ObjectType()
 @Entity()
@@ -46,6 +57,10 @@ export class User extends BaseEntity {
   public password!: string;
 
   @Field()
+  @Column({ type: 'varchar' })
+  public role!: Role;
+
+  @Field()
   @CreateDateColumn()
   public createdAt!: Date;
 
@@ -77,4 +92,7 @@ export class CreateUserInput implements Partial<User> {
 
   @Field()
   public password!: string;
+
+  @Field((type) => Role)
+  public role!: Role;
 }
