@@ -27,12 +27,9 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   @UseMiddleware(isAuth)
   async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
-    console.log('😍', ctx.payload);
-
     if (!ctx.payload.userId) {
-      return undefined;
+      return null;
     }
-
     return User.findOne({ where: { id: Number(ctx.payload.userId) } });
   }
 

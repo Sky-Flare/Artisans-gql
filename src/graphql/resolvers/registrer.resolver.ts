@@ -4,7 +4,6 @@ import { User, CreateUserInput } from '../../entities/user';
 import { compare } from 'bcryptjs';
 import { Field, ObjectType } from 'type-graphql';
 import { sign } from 'jsonwebtoken';
-import { MyContext } from '../myContext';
 import { AppDataSource } from '../../app-data-source';
 import { hash } from 'bcryptjs';
 
@@ -22,7 +21,6 @@ export class RegistrerResolver {
     @Arg('input') inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
     const userRepository = AppDataSource.getRepository(User);
-    const hashedPassword = await hash(inputData.password, 13);
 
     const user = userRepository.create({
       lastName: inputData.lastName,
@@ -31,14 +29,13 @@ export class RegistrerResolver {
       adress: inputData.adress,
       zipCode: inputData.zipCode,
       city: inputData.city,
-      password: hashedPassword,
+      password: await hash(inputData.password, 13),
     });
-
     return await userRepository
       .save(user)
       .then(() => {
         return {
-          accessToken: sign({ userId: user.id }, 'MySecretKey', {
+          accessToken: sign({ userId: user.id }, process.env.JWT_SECRET, {
             expiresIn: '15m',
           }),
         };
@@ -66,7 +63,7 @@ export class RegistrerResolver {
     }
 
     return {
-      accessToken: sign({ userId: user.id }, 'MySecretKey', {
+      accessToken: sign({ userId: user.id }, process.env.JWT_SECRET, {
         expiresIn: '15m',
       }),
     };
