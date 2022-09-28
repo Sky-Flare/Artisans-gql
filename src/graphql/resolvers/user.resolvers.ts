@@ -1,19 +1,45 @@
-import { Resolver, Query, Mutation, Arg, Ctx, Authorized } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  Ctx,
+  Authorized,
+  FieldResolver,
+  Root,
+} from 'type-graphql';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
+import { Shop } from '../../entities/shop';
 import { User, CreateUserInput } from '../../entities/user';
 import { MyContext } from '../myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
+const ShopRepository = AppDataSource.getRepository(Shop);
 
 @Resolver((of) => User)
 @Service()
 export class UserResolvers {
   @Query(() => [User])
-  @Authorized('ADMIN')
+  @Authorized()
   public async users(): Promise<User[]> {
     return await UserRepository.find({});
+  }
+
+  @FieldResolver()
+  @Authorized()
+  public async shops(@Root() user: User): Promise<Shop[]> {
+    return await ShopRepository.find({
+      relations: {
+        user: true,
+      },
+      where: {
+        user: {
+          id: user.id,
+        },
+      },
+    });
   }
 
   @Query(() => User, { nullable: true })

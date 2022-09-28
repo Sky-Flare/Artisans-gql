@@ -61,6 +61,7 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   public role!: Role;
 
+  @Field((type) => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops: Shop[];
 

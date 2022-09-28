@@ -38,8 +38,9 @@ export class Shop extends BaseEntity {
   @Column({ type: 'varchar' })
   public city!: string;
 
+  @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
-  user: number;
+  user: User;
 
   @Field()
   @CreateDateColumn()

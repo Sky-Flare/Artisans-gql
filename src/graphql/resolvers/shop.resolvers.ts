@@ -1,4 +1,13 @@
-import { Resolver, Query, Mutation, Arg, Ctx, Authorized } from 'type-graphql';
+import {
+  Resolver,
+  Query,
+  Mutation,
+  Arg,
+  Ctx,
+  Authorized,
+  FieldResolver,
+  Root,
+} from 'type-graphql';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
@@ -18,13 +27,26 @@ export class ShopResolvers {
     return await ShopRepository.find({});
   }
 
+  @FieldResolver()
+  @Authorized()
+  public async user(@Root() shop: Shop): Promise<User> {
+    const currentShop = await ShopRepository.find({
+      relations: {
+        user: true,
+      },
+      where: {
+        id: shop.id,
+      },
+    });
+    return currentShop[0].user;
+  }
+
   @Mutation(() => Shop, { nullable: true })
   @Authorized('ARTISAN')
   public async createShop(
     @Ctx() ctx: MyContext,
     @Arg('createShopInput') createShopInput?: CreateShopInput
   ): Promise<Shop | null> {
-    console.log('😃😃😃😃😃', ctx.payload.userId);
     const user = await User.findOne({
       where: { id: Number(ctx.payload.userId) },
     });
@@ -34,7 +56,7 @@ export class ShopResolvers {
       adress: createShopInput.adress,
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
-      user: Number(ctx.payload.userId),
+      user: user,
     });
     await ShopRepository.save(shop);
     return shop;
