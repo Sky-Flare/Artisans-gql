@@ -1,12 +1,4 @@
-import {
-  Resolver,
-  Query,
-  Mutation,
-  Arg,
-  UseMiddleware,
-  Ctx,
-  Authorized,
-} from 'type-graphql';
+import { Resolver, Query, Mutation, Arg, Ctx, Authorized } from 'type-graphql';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
@@ -17,7 +9,7 @@ const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver((of) => User)
 @Service()
-export class UserResolver {
+export class UserResolvers {
   @Query(() => [User])
   @Authorized('ADMIN')
   public async users(): Promise<User[]> {

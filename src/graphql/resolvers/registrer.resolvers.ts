@@ -15,7 +15,7 @@ class LoginResponse {
 
 @Resolver()
 @Service()
-export class RegistrerResolver {
+export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUp(
     @Arg('input') inputData?: CreateUserInput

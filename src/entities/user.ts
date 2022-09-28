@@ -7,15 +7,16 @@ import {
   Unique,
   UpdateDateColumn,
   BaseEntity,
+  OneToMany,
 } from 'typeorm';
+import { Shop } from './shop';
 import { IsEmail } from 'class-validator';
-
 import { registerEnumType } from 'type-graphql';
 
 export enum Role {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  ARTISANT = 'ARTISANT',
+  ARTISAN = 'ARTISAN',
 }
 registerEnumType(Role, {
   name: 'Role',
@@ -59,6 +60,9 @@ export class User extends BaseEntity {
   @Field()
   @Column({ type: 'varchar' })
   public role!: Role;
+
+  @OneToMany(() => Shop, (shop) => shop.user)
+  shops: Shop[];
 
   @Field()
   @CreateDateColumn()
