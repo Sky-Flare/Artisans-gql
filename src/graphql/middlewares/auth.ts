@@ -12,6 +12,7 @@ export const authChecker: AuthChecker<MyContext> = ({ context }, roles) => {
   try {
     const token = authorization.split(' ')[1];
     const payload = verify(token, process.env.JWT_SECRET);
+
     context.payload = payload as any;
     const role = payload.role;
     if (roles.length === 0) {

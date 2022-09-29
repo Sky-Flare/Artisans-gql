@@ -13,6 +13,7 @@ import { User } from './user';
 
 @ObjectType()
 @Entity()
+@Unique(['siret'])
 export class Shop extends BaseEntity {
   @Field((_type) => Number)
   @PrimaryGeneratedColumn()
@@ -37,6 +38,10 @@ export class Shop extends BaseEntity {
   @Field({ nullable: false })
   @Column({ type: 'varchar' })
   public city!: string;
+
+  @Field({ nullable: false })
+  @Column({ type: 'varchar' })
+  public siret!: string;
 
   @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
@@ -67,4 +72,7 @@ export class CreateShopInput implements Partial<Shop> {
 
   @Field()
   public city!: string;
+
+  @Field()
+  public siret!: string;
 }

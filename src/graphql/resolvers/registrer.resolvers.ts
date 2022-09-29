@@ -6,7 +6,7 @@ import { Field, ObjectType } from 'type-graphql';
 import { sign } from 'jsonwebtoken';
 import { AppDataSource } from '../../app-data-source';
 import { hash } from 'bcryptjs';
-const axios = require('axios');
+import axios from 'axios';
 
 @ObjectType()
 class LoginResponse {
