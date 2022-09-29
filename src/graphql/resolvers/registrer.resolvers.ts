@@ -1,11 +1,12 @@
 import { Resolver, Mutation, Arg, Ctx } from 'type-graphql';
 import { Service } from 'typedi';
-import { User, CreateUserInput } from '../../entities/user';
+import { User, CreateUserInput, Role } from '../../entities/user';
 import { compare } from 'bcryptjs';
 import { Field, ObjectType } from 'type-graphql';
 import { sign } from 'jsonwebtoken';
 import { AppDataSource } from '../../app-data-source';
 import { hash } from 'bcryptjs';
+const axios = require('axios');
 
 @ObjectType()
 class LoginResponse {
@@ -20,6 +21,26 @@ export class RegistrerResolvers {
   public async signUp(
     @Arg('input') inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
+    const isArtisant = inputData.role === Role.ARTISAN;
+    if (isArtisant) {
+      if (!inputData.siren) {
+        throw new Error('Siren requier');
+      }
+      await axios
+        .get(
+          `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.siren}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.JWT_SIREN}`,
+              Accept: 'application/json',
+            },
+          }
+        )
+        .catch(() => {
+          throw new Error('Siren not found');
+        });
+    }
+
     const userRepository = AppDataSource.getRepository(User);
 
     const user = userRepository.create({
@@ -31,6 +52,7 @@ export class RegistrerResolvers {
       city: inputData.city,
       password: await hash(inputData.password, 13),
       role: inputData.role,
+      siren: isArtisant ? inputData.siren : null,
     });
 
     return await userRepository

@@ -61,6 +61,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar' })
   public role!: Role;
 
+  @Column({ type: 'integer', nullable: true })
+  public siren: number;
+
   @Field((type) => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops: Shop[];
@@ -100,4 +103,7 @@ export class CreateUserInput implements Partial<User> {
 
   @Field((type) => Role)
   public role!: Role;
+
+  @Field({ nullable: true })
+  public siren: number;
 }
