@@ -8,11 +8,15 @@ import {
   UpdateDateColumn,
   BaseEntity,
   ManyToOne,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
+import { Siret } from './siret';
 import { User } from './user';
 
 @ObjectType()
 @Entity()
+@Unique(['siret'])
 export class Shop extends BaseEntity {
   @Field((_type) => Number)
   @PrimaryGeneratedColumn()
@@ -37,6 +41,14 @@ export class Shop extends BaseEntity {
   @Field({ nullable: false })
   @Column({ type: 'varchar' })
   public city!: string;
+
+  @OneToOne(() => Siret)
+  @JoinColumn()
+  siret: Siret;
+
+  @Field()
+  @Column({ type: 'integer', default: 1 })
+  public enabled!: number;
 
   @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
@@ -67,4 +79,7 @@ export class CreateShopInput implements Partial<Shop> {
 
   @Field()
   public city!: string;
+
+  @Field()
+  public siretNumber!: string;
 }

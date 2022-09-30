@@ -8,14 +8,16 @@ import {
   FieldResolver,
   Root,
 } from 'type-graphql';
+import axios from 'axios';
 
 import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
 import { Shop, CreateShopInput } from '../../entities/shop';
-import { User } from '../../entities/user';
+import { Role, User } from '../../entities/user';
 import { MyContext } from '../myContext';
+import { Siret } from '../../entities/siret';
 
-const UserRepository = AppDataSource.getRepository(Shop);
+const SiretRepository = AppDataSource.getRepository(Siret);
 const ShopRepository = AppDataSource.getRepository(Shop);
 
 @Resolver((of) => Shop)
@@ -42,14 +44,56 @@ export class ShopResolvers {
   }
 
   @Mutation(() => Shop, { nullable: true })
-  @Authorized('ARTISAN')
+  @Authorized(Role.ARTISAN)
   public async createShop(
     @Ctx() ctx: MyContext,
     @Arg('createShopInput') createShopInput?: CreateShopInput
   ): Promise<Shop | null> {
     const user = await User.findOne({
+      relations: {
+        siren: true,
+      },
       where: { id: Number(ctx.payload.userId) },
     });
+
+    if (user.role !== Role.ARTISAN) {
+      throw new Error('Not authorized');
+    }
+
+    if (!createShopInput.siretNumber) {
+      throw new Error('Siren requier');
+    }
+
+    const siret = SiretRepository.create({
+      siret: createShopInput.siretNumber,
+    });
+
+    await axios
+      .get(
+        `https://api.insee.fr/entreprises/sirene/V3/siret/${createShopInput.siretNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.JWT_SIREN}`,
+            Accept: 'application/json',
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.etablissement.siren !== user.siren.siren) {
+          throw new Error('not your establishment');
+        }
+        if (
+          Number(
+            res.data.etablissement.adresseEtablissement.codePostalEtablissement
+          ) !== createShopInput.zipCode
+        ) {
+          throw new Error('not good zip code');
+        }
+      })
+      .catch((e) => {
+        throw new Error(`${e}`);
+      });
+
     const shop = ShopRepository.create({
       name: createShopInput.name,
       description: createShopInput.city,
@@ -57,6 +101,7 @@ export class ShopResolvers {
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
       user: user,
+      siret: await SiretRepository.save(siret),
     });
     await ShopRepository.save(shop);
     return shop;

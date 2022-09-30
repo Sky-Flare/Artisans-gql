@@ -8,15 +8,18 @@ import {
   UpdateDateColumn,
   BaseEntity,
   OneToMany,
+  OneToOne,
+  JoinColumn,
 } from 'typeorm';
 import { Shop } from './shop';
 import { IsEmail } from 'class-validator';
 import { registerEnumType } from 'type-graphql';
+import { Siren } from './siren';
 
 export enum Role {
-  ADMIN = 'ADMIN',
-  CLIENT = 'CLIENT',
-  ARTISAN = 'ARTISAN',
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  ARTISAN = 'artisan',
 }
 registerEnumType(Role, {
   name: 'Role',
@@ -58,12 +61,20 @@ export class User extends BaseEntity {
   public password!: string;
 
   @Field()
-  @Column({ type: 'varchar' })
+  @Column({
+    type: 'enum',
+    enum: Role,
+    default: Role.CLIENT,
+  })
   public role!: Role;
 
   @Field((type) => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops: Shop[];
+
+  @OneToOne(() => Siren)
+  @JoinColumn()
+  siren: Siren;
 
   @Field()
   @CreateDateColumn()
@@ -100,4 +111,7 @@ export class CreateUserInput implements Partial<User> {
 
   @Field((type) => Role)
   public role!: Role;
+
+  @Field()
+  public sirenNumber: string;
 }

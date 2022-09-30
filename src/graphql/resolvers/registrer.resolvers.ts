@@ -1,17 +1,22 @@
 import { Resolver, Mutation, Arg, Ctx } from 'type-graphql';
 import { Service } from 'typedi';
-import { User, CreateUserInput } from '../../entities/user';
+import { User, CreateUserInput, Role } from '../../entities/user';
 import { compare } from 'bcryptjs';
 import { Field, ObjectType } from 'type-graphql';
 import { sign } from 'jsonwebtoken';
 import { AppDataSource } from '../../app-data-source';
 import { hash } from 'bcryptjs';
+import axios from 'axios';
+import { Siren } from '../../entities/siren';
 
 @ObjectType()
 class LoginResponse {
   @Field()
   accessToken: string;
 }
+
+const SirenRepository = AppDataSource.getRepository(Siren);
+const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver()
 @Service()
@@ -20,9 +25,30 @@ export class RegistrerResolvers {
   public async signUp(
     @Arg('input') inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
-    const userRepository = AppDataSource.getRepository(User);
+    const isArtisant = inputData.role === Role.ARTISAN;
+    const siren = SirenRepository.create({
+      siren: inputData.sirenNumber,
+    });
+    if (isArtisant) {
+      if (!inputData.sirenNumber) {
+        throw new Error('Siren requier');
+      }
+      await axios
+        .get(
+          `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.sirenNumber}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.JWT_SIREN}`,
+              Accept: 'application/json',
+            },
+          }
+        )
+        .catch(() => {
+          throw new Error('Siren not found');
+        });
+    }
 
-    const user = userRepository.create({
+    const user = UserRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
       email: inputData.email,
@@ -31,10 +57,10 @@ export class RegistrerResolvers {
       city: inputData.city,
       password: await hash(inputData.password, 13),
       role: inputData.role,
+      siren: isArtisant ? await SirenRepository.save(siren) : null,
     });
 
-    return await userRepository
-      .save(user)
+    return await UserRepository.save(user)
       .then(() => {
         return {
           accessToken: sign(
