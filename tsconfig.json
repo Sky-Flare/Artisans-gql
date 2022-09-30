@@ -5,8 +5,6 @@
     "lib": ["dom", "es6"],
     "sourceMap": true /* Generates corresponding '.map' file. */,
     "outDir": "dist" /* Redirect output to the directory. */,
-    "rootDir": "src" /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */,
-  
     "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
   
     "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,

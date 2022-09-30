@@ -16,9 +16,11 @@ import { Shop, CreateShopInput } from '../../entities/shop';
 import { Role, User } from '../../entities/user';
 import { MyContext } from '../myContext';
 import { Siret } from '../../entities/siret';
+import { Category_shop } from '../../entities/category_shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 const ShopRepository = AppDataSource.getRepository(Shop);
+const Category_shopRepository = AppDataSource.getRepository(Category_shop);
 
 @Resolver((of) => Shop)
 @Service()
@@ -53,15 +55,31 @@ export class ShopResolvers {
       relations: {
         siren: true,
       },
-      where: { id: Number(ctx.payload.userId) },
+      where: { id: Number(ctx?.payload?.userId) },
     });
 
-    if (user.role !== Role.ARTISAN) {
+    if (user?.role !== Role.ARTISAN) {
       throw new Error('Not authorized');
     }
 
-    if (!createShopInput.siretNumber) {
+    if (!createShopInput?.siretNumber) {
       throw new Error('Siren requier');
+    }
+
+    if (!createShopInput?.categoriesIds.length) {
+      throw new Error('Category required');
+    }
+
+    const categories = await Category_shopRepository.createQueryBuilder(
+      'category_shop'
+    )
+      .where('category_shop.id IN (:...ids)', {
+        ids: createShopInput?.categoriesIds,
+      })
+      .getMany();
+
+    if (!categories.length) {
+      throw new Error('Category not found');
     }
 
     const siret = SiretRepository.create({
@@ -102,6 +120,7 @@ export class ShopResolvers {
       city: createShopInput.city,
       user: user,
       siret: await SiretRepository.save(siret),
+      categories: categories,
     });
     await ShopRepository.save(shop);
     return shop;

@@ -44,8 +44,8 @@ export class UserResolvers {
 
   @Query(() => User, { nullable: true })
   @Authorized()
-  async me(@Ctx() ctx: MyContext): Promise<User | undefined> {
-    if (!ctx.payload.userId) {
+  async me(@Ctx() ctx: MyContext): Promise<User | null> {
+    if (!ctx.payload?.userId) {
       return null;
     }
     return User.findOne({ where: { id: Number(ctx.payload.userId) } });
