@@ -57,7 +57,8 @@ export class Shop extends BaseEntity {
   @ManyToOne(() => User, (user) => user.shops)
   user: User;
 
-  @ManyToMany(() => Category_shop)
+  @Field((type) => [Category_shop])
+  @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
   public categories!: Category_shop[];
 

@@ -21,6 +21,7 @@ import { Category_shop } from '../../entities/category_shop';
 const SiretRepository = AppDataSource.getRepository(Siret);
 const ShopRepository = AppDataSource.getRepository(Shop);
 const Category_shopRepository = AppDataSource.getRepository(Category_shop);
+const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver((of) => Shop)
 @Service()
@@ -34,15 +35,22 @@ export class ShopResolvers {
   @FieldResolver()
   @Authorized()
   public async user(@Root() shop: Shop): Promise<User> {
-    const currentShop = await ShopRepository.find({
-      relations: {
-        user: true,
-      },
-      where: {
-        id: shop.id,
-      },
-    });
-    return currentShop[0].user;
+    return await UserRepository.createQueryBuilder('user')
+      .leftJoin('user.shops', 'shop')
+      .where('shop.id = :id', { id: shop.id })
+      .getOne();
+  }
+
+  @FieldResolver({ description: 'All categories of a shop' })
+  @Authorized()
+  public async categories(@Root() shop: Shop): Promise<Category_shop[] | null> {
+    if (!shop.id) {
+      return [];
+    }
+    return await Category_shopRepository.createQueryBuilder('category_shop')
+      .leftJoin('category_shop.shops', 'shop')
+      .where('shop.id = :id', { id: shop.id })
+      .getMany();
   }
 
   @Mutation(() => Shop, { nullable: true })

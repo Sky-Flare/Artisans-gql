@@ -1,4 +1,5 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
+import { ManyToMany } from 'typeorm';
 import {
   Column,
   Entity,
@@ -6,6 +7,7 @@ import {
   Unique,
   BaseEntity,
 } from 'typeorm';
+import { Shop } from './shop';
 
 @ObjectType()
 @Entity()
@@ -22,6 +24,9 @@ export class Category_shop extends BaseEntity {
   @Field({ nullable: true })
   @Column({ type: 'varchar', nullable: true })
   public picture?: string;
+
+  @ManyToMany(() => Shop, (shop) => shop.categories)
+  shops: Shop[];
 }
 
 @InputType({ description: ' New category shop' })
