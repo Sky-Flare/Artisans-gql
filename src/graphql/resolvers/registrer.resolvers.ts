@@ -15,8 +15,8 @@ class LoginResponse {
   accessToken: string;
 }
 
-const sirenRepository = AppDataSource.getRepository(Siren);
-const userRepository = AppDataSource.getRepository(User);
+const SirenRepository = AppDataSource.getRepository(Siren);
+const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver()
 @Service()
@@ -26,7 +26,7 @@ export class RegistrerResolvers {
     @Arg('input') inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
     const isArtisant = inputData.role === Role.ARTISAN;
-    const siren = sirenRepository.create({
+    const siren = SirenRepository.create({
       siren: inputData.sirenNumber,
     });
     if (isArtisant) {
@@ -48,7 +48,7 @@ export class RegistrerResolvers {
         });
     }
 
-    const user = userRepository.create({
+    const user = UserRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
       email: inputData.email,
@@ -57,11 +57,10 @@ export class RegistrerResolvers {
       city: inputData.city,
       password: await hash(inputData.password, 13),
       role: inputData.role,
-      siren: isArtisant ? await sirenRepository.save(siren) : null,
+      siren: isArtisant ? await SirenRepository.save(siren) : null,
     });
 
-    return await userRepository
-      .save(user)
+    return await UserRepository.save(user)
       .then(() => {
         return {
           accessToken: sign(

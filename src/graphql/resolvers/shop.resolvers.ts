@@ -15,8 +15,9 @@ import { AppDataSource } from '../../app-data-source';
 import { Shop, CreateShopInput } from '../../entities/shop';
 import { Role, User } from '../../entities/user';
 import { MyContext } from '../myContext';
+import { Siret } from '../../entities/siret';
 
-const UserRepository = AppDataSource.getRepository(Shop);
+const SiretRepository = AppDataSource.getRepository(Siret);
 const ShopRepository = AppDataSource.getRepository(Shop);
 
 @Resolver((of) => Shop)
@@ -59,13 +60,17 @@ export class ShopResolvers {
       throw new Error('Not authorized');
     }
 
-    if (!createShopInput.siret) {
+    if (!createShopInput.siretNumber) {
       throw new Error('Siren requier');
     }
 
+    const siret = SiretRepository.create({
+      siret: createShopInput.siretNumber,
+    });
+
     await axios
       .get(
-        `https://api.insee.fr/entreprises/sirene/V3/siret/${createShopInput.siret}`,
+        `https://api.insee.fr/entreprises/sirene/V3/siret/${createShopInput.siretNumber}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.JWT_SIREN}`,
@@ -96,7 +101,7 @@ export class ShopResolvers {
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
       user: user,
-      siret: createShopInput.siret,
+      siret: await SiretRepository.save(siret),
     });
     await ShopRepository.save(shop);
     return shop;
