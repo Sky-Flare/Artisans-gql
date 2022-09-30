@@ -43,12 +43,15 @@ export class ShopResolvers {
   }
 
   @Mutation(() => Shop, { nullable: true })
-  @Authorized('ARTISAN')
+  @Authorized(Role.ARTISAN)
   public async createShop(
     @Ctx() ctx: MyContext,
     @Arg('createShopInput') createShopInput?: CreateShopInput
   ): Promise<Shop | null> {
     const user = await User.findOne({
+      relations: {
+        siren: true,
+      },
       where: { id: Number(ctx.payload.userId) },
     });
 
@@ -71,7 +74,7 @@ export class ShopResolvers {
         }
       )
       .then((res) => {
-        if (res.data.etablissement.siren !== user.siren) {
+        if (res.data.etablissement.siren !== user.siren.siren) {
           throw new Error('not your establishment');
         }
         if (

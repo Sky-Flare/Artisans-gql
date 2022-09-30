@@ -37,6 +37,10 @@ const bootstrap = async () => {
       context: ({ req, res }) => ({ req, res }),
       debug: true,
       introspection: true,
+      apollo: {
+        key: process.env.APOLLO_KEY,
+        graphRef: process.env.APOLLO_GRAPH_REF,
+      },
     });
     await server.start();
     server.applyMiddleware({ app, cors: corsConfig });

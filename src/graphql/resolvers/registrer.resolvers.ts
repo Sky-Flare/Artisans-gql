@@ -7,12 +7,16 @@ import { sign } from 'jsonwebtoken';
 import { AppDataSource } from '../../app-data-source';
 import { hash } from 'bcryptjs';
 import axios from 'axios';
+import { Siren } from '../../entities/siren';
 
 @ObjectType()
 class LoginResponse {
   @Field()
   accessToken: string;
 }
+
+const sirenRepository = AppDataSource.getRepository(Siren);
+const userRepository = AppDataSource.getRepository(User);
 
 @Resolver()
 @Service()
@@ -22,13 +26,16 @@ export class RegistrerResolvers {
     @Arg('input') inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
     const isArtisant = inputData.role === Role.ARTISAN;
+    const siren = sirenRepository.create({
+      siren: inputData.sirenNumber,
+    });
     if (isArtisant) {
-      if (!inputData.siren) {
+      if (!inputData.sirenNumber) {
         throw new Error('Siren requier');
       }
       await axios
         .get(
-          `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.siren}`,
+          `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.sirenNumber}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.JWT_SIREN}`,
@@ -41,8 +48,6 @@ export class RegistrerResolvers {
         });
     }
 
-    const userRepository = AppDataSource.getRepository(User);
-
     const user = userRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
@@ -52,7 +57,7 @@ export class RegistrerResolvers {
       city: inputData.city,
       password: await hash(inputData.password, 13),
       role: inputData.role,
-      siren: isArtisant ? inputData.siren : null,
+      siren: isArtisant ? await sirenRepository.save(siren) : null,
     });
 
     return await userRepository

@@ -39,9 +39,13 @@ export class Shop extends BaseEntity {
   @Column({ type: 'varchar' })
   public city!: string;
 
-  @Field({ nullable: false })
+  @Field()
   @Column({ type: 'varchar' })
   public siret!: string;
+
+  @Field()
+  @Column({ type: 'integer', default: 1 })
+  public enabled!: number;
 
   @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
