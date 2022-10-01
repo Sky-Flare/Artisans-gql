@@ -8,13 +8,12 @@ import {
   FieldResolver,
   Root,
 } from 'type-graphql';
-import axios from 'axios';
-
 import { Service } from 'typedi';
+
 import { AppDataSource } from '../../app-data-source';
+import { MyContext } from '../myContext';
 import { Shop, CreateShopInput } from '../../entities/shop';
 import { Role, User } from '../../entities/user';
-import { MyContext } from '../myContext';
 import { Siret } from '../../entities/siret';
 import {
   GetShopCatIdsAndZipCode,

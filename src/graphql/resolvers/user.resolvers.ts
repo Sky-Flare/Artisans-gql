@@ -8,12 +8,12 @@ import {
   FieldResolver,
   Root,
 } from 'type-graphql';
-
 import { Service } from 'typedi';
+
+import { MyContext } from '../myContext';
 import { AppDataSource } from '../../app-data-source';
 import { Shop } from '../../entities/shop';
 import { User, CreateUserInput } from '../../entities/user';
-import { MyContext } from '../myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ShopRepository = AppDataSource.getRepository(Shop);

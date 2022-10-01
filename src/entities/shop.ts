@@ -13,7 +13,7 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { CategoryShopInput, Category_shop } from './category_shop';
+import { Category_shop } from './category_shop';
 import { Siret } from './siret';
 import { User } from './user';
 

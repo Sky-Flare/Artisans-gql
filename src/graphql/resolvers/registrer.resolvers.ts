@@ -1,12 +1,10 @@
-import { Resolver, Mutation, Arg, Ctx } from 'type-graphql';
+import { Resolver, Mutation, Arg, Field, ObjectType } from 'type-graphql';
 import { Service } from 'typedi';
-import { User, CreateUserInput, Role } from '../../entities/user';
-import { compare } from 'bcryptjs';
-import { Field, ObjectType } from 'type-graphql';
+import { compare, hash } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
-import { AppDataSource } from '../../app-data-source';
-import { hash } from 'bcryptjs';
 import axios from 'axios';
+import { AppDataSource } from '../../app-data-source';
+import { User, CreateUserInput, Role } from '../../entities/user';
 import { Siren } from '../../entities/siren';
 
 @ObjectType()
