@@ -22,9 +22,9 @@ import {
 } from '../../entities/category_shop';
 import { ShopRepository } from '../../repository/shop';
 import { Category_shopRepository } from '../../repository/category_shop';
+import { UserRepository } from '../../repository/user';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
-const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver((of) => Shop)
 @Service()
@@ -55,10 +55,7 @@ export class ShopResolvers {
   @FieldResolver()
   @Authorized()
   public async user(@Root() shop: Shop): Promise<User> {
-    return await UserRepository.createQueryBuilder('user')
-      .leftJoin('user.shops', 'shop')
-      .where('shop.id = :id', { id: shop.id })
-      .getOne();
+    return await UserRepository.findUserOfShop(shop.id);
   }
 
   @FieldResolver({ description: 'All categories of a shop' })
