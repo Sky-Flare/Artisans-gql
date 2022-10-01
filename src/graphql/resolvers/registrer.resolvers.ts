@@ -67,7 +67,7 @@ export class RegistrerResolvers {
             { userId: user.id, role: user.role },
             process.env.JWT_SECRET,
             {
-              expiresIn: '15m',
+              expiresIn: '60m',
             }
           ),
         };

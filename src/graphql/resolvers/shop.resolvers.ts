@@ -16,20 +16,40 @@ import { Shop, CreateShopInput } from '../../entities/shop';
 import { Role, User } from '../../entities/user';
 import { MyContext } from '../myContext';
 import { Siret } from '../../entities/siret';
-import { Category_shop } from '../../entities/category_shop';
+import {
+  GetShopCatIdsAndZipCode,
+  Category_shop,
+} from '../../entities/category_shop';
+import { ShopRepository } from '../../repository/shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
-const ShopRepository = AppDataSource.getRepository(Shop);
 const Category_shopRepository = AppDataSource.getRepository(Category_shop);
 const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver((of) => Shop)
 @Service()
 export class ShopResolvers {
-  @Query(() => [Shop])
+  @Query(() => [Shop], { nullable: true })
   @Authorized()
-  public async shops(): Promise<Shop[]> {
-    return await ShopRepository.find({});
+  public async shops(
+    @Ctx() ctx: MyContext,
+    @Arg('filtersInput', { nullable: true })
+    filtersInput?: GetShopCatIdsAndZipCode
+  ): Promise<Shop[]> {
+    let zipCodeSearch = filtersInput?.zipcode;
+    if (!zipCodeSearch) {
+      const me = await UserRepository.findOneBy({
+        id: Number(ctx?.payload?.userId),
+      });
+      zipCodeSearch = me.zipCode;
+    }
+    if (!filtersInput?.categoriesIds) {
+      return await ShopRepository.findByZipCode(zipCodeSearch);
+    }
+    return ShopRepository.findByCategoriesShopWithZipCode(
+      zipCodeSearch,
+      filtersInput.categoriesIds
+    );
   }
 
   @FieldResolver()
@@ -94,31 +114,31 @@ export class ShopResolvers {
       siret: createShopInput.siretNumber,
     });
 
-    await axios
-      .get(
-        `https://api.insee.fr/entreprises/sirene/V3/siret/${createShopInput.siretNumber}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.JWT_SIREN}`,
-            Accept: 'application/json',
-          },
-        }
-      )
-      .then((res) => {
-        if (res.data.etablissement.siren !== user.siren.siren) {
-          throw new Error('not your establishment');
-        }
-        if (
-          Number(
-            res.data.etablissement.adresseEtablissement.codePostalEtablissement
-          ) !== createShopInput.zipCode
-        ) {
-          throw new Error('not good zip code');
-        }
-      })
-      .catch((e) => {
-        throw new Error(`${e}`);
-      });
+    // await axios
+    //   .get(
+    //     `https://api.insee.fr/entreprises/sirene/V3/siret/${createShopInput.siretNumber}`,
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${process.env.JWT_SIREN}`,
+    //         Accept: 'application/json',
+    //       },
+    //     }
+    //   )
+    //   .then((res) => {
+    //     if (res.data.etablissement.siren !== user.siren.siren) {
+    //       throw new Error('not your establishment');
+    //     }
+    //     if (
+    //       Number(
+    //         res.data.etablissement.adresseEtablissement.codePostalEtablissement
+    //       ) !== createShopInput.zipCode
+    //     ) {
+    //       throw new Error('not good zip code');
+    //     }
+    //   })
+    //   .catch((e) => {
+    //     throw new Error(`${e}`);
+    //   });
 
     const shop = ShopRepository.create({
       name: createShopInput.name,

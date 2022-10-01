@@ -29,11 +29,23 @@ export class Category_shop extends BaseEntity {
   shops: Shop[];
 }
 
-@InputType({ description: ' New category shop' })
+@InputType({ description: 'New category shop' })
 export class CategoryShopInput {
   @Field()
   public name!: string;
 
   @Field({ nullable: true })
   public picture: string;
+}
+
+@InputType({ description: 'Get shops by categories id & zip code ' })
+export class GetShopCatIdsAndZipCode {
+  @Field((type) => [Number], { nullable: true })
+  public categoriesIds?: number[];
+
+  @Field((type) => Number, {
+    nullable: true,
+    description: 'if null: zipCode user',
+  })
+  public zipcode?: number;
 }
