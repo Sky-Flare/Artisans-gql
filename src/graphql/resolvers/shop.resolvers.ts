@@ -21,9 +21,9 @@ import {
   Category_shop,
 } from '../../entities/category_shop';
 import { ShopRepository } from '../../repository/shop';
+import { Category_shopRepository } from '../../repository/category_shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
-const Category_shopRepository = AppDataSource.getRepository(Category_shop);
 const UserRepository = AppDataSource.getRepository(User);
 
 @Resolver((of) => Shop)
@@ -67,10 +67,7 @@ export class ShopResolvers {
     if (!shop.id) {
       return [];
     }
-    return await Category_shopRepository.createQueryBuilder('category_shop')
-      .leftJoin('category_shop.shops', 'shop')
-      .where('shop.id = :id', { id: shop.id })
-      .getMany();
+    return await Category_shopRepository.findCategoryOfShop(shop.id);
   }
 
   @Mutation(() => Shop, { nullable: true })
@@ -98,13 +95,9 @@ export class ShopResolvers {
       throw new Error('Category required');
     }
 
-    const categories = await Category_shopRepository.createQueryBuilder(
-      'category_shop'
-    )
-      .where('category_shop.id IN (:...ids)', {
-        ids: createShopInput?.categoriesIds,
-      })
-      .getMany();
+    const categories = await Category_shopRepository.findByCategoriesIds(
+      createShopInput?.categoriesIds
+    );
 
     if (!categories.length) {
       throw new Error('Category not found');
