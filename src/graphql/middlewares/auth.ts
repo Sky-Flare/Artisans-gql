@@ -1,4 +1,4 @@
-import { MiddlewareFn, AuthChecker } from 'type-graphql';
+import { AuthChecker } from 'type-graphql';
 import { verify } from 'jsonwebtoken';
 import { MyContext } from '../myContext';
 

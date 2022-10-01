@@ -10,7 +10,10 @@ import {
   ManyToOne,
   OneToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
+import { Category_shop } from './category_shop';
 import { Siret } from './siret';
 import { User } from './user';
 
@@ -54,6 +57,11 @@ export class Shop extends BaseEntity {
   @ManyToOne(() => User, (user) => user.shops)
   user: User;
 
+  @Field((type) => [Category_shop])
+  @ManyToMany(() => Category_shop, (cat) => cat.shops)
+  @JoinTable()
+  public categories!: Category_shop[];
+
   @Field()
   @CreateDateColumn()
   public createdAt!: Date;
@@ -82,4 +90,7 @@ export class CreateShopInput implements Partial<Shop> {
 
   @Field()
   public siretNumber!: string;
+
+  @Field((type) => [Number])
+  public categoriesIds!: number[];
 }
