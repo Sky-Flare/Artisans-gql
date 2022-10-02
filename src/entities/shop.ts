@@ -17,6 +17,8 @@ import { Category_shop } from './category_shop';
 import { Siret } from './siret';
 import { User } from './user';
 import { Product } from './product';
+import { CategoryShopResolver } from '../graphql/resolvers/category_shop.resolvers';
+import { Category_product } from './category_product';
 
 @ObjectType()
 @Entity()
@@ -61,7 +63,12 @@ export class Shop extends BaseEntity {
   @Field((type) => [Category_shop])
   @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
-  public categories!: Category_shop[];
+  public categoriesShops!: Category_shop[];
+
+  @Field((type) => [Category_product], { nullable: true })
+  @ManyToMany(() => Category_product, (cat) => cat.shops)
+  @JoinTable()
+  public categoriesProducts?: Category_product[];
 
   @Field((type) => [Product])
   @ManyToMany(() => Product, (product) => product.shops)

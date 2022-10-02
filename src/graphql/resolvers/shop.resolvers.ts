@@ -22,6 +22,8 @@ import {
 import { ShopRepository } from '../../repository/shop';
 import { Category_shopRepository } from '../../repository/category_shop';
 import { UserRepository } from '../../repository/user';
+import { Product } from '../../entities/product';
+import { ProductRepository } from '../../repository/product';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -59,11 +61,22 @@ export class ShopResolvers {
 
   @FieldResolver({ description: 'All categories of a shop' })
   @Authorized()
-  public async categories(@Root() shop: Shop): Promise<Category_shop[] | null> {
+  public async categoriesShops(
+    @Root() shop: Shop
+  ): Promise<Category_shop[] | null> {
     if (!shop.id) {
       return [];
     }
     return await Category_shopRepository.findCategoryOfShop(shop.id);
+  }
+
+  @FieldResolver({ description: 'All products of a shop' })
+  @Authorized()
+  public async products(@Root() shop: Shop): Promise<Product[] | null> {
+    if (!shop.id) {
+      return [];
+    }
+    return await ProductRepository.findProductsOfShop(shop.id);
   }
 
   @Mutation(() => Shop, { nullable: true })
@@ -137,7 +150,7 @@ export class ShopResolvers {
       city: createShopInput.city,
       user: user,
       siret: await SiretRepository.save(siret),
-      categories: categories,
+      categoriesShops: categories,
     });
     await ShopRepository.save(shop);
     return shop;

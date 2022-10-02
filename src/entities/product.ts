@@ -9,7 +9,9 @@ import {
   ManyToMany,
   ManyToOne,
   Unique,
+  JoinTable,
 } from 'typeorm';
+import { Category_product } from './category_product';
 import { Shop } from './shop';
 import { User } from './user';
 
@@ -40,19 +42,20 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field((type) => [Shop], { nullable: true })
-  @ManyToMany(() => Shop, (shop) => shop.user)
+  @Field((type) => [Category_product])
+  @ManyToMany(() => Category_product, (cat) => cat.products)
+  @JoinTable()
+  public categoriesProducts!: Category_product[];
+
+  @ManyToMany(() => Shop, (shop) => shop.products)
   shops: Shop[];
 
-  @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.products)
   user: User;
 
-  @Field()
   @CreateDateColumn()
   public createdAt!: Date;
 
-  @Field()
   @UpdateDateColumn()
   public updatedAt!: Date;
 }
@@ -73,4 +76,7 @@ export class CreateProductInput implements Partial<Product> {
 
   @Field((type) => [Number], { nullable: true })
   public shopsIds?: number[];
+
+  @Field((type) => [Number], { nullable: true })
+  public categoriesProductsIds?: number[];
 }
