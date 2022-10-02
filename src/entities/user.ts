@@ -15,6 +15,7 @@ import { Shop } from './shop';
 import { IsEmail } from 'class-validator';
 import { registerEnumType } from 'type-graphql';
 import { Siren } from './siren';
+import { Product } from './product';
 
 export enum Role {
   ADMIN = 'admin',
@@ -71,6 +72,10 @@ export class User extends BaseEntity {
   @Field((type) => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops: Shop[];
+
+  @Field((type) => [Product], { nullable: true })
+  @OneToMany(() => Product, (product) => product.user)
+  products: Product[];
 
   @OneToOne(() => Siren)
   @JoinColumn()

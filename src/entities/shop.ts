@@ -16,6 +16,7 @@ import {
 import { Category_shop } from './category_shop';
 import { Siret } from './siret';
 import { User } from './user';
+import { Product } from './product';
 
 @ObjectType()
 @Entity()
@@ -61,6 +62,11 @@ export class Shop extends BaseEntity {
   @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
   public categories!: Category_shop[];
+
+  @Field((type) => [Product])
+  @ManyToMany(() => Product, (product) => product.shops)
+  @JoinTable()
+  public products!: Product[];
 
   @Field()
   @CreateDateColumn()
