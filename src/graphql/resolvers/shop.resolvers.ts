@@ -24,6 +24,8 @@ import { Category_shopRepository } from '../../repository/category_shop';
 import { UserRepository } from '../../repository/user';
 import { Product } from '../../entities/product';
 import { ProductRepository } from '../../repository/product';
+import { Category_product } from '../../entities/category_product';
+import { Category_productRepository } from '../../repository/category_product';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -44,7 +46,7 @@ export class ShopResolvers {
       });
       zipCodeSearch = me.zipCode;
     }
-    if (!filtersInput?.categoriesIds) {
+    if (!filtersInput?.categoriesIds.length) {
       return await ShopRepository.findByZipCode(zipCodeSearch);
     }
     return ShopRepository.findByCategoriesShopWithZipCode(
@@ -68,6 +70,19 @@ export class ShopResolvers {
       return [];
     }
     return await Category_shopRepository.findCategoryOfShop(shop.id);
+  }
+
+  @FieldResolver({ description: 'All categoriesProduct of a shop' })
+  @Authorized()
+  public async categoriesProducts(
+    @Root() shop: Shop
+  ): Promise<Category_product[] | null> {
+    if (!shop.id) {
+      return [];
+    }
+    return await Category_productRepository.findCategoriesProductByShop(
+      shop.id
+    );
   }
 
   @FieldResolver({ description: 'All products of a shop' })

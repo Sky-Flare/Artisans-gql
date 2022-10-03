@@ -24,9 +24,11 @@ export const ShopRepository = AppDataSource.getRepository(Shop).extend({
       .getMany();
   },
   findByShopsIds(shopsIds: number[]): Shop[] {
+    console.log('lalala');
+
     return this.createQueryBuilder('shop')
-      .where('id IN (:...shopId)', {
-        shopId: shopsIds,
+      .where('shop.id IN (:...shopsIds)', {
+        shopsIds: shopsIds,
       })
       .getMany();
   },

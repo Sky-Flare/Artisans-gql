@@ -42,7 +42,7 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field((type) => [Category_product])
+  @Field((type) => [Category_product], { nullable: true })
   @ManyToMany(() => Category_product, (cat) => cat.products)
   @JoinTable()
   public categoriesProducts!: Category_product[];
