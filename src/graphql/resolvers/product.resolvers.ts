@@ -25,6 +25,16 @@ const SiretRepository = AppDataSource.getRepository(Siret);
 @Resolver((of) => Product)
 @Service()
 export class ProductResolvers {
+  @FieldResolver()
+  @Authorized()
+  public async categoriesProducts(
+    @Root() product: Product
+  ): Promise<Category_product[] | null> {
+    return await Category_productRepository.findCategoriesProductOfOneProduct(
+      product.id
+    );
+  }
+
   @Mutation(() => Product, { nullable: true })
   @Authorized(Role.ARTISAN)
   public async createProduct(
@@ -51,7 +61,7 @@ export class ProductResolvers {
     let categoriesProductSlected = [];
     if (categoriesProductsIds?.length) {
       categoriesProductSlected =
-        await await Category_productRepository.findCategoriesProductByIds(
+        await Category_productRepository.findCategoriesProductByIds(
           categoriesProductsIds
         );
     }
@@ -66,15 +76,5 @@ export class ProductResolvers {
     });
 
     return await product.save();
-  }
-
-  @FieldResolver()
-  @Authorized()
-  public async categoriesProducts(
-    @Root() product: Product
-  ): Promise<Category_product[] | null> {
-    return await Category_productRepository.findCategoriesProductOfOneProduct(
-      product.id
-    );
   }
 }
