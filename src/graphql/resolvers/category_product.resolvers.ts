@@ -3,7 +3,6 @@ import { Service } from 'typedi';
 import { AppDataSource } from '../../app-data-source';
 
 import { Role } from '../../entities/user';
-import { Category_shop } from '../../entities/category_shop';
 import { Category_product } from '../../entities/category_product';
 import { Category_productRepository } from '../../repository/category_product';
 import { ShopRepository } from '../../repository/shop';
