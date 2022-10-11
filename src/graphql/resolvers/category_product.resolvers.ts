@@ -9,8 +9,6 @@ import { Category_productRepository } from '../../repository/category_product';
 import { ShopRepository } from '../../repository/shop';
 import { Shop } from 'src/entities/shop';
 
-const CategoryShopRepository = AppDataSource.getRepository(Category_shop);
-
 Resolver((of) => Category_product);
 @Service()
 export class CategoryProductResolver {
