@@ -16,6 +16,9 @@ import {
 import { Category_shop } from './category_shop';
 import { Siret } from './siret';
 import { User } from './user';
+import { Product } from './product';
+import { CategoryShopResolver } from '../graphql/resolvers/category_shop.resolvers';
+import { Category_product } from './category_product';
 
 @ObjectType()
 @Entity()
@@ -47,7 +50,7 @@ export class Shop extends BaseEntity {
 
   @OneToOne(() => Siret)
   @JoinColumn()
-  siret: Siret;
+  public siret!: Siret;
 
   @Field()
   @Column({ type: 'integer', default: 1 })
@@ -55,12 +58,22 @@ export class Shop extends BaseEntity {
 
   @Field((type) => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
-  user: User;
+  public user?: User | null;
 
   @Field((type) => [Category_shop])
   @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
-  public categories!: Category_shop[];
+  public categoriesShops?: Category_shop[];
+
+  @Field((type) => [Category_product], { nullable: true })
+  @ManyToMany(() => Category_product, (cat) => cat.shops)
+  @JoinTable()
+  public categoriesProducts?: Category_product[];
+
+  @Field((type) => [Product], { nullable: true })
+  @ManyToMany(() => Product, (product) => product.shops)
+  @JoinTable()
+  public products?: Product[];
 
   @Field()
   @CreateDateColumn()

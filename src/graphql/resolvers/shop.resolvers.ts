@@ -7,6 +7,7 @@ import {
   Authorized,
   FieldResolver,
   Root,
+  ResolverInterface,
 } from 'type-graphql';
 import { Service } from 'typedi';
 
@@ -22,48 +23,79 @@ import {
 import { ShopRepository } from '../../repository/shop';
 import { Category_shopRepository } from '../../repository/category_shop';
 import { UserRepository } from '../../repository/user';
+import { Product } from '../../entities/product';
+import { ProductRepository } from '../../repository/product';
+import { Category_product } from '../../entities/category_product';
+import { Category_productRepository } from '../../repository/category_product';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
 @Resolver((of) => Shop)
 @Service()
-export class ShopResolvers {
+export class ShopResolvers implements ResolverInterface<Shop> {
   @Query(() => [Shop], { nullable: true })
   @Authorized()
   public async shops(
     @Ctx() ctx: MyContext,
     @Arg('filtersInput', { nullable: true })
     filtersInput?: GetShopCatIdsAndZipCode
-  ): Promise<Shop[]> {
+  ): Promise<Shop[] | null> {
     let zipCodeSearch = filtersInput?.zipcode;
     if (!zipCodeSearch) {
       const me = await UserRepository.findOneBy({
         id: Number(ctx?.payload?.userId),
       });
-      zipCodeSearch = me.zipCode;
+      zipCodeSearch = me?.zipCode;
     }
-    if (!filtersInput?.categoriesIds) {
-      return await ShopRepository.findByZipCode(zipCodeSearch);
+    if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
+      return ShopRepository.findByZipCode(zipCodeSearch);
     }
-    return ShopRepository.findByCategoriesShopWithZipCode(
-      zipCodeSearch,
-      filtersInput.categoriesIds
-    );
+    if (zipCodeSearch && filtersInput?.categoriesIds) {
+      return ShopRepository.findByCategoriesShopWithZipCode(
+        zipCodeSearch,
+        filtersInput?.categoriesIds
+      );
+    }
+    return null;
   }
 
   @FieldResolver()
   @Authorized()
-  public async user(@Root() shop: Shop): Promise<User> {
+  public async user(@Root() shop: Shop): Promise<User | null> {
     return await UserRepository.findUserOfShop(shop.id);
   }
 
   @FieldResolver({ description: 'All categories of a shop' })
   @Authorized()
-  public async categories(@Root() shop: Shop): Promise<Category_shop[] | null> {
+  public async categoriesShops(
+    @Root() shop: Shop
+  ): Promise<Category_shop[] | undefined> {
     if (!shop.id) {
       return [];
     }
     return await Category_shopRepository.findCategoryOfShop(shop.id);
+  }
+
+  @FieldResolver({ description: 'All categoriesProduct of a shop' })
+  @Authorized()
+  public async categoriesProducts(
+    @Root() shop: Shop
+  ): Promise<Category_product[] | undefined> {
+    if (!shop.id) {
+      return [];
+    }
+    return await Category_productRepository.findCategoriesProductByShop(
+      shop.id
+    );
+  }
+
+  @FieldResolver({ description: 'All products of a shop' })
+  @Authorized()
+  public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
+    if (!shop.id) {
+      return [];
+    }
+    return await ProductRepository.findProductsOfShop(shop.id);
   }
 
   @Mutation(() => Shop, { nullable: true })
@@ -137,7 +169,7 @@ export class ShopResolvers {
       city: createShopInput.city,
       user: user,
       siret: await SiretRepository.save(siret),
-      categories: categories,
+      categoriesShops: categories,
     });
     await ShopRepository.save(shop);
     return shop;

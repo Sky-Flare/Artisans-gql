@@ -21,22 +21,6 @@ const ShopRepository = AppDataSource.getRepository(Shop);
 @Resolver((of) => User)
 @Service()
 export class UserResolvers {
-  @Query(() => [User], { nullable: true, description: 'Return all users' })
-  @Authorized()
-  public async users(): Promise<User[]> {
-    return await UserRepository.find({});
-  }
-
-  @Query(() => User, { nullable: true, description: 'Return on user' })
-  @Authorized()
-  public async user(
-    @Arg('userId', { nullable: true }) userId?: number
-  ): Promise<User> {
-    return await UserRepository.findOneBy({
-      id: userId,
-    });
-  }
-
   @FieldResolver()
   @Authorized()
   public async shops(@Root() user: User): Promise<Shop[]> {
@@ -49,6 +33,22 @@ export class UserResolvers {
           id: user.id,
         },
       },
+    });
+  }
+
+  @Query(() => [User], { nullable: true, description: 'Return all users' })
+  @Authorized()
+  public async users(): Promise<User[]> {
+    return await UserRepository.find({});
+  }
+
+  @Query(() => User, { nullable: true, description: 'Return on user' })
+  @Authorized()
+  public async user(
+    @Arg('userId', { nullable: true }) userId?: number
+  ): Promise<User | null> {
+    return await UserRepository.findOneBy({
+      id: userId,
     });
   }
 

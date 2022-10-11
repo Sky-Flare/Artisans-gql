@@ -7,12 +7,13 @@ import {
   Unique,
   BaseEntity,
 } from 'typeorm';
+import { Product } from './product';
 import { Shop } from './shop';
 
 @ObjectType()
 @Entity()
 @Unique(['name'])
-export class Category_shop extends BaseEntity {
+export class Category_product extends BaseEntity {
   @Field((_type) => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
@@ -25,27 +26,19 @@ export class Category_shop extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   public picture?: string;
 
-  @ManyToMany(() => Shop, (shop) => shop.categoriesShops)
-  shops?: Shop[] | null;
+  @Field((type) => [Product], { nullable: true })
+  @ManyToMany(() => Product, (product) => product.categoriesProducts)
+  products: Product[] = [];
+
+  @ManyToMany(() => Shop, (shop) => shop.categoriesProducts)
+  shops: Shop[] = [];
 }
 
-@InputType({ description: 'New category shop' })
-export class CategoryShopInput {
+@InputType({ description: 'New category product' })
+export class CategoryProductInput {
   @Field()
   public name!: string;
 
   @Field({ nullable: true })
   public picture: string | undefined;
-}
-
-@InputType({ description: 'Get shops by categories id & zip code ' })
-export class GetShopCatIdsAndZipCode {
-  @Field((type) => [Number], { nullable: true })
-  public categoriesIds?: number[];
-
-  @Field((type) => Number, {
-    nullable: true,
-    description: 'if null: zipCode user',
-  })
-  public zipcode?: number;
 }
