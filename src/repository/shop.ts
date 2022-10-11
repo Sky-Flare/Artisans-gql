@@ -5,7 +5,7 @@ export const ShopRepository = AppDataSource.getRepository(Shop).extend({
   findByCategoriesShopWithZipCode(
     zipCode: number,
     categoriesIds: number[]
-  ): Shop[] {
+  ): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .leftJoin('shop.categoriesShops', 'category_shop')
       .where('category_shop.id IN (:...catIds)', {
@@ -16,16 +16,14 @@ export const ShopRepository = AppDataSource.getRepository(Shop).extend({
       })
       .getMany();
   },
-  findByZipCode(zipCode: number): Shop[] {
+  findByZipCode(zipCode: number): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .where('shop.zipCode = :zipCodeNumber', {
         zipCodeNumber: zipCode,
       })
       .getMany();
   },
-  findByShopsIds(shopsIds: number[]): Shop[] {
-    console.log('lalala');
-
+  findByShopsIds(shopsIds: number[]): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .where('shop.id IN (:...shopsIds)', {
         shopsIds: shopsIds,

@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "ESNext",
     "module": "commonjs",
-    "lib": ["dom", "es6"],
+    "lib": ["dom", "ESNext"],
     "sourceMap": true /* Generates corresponding '.map' file. */,
     "outDir": "dist" /* Redirect output to the directory. */,
     "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
@@ -10,6 +10,23 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,   
     "skipLibCheck": true,
     "esModuleInterop": true,
+
+    "baseUrl": ".",
+    "rootDir": ".",
+//    "importsNotUsedAsValues": "error",
+    "resolveJsonModule": true,
+    "pretty": true,
+    "types": ["reflect-metadata", "node"],
+    "noEmitOnError": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitAny": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true
+
   },
   "compileOnSave": true,
   "exclude": ["node_modules"],

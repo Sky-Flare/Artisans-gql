@@ -48,10 +48,10 @@ export class Product extends BaseEntity {
   public categoriesProducts!: Category_product[];
 
   @ManyToMany(() => Shop, (shop) => shop.products)
-  shops: Shop[];
+  shops: Shop[] = [];
 
   @ManyToOne(() => User, (user) => user.products)
-  user: User;
+  user!: User;
 
   @CreateDateColumn()
   public createdAt!: Date;

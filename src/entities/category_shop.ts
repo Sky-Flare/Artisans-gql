@@ -26,7 +26,7 @@ export class Category_shop extends BaseEntity {
   public picture?: string;
 
   @ManyToMany(() => Shop, (shop) => shop.categoriesShops)
-  shops: Shop[];
+  shops?: Shop[] | null;
 }
 
 @InputType({ description: 'New category shop' })
@@ -35,7 +35,7 @@ export class CategoryShopInput {
   public name!: string;
 
   @Field({ nullable: true })
-  public picture: string;
+  public picture: string | undefined;
 }
 
 @InputType({ description: 'Get shops by categories id & zip code ' })

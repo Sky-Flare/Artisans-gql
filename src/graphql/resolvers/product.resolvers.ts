@@ -19,6 +19,7 @@ import { ShopRepository } from '../../repository/shop';
 import { Category_productRepository } from '../../repository/category_product';
 import {} from '../../repository/category_shop';
 import { ProductRepository } from '../../repository/product';
+import { Shop } from 'src/entities/shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -54,11 +55,11 @@ export class ProductResolvers {
     if (!me) {
       throw new Error('Artisan not found');
     }
-    let shopsSlected = [];
+    let shopsSlected: Shop[] = [];
     if (shopsIds?.length) {
       shopsSlected = await ShopRepository.findByShopsIds(shopsIds);
     }
-    let categoriesProductSlected = [];
+    let categoriesProductSlected: Category_product[] = [];
     if (categoriesProductsIds?.length) {
       categoriesProductSlected =
         await Category_productRepository.findCategoriesProductByIds(
@@ -70,7 +71,7 @@ export class ProductResolvers {
       description,
       price,
       picture,
-      shops: shopsSlected.length ? shopsSlected : null,
+      shops: shopsSlected,
       user: me,
       categoriesProducts: categoriesProductSlected,
     });

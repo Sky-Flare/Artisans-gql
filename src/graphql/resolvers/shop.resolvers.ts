@@ -7,6 +7,7 @@ import {
   Authorized,
   FieldResolver,
   Root,
+  ResolverInterface,
 } from 'type-graphql';
 import { Service } from 'typedi';
 
@@ -31,33 +32,36 @@ const SiretRepository = AppDataSource.getRepository(Siret);
 
 @Resolver((of) => Shop)
 @Service()
-export class ShopResolvers {
+export class ShopResolvers implements ResolverInterface<Shop> {
   @Query(() => [Shop], { nullable: true })
   @Authorized()
   public async shops(
     @Ctx() ctx: MyContext,
     @Arg('filtersInput', { nullable: true })
     filtersInput?: GetShopCatIdsAndZipCode
-  ): Promise<Shop[]> {
+  ): Promise<Shop[] | null> {
     let zipCodeSearch = filtersInput?.zipcode;
     if (!zipCodeSearch) {
       const me = await UserRepository.findOneBy({
         id: Number(ctx?.payload?.userId),
       });
-      zipCodeSearch = me.zipCode;
+      zipCodeSearch = me?.zipCode;
     }
-    if (!filtersInput?.categoriesIds.length) {
-      return await ShopRepository.findByZipCode(zipCodeSearch);
+    if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
+      return ShopRepository.findByZipCode(zipCodeSearch);
     }
-    return ShopRepository.findByCategoriesShopWithZipCode(
-      zipCodeSearch,
-      filtersInput.categoriesIds
-    );
+    if (zipCodeSearch && filtersInput?.categoriesIds) {
+      return ShopRepository.findByCategoriesShopWithZipCode(
+        zipCodeSearch,
+        filtersInput?.categoriesIds
+      );
+    }
+    return null;
   }
 
   @FieldResolver()
   @Authorized()
-  public async user(@Root() shop: Shop): Promise<User> {
+  public async user(@Root() shop: Shop): Promise<User | null> {
     return await UserRepository.findUserOfShop(shop.id);
   }
 
@@ -65,7 +69,7 @@ export class ShopResolvers {
   @Authorized()
   public async categoriesShops(
     @Root() shop: Shop
-  ): Promise<Category_shop[] | null> {
+  ): Promise<Category_shop[] | undefined> {
     if (!shop.id) {
       return [];
     }
@@ -76,7 +80,7 @@ export class ShopResolvers {
   @Authorized()
   public async categoriesProducts(
     @Root() shop: Shop
-  ): Promise<Category_product[] | null> {
+  ): Promise<Category_product[] | undefined> {
     if (!shop.id) {
       return [];
     }
@@ -87,7 +91,7 @@ export class ShopResolvers {
 
   @FieldResolver({ description: 'All products of a shop' })
   @Authorized()
-  public async products(@Root() shop: Shop): Promise<Product[] | null> {
+  public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
     if (!shop.id) {
       return [];
     }

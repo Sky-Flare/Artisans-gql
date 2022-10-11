@@ -7,6 +7,7 @@ import { Category_shop } from '../../entities/category_shop';
 import { Category_product } from '../../entities/category_product';
 import { Category_productRepository } from '../../repository/category_product';
 import { ShopRepository } from '../../repository/shop';
+import { Shop } from 'src/entities/shop';
 
 const CategoryShopRepository = AppDataSource.getRepository(Category_shop);
 
@@ -28,15 +29,16 @@ export class CategoryProductResolver {
     @Arg('picture', { nullable: true }) picture?: string,
     @Arg('shopsIds', () => [Number], { nullable: true }) shopsIds?: number[]
   ): Promise<Category_product | null> {
-    let shops = [];
+    let shops: Shop[] = [];
     if (shopsIds?.length) {
       shops = await ShopRepository.findByShopsIds(shopsIds);
     }
     const categoryProduct = Category_productRepository.create({
       name: name,
-      picture: picture ?? null,
+      picture: picture,
       shops: shops,
     });
+
     return await Category_productRepository.save(categoryProduct);
   }
 }

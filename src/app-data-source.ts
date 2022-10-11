@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   logger: 'advanced-console',
   logging: 'all',
-  cache: false,
-  dropSchema: false,
+  cache: true,
+  dropSchema: true,
   entities: ['dist/entities/*.js'],
 });

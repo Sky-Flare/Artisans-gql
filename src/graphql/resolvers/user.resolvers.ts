@@ -46,7 +46,7 @@ export class UserResolvers {
   @Authorized()
   public async user(
     @Arg('userId', { nullable: true }) userId?: number
-  ): Promise<User> {
+  ): Promise<User | null> {
     return await UserRepository.findOneBy({
       id: userId,
     });

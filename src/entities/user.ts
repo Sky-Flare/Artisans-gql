@@ -71,15 +71,15 @@ export class User extends BaseEntity {
 
   @Field((type) => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
-  shops: Shop[];
+  shops: Shop[] | undefined;
 
   @Field((type) => [Product], { nullable: true })
   @OneToMany(() => Product, (product) => product.user)
-  products: Product[];
+  products: Product[] | undefined;
 
   @OneToOne(() => Siren)
   @JoinColumn()
-  siren: Siren;
+  siren: Siren | undefined;
 
   @Field()
   @CreateDateColumn()
@@ -118,5 +118,5 @@ export class CreateUserInput implements Partial<User> {
   public role!: Role;
 
   @Field()
-  public sirenNumber: string;
+  public sirenNumber: string | undefined;
 }

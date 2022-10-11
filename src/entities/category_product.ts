@@ -28,10 +28,10 @@ export class Category_product extends BaseEntity {
 
   @Field((type) => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.categoriesProducts)
-  products: Product[];
+  products: Product[] = [];
 
   @ManyToMany(() => Shop, (shop) => shop.categoriesProducts)
-  shops: Shop[];
+  shops: Shop[] = [];
 }
 
 @InputType({ description: 'New category product' })
@@ -40,5 +40,5 @@ export class CategoryProductInput {
   public name!: string;
 
   @Field({ nullable: true })
-  public picture: string;
+  public picture: string | undefined;
 }

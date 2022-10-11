@@ -1,6 +1,6 @@
 import { AuthChecker } from 'type-graphql';
-import { verify } from 'jsonwebtoken';
-import { MyContext } from '../myContext';
+import { Secret, verify } from 'jsonwebtoken';
+import { MyContext, Payload } from '../myContext';
 
 // create auth checker function
 export const authChecker: AuthChecker<MyContext> = ({ context }, roles) => {
@@ -11,7 +11,7 @@ export const authChecker: AuthChecker<MyContext> = ({ context }, roles) => {
 
   try {
     const token = authorization.split(' ')[1];
-    const payload = verify(token, process.env.JWT_SECRET);
+    const payload = verify(token, process.env.JWT_SECRET as Secret) as Payload;
 
     if (!payload) {
       throw new Error('Not authenticated');
