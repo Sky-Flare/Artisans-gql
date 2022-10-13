@@ -1,5 +1,5 @@
-import { IsEmail } from "class-validator";
-import { Field, InputType, ObjectType, registerEnumType } from "type-graphql";
+import { IsEmail } from 'class-validator';
+import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -11,58 +11,58 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
-} from "typeorm";
-import { Product } from "./product";
-import { Shop } from "./shop";
-import { Siren } from "./siren";
+} from 'typeorm';
+import { Product } from './product';
+import { Shop } from './shop';
+import { Siren } from './siren';
 
 export enum Role {
-  ADMIN = "admin",
-  CLIENT = "client",
-  ARTISAN = "artisan"
+  ADMIN = 'admin',
+  CLIENT = 'client',
+  ARTISAN = 'artisan'
 }
 registerEnumType(Role, {
-  name: "Role"
+  name: 'Role'
 });
 
 @ObjectType()
 @Entity()
-@Unique(["email"])
+@Unique(['email'])
 export class User extends BaseEntity {
   @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public firstName!: string;
 
   @Field()
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public lastName!: string;
 
   @Field()
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public email!: string;
 
   @Field()
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public adress!: string;
 
   @Field()
-  @Column({ type: "integer" })
+  @Column({ type: 'integer' })
   public zipCode!: number;
 
   @Field()
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public city!: string;
 
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public password!: string;
 
   @Field()
   @Column({
-    type: "enum",
+    type: 'enum',
     enum: Role,
     default: Role.CLIENT
   })
@@ -89,7 +89,7 @@ export class User extends BaseEntity {
   public updatedAt!: Date;
 }
 
-@InputType({ description: "New user data" })
+@InputType({ description: 'New user data' })
 export class CreateUserInput implements Partial<User> {
   @Field()
   public lastName!: string;

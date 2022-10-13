@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from "type-graphql";
+import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -12,39 +12,39 @@ import {
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
-} from "typeorm";
-import { Category_product } from "./category_product";
-import { Category_shop } from "./category_shop";
-import { Product } from "./product";
-import { Siret } from "./siret";
-import { User } from "./user";
+} from 'typeorm';
+import { Category_product } from './category_product';
+import { Category_shop } from './category_shop';
+import { Product } from './product';
+import { Siret } from './siret';
+import { User } from './user';
 
 @ObjectType()
 @Entity()
-@Unique(["siret"])
+@Unique(['siret'])
 export class Shop extends BaseEntity {
   @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public name!: string;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public description!: string;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public adress!: string;
 
   @Field({ nullable: false })
-  @Column({ type: "integer" })
+  @Column({ type: 'integer' })
   public zipCode!: number;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public city!: string;
 
   @OneToOne(() => Siret)
@@ -52,7 +52,7 @@ export class Shop extends BaseEntity {
   public siret!: Siret;
 
   @Field()
-  @Column({ type: "integer", default: 1 })
+  @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
   @Field(() => User, { nullable: true })
@@ -83,7 +83,7 @@ export class Shop extends BaseEntity {
   public updatedAt!: Date;
 }
 
-@InputType({ description: "New shop data" })
+@InputType({ description: 'New shop data' })
 export class CreateShopInput implements Partial<Shop> {
   @Field()
   public name!: string;

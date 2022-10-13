@@ -6,17 +6,17 @@ import {
   Mutation,
   Resolver,
   Root
-} from "type-graphql";
-import { Service } from "typedi";
+} from 'type-graphql';
+import { Service } from 'typedi';
 
-import { Shop } from "src/entities/shop";
-import { Category_product } from "../../entities/category_product";
-import { CreateProductInput, Product } from "../../entities/product";
-import { Role, User } from "../../entities/user";
-import { Category_productRepository } from "../../repository/category_product";
-import { ProductRepository } from "../../repository/product";
-import { ShopRepository } from "../../repository/shop";
-import { MyContext } from "../myContext";
+import { Shop } from 'src/entities/shop';
+import { Category_product } from '../../entities/category_product';
+import { CreateProductInput, Product } from '../../entities/product';
+import { Role, User } from '../../entities/user';
+import { Category_productRepository } from '../../repository/category_product';
+import { ProductRepository } from '../../repository/product';
+import { ShopRepository } from '../../repository/shop';
+import { MyContext } from '../myContext';
 
 @Resolver(() => Product)
 @Service()
@@ -35,7 +35,7 @@ export class ProductResolvers {
   @Authorized(Role.ARTISAN)
   public async createProduct(
     @Ctx() ctx: MyContext,
-    @Arg("createProductInput")
+    @Arg('createProductInput')
     {
       name,
       description,
@@ -48,7 +48,7 @@ export class ProductResolvers {
     const me = await User.findOneBy({ id: Number(ctx?.payload?.userId) });
 
     if (!me) {
-      throw new Error("Artisan not found");
+      throw new Error('Artisan not found');
     }
     let shopsSlected: Shop[] = [];
     if (shopsIds?.length) {

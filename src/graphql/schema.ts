@@ -1,10 +1,10 @@
-import { buildSchema, ContainerType } from "type-graphql";
-import { authChecker } from "./middlewares/auth";
+import { buildSchema, ContainerType } from 'type-graphql';
+import { authChecker } from './middlewares/auth';
 
-export default (Container: any) => {
+export default (Container: ContainerType) => {
   return buildSchema({
     container: Container,
-    resolvers: [__dirname + "/**/*.resolvers.{ts,js}"],
+    resolvers: [__dirname + '/**/*.resolvers.{ts,js}'],
     authChecker
   });
 };

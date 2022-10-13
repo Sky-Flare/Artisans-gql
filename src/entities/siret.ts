@@ -1,21 +1,21 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
   Entity,
   PrimaryGeneratedColumn,
   Unique
-} from "typeorm";
+} from 'typeorm';
 
 @ObjectType()
 @Entity()
-@Unique(["siret"])
+@Unique(['siret'])
 export class Siret extends BaseEntity {
   @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field({ nullable: false })
-  @Column({ type: "varchar" })
+  @Column({ type: 'varchar' })
   public siret!: string;
 }

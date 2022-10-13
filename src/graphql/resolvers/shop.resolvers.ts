@@ -8,25 +8,25 @@ import {
   Resolver,
   ResolverInterface,
   Root
-} from "type-graphql";
-import { Service } from "typedi";
+} from 'type-graphql';
+import { Service } from 'typedi';
 
-import { AppDataSource } from "../../app-data-source";
-import { Category_product } from "../../entities/category_product";
+import { AppDataSource } from '../../app-data-source';
+import { Category_product } from '../../entities/category_product';
 import {
   Category_shop,
   GetShopCatIdsAndZipCode
-} from "../../entities/category_shop";
-import { Product } from "../../entities/product";
-import { CreateShopInput, Shop } from "../../entities/shop";
-import { Siret } from "../../entities/siret";
-import { Role, User } from "../../entities/user";
-import { Category_productRepository } from "../../repository/category_product";
-import { Category_shopRepository } from "../../repository/category_shop";
-import { ProductRepository } from "../../repository/product";
-import { ShopRepository } from "../../repository/shop";
-import { UserRepository } from "../../repository/user";
-import { MyContext } from "../myContext";
+} from '../../entities/category_shop';
+import { Product } from '../../entities/product';
+import { CreateShopInput, Shop } from '../../entities/shop';
+import { Siret } from '../../entities/siret';
+import { Role, User } from '../../entities/user';
+import { Category_productRepository } from '../../repository/category_product';
+import { Category_shopRepository } from '../../repository/category_shop';
+import { ProductRepository } from '../../repository/product';
+import { ShopRepository } from '../../repository/shop';
+import { UserRepository } from '../../repository/user';
+import { MyContext } from '../myContext';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -37,7 +37,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @Authorized()
   public async shops(
     @Ctx() ctx: MyContext,
-    @Arg("filtersInput", { nullable: true })
+    @Arg('filtersInput', { nullable: true })
     filtersInput?: GetShopCatIdsAndZipCode
   ): Promise<Shop[] | null> {
     let zipCodeSearch = filtersInput?.zipcode;
@@ -65,7 +65,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     return await UserRepository.findUserOfShop(shop.id);
   }
 
-  @FieldResolver({ description: "All categories of a shop" })
+  @FieldResolver({ description: 'All categories of a shop' })
   @Authorized()
   public async categoriesShops(
     @Root() shop: Shop
@@ -76,7 +76,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     return await Category_shopRepository.findCategoryOfShop(shop.id);
   }
 
-  @FieldResolver({ description: "All categoriesProduct of a shop" })
+  @FieldResolver({ description: 'All categoriesProduct of a shop' })
   @Authorized()
   public async categoriesProducts(
     @Root() shop: Shop
@@ -89,7 +89,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     );
   }
 
-  @FieldResolver({ description: "All products of a shop" })
+  @FieldResolver({ description: 'All products of a shop' })
   @Authorized()
   public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
     if (!shop.id) {
@@ -102,7 +102,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @Authorized(Role.ARTISAN)
   public async createShop(
     @Ctx() ctx: MyContext,
-    @Arg("createShopInput") createShopInput?: CreateShopInput
+    @Arg('createShopInput') createShopInput?: CreateShopInput
   ): Promise<Shop | null> {
     const user = await User.findOne({
       relations: {
@@ -112,15 +112,15 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     });
 
     if (user?.role !== Role.ARTISAN) {
-      throw new Error("Not authorized");
+      throw new Error('Not authorized');
     }
 
     if (!createShopInput?.siretNumber) {
-      throw new Error("Siren requier");
+      throw new Error('Siren requier');
     }
 
     if (!createShopInput?.categoriesIds.length) {
-      throw new Error("Category required");
+      throw new Error('Category required');
     }
 
     const categories = await Category_shopRepository.findByCategoriesIds(
@@ -128,7 +128,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     );
 
     if (!categories.length) {
-      throw new Error("Category not found");
+      throw new Error('Category not found');
     }
 
     const siret = SiretRepository.create({

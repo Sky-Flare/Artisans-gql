@@ -1,23 +1,23 @@
-import { ApolloServer } from "apollo-server-express";
-import cors from "cors";
-import dotenv from "dotenv";
-import express from "express";
-import "reflect-metadata";
-import { Container } from "typedi";
-import createSchema from "./graphql/schema";
+import { ApolloServer } from 'apollo-server-express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import express from 'express';
+import 'reflect-metadata';
+import { Container } from 'typedi';
+import createSchema from './graphql/schema';
 
 dotenv.config();
 
-import { AppDataSource } from "./app-data-source";
+import { AppDataSource } from './app-data-source';
 
 AppDataSource.initialize()
   .then(() => {
     // eslint-disable-next-line no-console
-    console.log("Data Source has been initialized!");
+    console.log('Data Source has been initialized!');
   })
   .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error("Error during Data Source initialization", err);
+    console.error('Error during Data Source initialization', err);
   });
 
 const bootstrap = async () => {
@@ -26,9 +26,9 @@ const bootstrap = async () => {
 
     const app = express();
     const corsConfig = {
-      methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
       credentials: true,
-      origin: [/localhost*/, "https://studio.apollographql.com"]
+      origin: [/localhost*/, 'https://studio.apollographql.com']
     };
     app.use(cors(corsConfig));
 
