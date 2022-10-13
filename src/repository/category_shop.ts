@@ -1,6 +1,5 @@
 import { AppDataSource } from '../app-data-source';
 import { Category_shop } from '../entities/category_shop';
-import { Shop } from '../entities/shop';
 
 export const Category_shopRepository = AppDataSource.getRepository(
   Category_shop
@@ -14,8 +13,8 @@ export const Category_shopRepository = AppDataSource.getRepository(
   findByCategoriesIds(ids: number[]): Promise<Category_shop[]> {
     return this.createQueryBuilder('category_shop')
       .where('category_shop.id IN (:...ids)', {
-        ids: ids,
+        ids: ids
       })
       .getMany();
-  },
+  }
 });

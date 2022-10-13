@@ -1,14 +1,13 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { AppDataSource } from '../../app-data-source';
 
-import { Role } from '../../entities/user';
+import { Shop } from 'src/entities/shop';
 import { Category_product } from '../../entities/category_product';
+import { Role } from '../../entities/user';
 import { Category_productRepository } from '../../repository/category_product';
 import { ShopRepository } from '../../repository/shop';
-import { Shop } from 'src/entities/shop';
 
-Resolver((of) => Category_product);
+@Resolver(() => Category_product)
 @Service()
 export class CategoryProductResolver {
   @Query(() => [Category_product])
@@ -30,10 +29,11 @@ export class CategoryProductResolver {
     if (shopsIds?.length) {
       shops = await ShopRepository.findByShopsIds(shopsIds);
     }
+
     const categoryProduct = Category_productRepository.create({
       name: name,
       picture: picture,
-      shops: shops,
+      shops: shops
     });
 
     return await Category_productRepository.save(categoryProduct);

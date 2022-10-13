@@ -1,24 +1,24 @@
 import {
-  Resolver,
-  Query,
-  Mutation,
   Arg,
-  Ctx,
   Authorized,
+  Ctx,
   FieldResolver,
-  Root,
+  Mutation,
+  Query,
+  Resolver,
+  Root
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { MyContext } from '../myContext';
 import { AppDataSource } from '../../app-data-source';
 import { Shop } from '../../entities/shop';
-import { User, CreateUserInput } from '../../entities/user';
+import { CreateUserInput, User } from '../../entities/user';
+import { MyContext } from '../myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ShopRepository = AppDataSource.getRepository(Shop);
 
-@Resolver((of) => User)
+@Resolver(() => User)
 @Service()
 export class UserResolvers {
   @FieldResolver()
@@ -26,13 +26,13 @@ export class UserResolvers {
   public async shops(@Root() user: User): Promise<Shop[]> {
     return await ShopRepository.find({
       relations: {
-        user: true,
+        user: true
       },
       where: {
         user: {
-          id: user.id,
-        },
-      },
+          id: user.id
+        }
+      }
     });
   }
 
@@ -48,7 +48,7 @@ export class UserResolvers {
     @Arg('userId', { nullable: true }) userId?: number
   ): Promise<User | null> {
     return await UserRepository.findOneBy({
-      id: userId,
+      id: userId
     });
   }
 

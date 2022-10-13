@@ -7,5 +7,5 @@ export const UserRepository = AppDataSource.getRepository(User).extend({
       .leftJoin('user.shops', 'shop')
       .where('shop.id = :id', { id: shopId })
       .getOne();
-  },
+  }
 });

@@ -1,17 +1,17 @@
 import { Field, ObjectType } from 'type-graphql';
 import {
+  BaseEntity,
   Column,
   Entity,
   PrimaryGeneratedColumn,
-  Unique,
-  BaseEntity,
+  Unique
 } from 'typeorm';
 
 @ObjectType()
 @Entity()
 @Unique(['siret'])
 export class Siret extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 

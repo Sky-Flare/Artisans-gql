@@ -1,36 +1,35 @@
-import { Field, ObjectType, InputType } from 'type-graphql';
+import { IsEmail } from 'class-validator';
+import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-  BaseEntity,
+  JoinColumn,
   OneToMany,
   OneToOne,
-  JoinColumn,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn
 } from 'typeorm';
-import { Shop } from './shop';
-import { IsEmail } from 'class-validator';
-import { registerEnumType } from 'type-graphql';
-import { Siren } from './siren';
 import { Product } from './product';
+import { Shop } from './shop';
+import { Siren } from './siren';
 
 export enum Role {
   ADMIN = 'admin',
   CLIENT = 'client',
-  ARTISAN = 'artisan',
+  ARTISAN = 'artisan'
 }
 registerEnumType(Role, {
-  name: 'Role',
+  name: 'Role'
 });
 
 @ObjectType()
 @Entity()
 @Unique(['email'])
 export class User extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
@@ -65,15 +64,15 @@ export class User extends BaseEntity {
   @Column({
     type: 'enum',
     enum: Role,
-    default: Role.CLIENT,
+    default: Role.CLIENT
   })
   public role!: Role;
 
-  @Field((type) => [Shop], { nullable: true })
+  @Field(() => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops: Shop[] | undefined;
 
-  @Field((type) => [Product], { nullable: true })
+  @Field(() => [Product], { nullable: true })
   @OneToMany(() => Product, (product) => product.user)
   products: Product[] | undefined;
 
@@ -114,9 +113,9 @@ export class CreateUserInput implements Partial<User> {
   @Field()
   public password!: string;
 
-  @Field((type) => Role)
+  @Field(() => Role)
   public role!: Role;
 
-  @Field()
+  @Field(() => String)
   public sirenNumber: string | undefined;
 }

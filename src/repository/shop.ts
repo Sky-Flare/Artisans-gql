@@ -9,25 +9,25 @@ export const ShopRepository = AppDataSource.getRepository(Shop).extend({
     return this.createQueryBuilder('shop')
       .leftJoin('shop.categoriesShops', 'category_shop')
       .where('category_shop.id IN (:...catIds)', {
-        catIds: categoriesIds,
+        catIds: categoriesIds
       })
       .andWhere('shop.zipCode = :zipCodeNumber', {
-        zipCodeNumber: zipCode,
+        zipCodeNumber: zipCode
       })
       .getMany();
   },
   findByZipCode(zipCode: number): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .where('shop.zipCode = :zipCodeNumber', {
-        zipCodeNumber: zipCode,
+        zipCodeNumber: zipCode
       })
       .getMany();
   },
   findByShopsIds(shopsIds: number[]): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .where('shop.id IN (:...shopsIds)', {
-        shopsIds: shopsIds,
+        shopsIds: shopsIds
       })
       .getMany();
-  },
+  }
 });

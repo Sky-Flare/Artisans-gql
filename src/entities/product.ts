@@ -1,15 +1,14 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  BaseEntity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
-  Unique,
-  JoinTable,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
 } from 'typeorm';
 import { Category_product } from './category_product';
 import { Shop } from './shop';
@@ -18,7 +17,7 @@ import { User } from './user';
 @ObjectType()
 @Entity()
 export class Product extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
@@ -42,13 +41,13 @@ export class Product extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field((type) => [Category_product], { nullable: true })
+  @Field(() => [Category_product], { nullable: true })
   @ManyToMany(() => Category_product, (cat) => cat.products)
   @JoinTable()
   public categoriesProducts!: Category_product[];
 
   @ManyToMany(() => Shop, (shop) => shop.products)
-  shops: Shop[] = [];
+  shops?: Shop[];
 
   @ManyToOne(() => User, (user) => user.products)
   user!: User;
@@ -71,12 +70,12 @@ export class CreateProductInput implements Partial<Product> {
   @Field()
   public price!: number;
 
-  @Field()
+  @Field(() => String, { nullable: false })
   public picture!: string;
 
-  @Field((type) => [Number], { nullable: true })
+  @Field(() => [Number], { nullable: true })
   public shopsIds?: number[];
 
-  @Field((type) => [Number], { nullable: true })
+  @Field(() => [Number], { nullable: true })
   public categoriesProductsIds?: number[];
 }

@@ -1,11 +1,11 @@
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { ManyToMany } from 'typeorm';
 import {
+  BaseEntity,
   Column,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
-  Unique,
-  BaseEntity,
+  Unique
 } from 'typeorm';
 import { Product } from './product';
 import { Shop } from './shop';
@@ -14,7 +14,7 @@ import { Shop } from './shop';
 @Entity()
 @Unique(['name'])
 export class Category_product extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
@@ -26,12 +26,12 @@ export class Category_product extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   public picture?: string;
 
-  @Field((type) => [Product], { nullable: true })
+  @Field(() => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.categoriesProducts)
-  products: Product[] = [];
+  products?: Product[];
 
   @ManyToMany(() => Shop, (shop) => shop.categoriesProducts)
-  shops: Shop[] = [];
+  shops?: Shop[];
 }
 
 @InputType({ description: 'New category product' })
@@ -39,6 +39,6 @@ export class CategoryProductInput {
   @Field()
   public name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   public picture: string | undefined;
 }

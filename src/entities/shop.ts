@@ -1,30 +1,29 @@
-import { Field, ObjectType, InputType } from 'type-graphql';
+import { Field, InputType, ObjectType } from 'type-graphql';
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
-  BaseEntity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   OneToOne,
-  JoinColumn,
-  ManyToMany,
-  JoinTable,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn
 } from 'typeorm';
+import { Category_product } from './category_product';
 import { Category_shop } from './category_shop';
+import { Product } from './product';
 import { Siret } from './siret';
 import { User } from './user';
-import { Product } from './product';
-import { CategoryShopResolver } from '../graphql/resolvers/category_shop.resolvers';
-import { Category_product } from './category_product';
 
 @ObjectType()
 @Entity()
 @Unique(['siret'])
 export class Shop extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
@@ -56,21 +55,21 @@ export class Shop extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field((type) => User, { nullable: true })
+  @Field(() => User, { nullable: true })
   @ManyToOne(() => User, (user) => user.shops)
   public user?: User | null;
 
-  @Field((type) => [Category_shop])
+  @Field(() => [Category_shop])
   @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
   public categoriesShops?: Category_shop[];
 
-  @Field((type) => [Category_product], { nullable: true })
+  @Field(() => [Category_product], { nullable: true })
   @ManyToMany(() => Category_product, (cat) => cat.shops)
   @JoinTable()
   public categoriesProducts?: Category_product[];
 
-  @Field((type) => [Product], { nullable: true })
+  @Field(() => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.shops)
   @JoinTable()
   public products?: Product[];
@@ -104,6 +103,6 @@ export class CreateShopInput implements Partial<Shop> {
   @Field()
   public siretNumber!: string;
 
-  @Field((type) => [Number])
+  @Field(() => [Number])
   public categoriesIds!: number[];
 }

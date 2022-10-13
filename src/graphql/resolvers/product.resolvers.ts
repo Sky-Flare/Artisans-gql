@@ -1,29 +1,24 @@
 import {
-  Resolver,
-  Mutation,
   Arg,
-  Ctx,
   Authorized,
+  Ctx,
   FieldResolver,
-  Root,
+  Mutation,
+  Resolver,
+  Root
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { AppDataSource } from '../../app-data-source';
-import { MyContext } from '../myContext';
-import { Role, User } from '../../entities/user';
-import { Siret } from '../../entities/siret';
+import { Shop } from 'src/entities/shop';
 import { Category_product } from '../../entities/category_product';
 import { CreateProductInput, Product } from '../../entities/product';
-import { ShopRepository } from '../../repository/shop';
+import { Role, User } from '../../entities/user';
 import { Category_productRepository } from '../../repository/category_product';
-import {} from '../../repository/category_shop';
 import { ProductRepository } from '../../repository/product';
-import { Shop } from 'src/entities/shop';
+import { ShopRepository } from '../../repository/shop';
+import { MyContext } from '../myContext';
 
-const SiretRepository = AppDataSource.getRepository(Siret);
-
-@Resolver((of) => Product)
+@Resolver(() => Product)
 @Service()
 export class ProductResolvers {
   @FieldResolver()
@@ -47,7 +42,7 @@ export class ProductResolvers {
       price,
       picture,
       shopsIds,
-      categoriesProductsIds,
+      categoriesProductsIds
     }: CreateProductInput
   ): Promise<Product | null> {
     const me = await User.findOneBy({ id: Number(ctx?.payload?.userId) });
@@ -73,7 +68,7 @@ export class ProductResolvers {
       picture,
       shops: shopsSlected,
       user: me,
-      categoriesProducts: categoriesProductSlected,
+      categoriesProducts: categoriesProductSlected
     });
 
     return await product.save();

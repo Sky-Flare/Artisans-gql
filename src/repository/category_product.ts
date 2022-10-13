@@ -1,7 +1,5 @@
 import { AppDataSource } from '../app-data-source';
 import { Category_product } from '../entities/category_product';
-import { Category_shop } from '../entities/category_shop';
-import { Shop } from '../entities/shop';
 
 export const Category_productRepository = AppDataSource.getRepository(
   Category_product
@@ -17,7 +15,7 @@ export const Category_productRepository = AppDataSource.getRepository(
   ): Promise<Category_product[]> {
     return this.createQueryBuilder('category_product')
       .where('category_product.id IN (:...ids)', {
-        ids: categoriesProductIds,
+        ids: categoriesProductIds
       })
       .getMany();
   },
@@ -28,5 +26,5 @@ export const Category_productRepository = AppDataSource.getRepository(
       .leftJoin('category_product.products', 'product')
       .where('product.id = :id', { id: productId })
       .getMany();
-  },
+  }
 });

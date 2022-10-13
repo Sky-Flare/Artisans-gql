@@ -1,5 +1,5 @@
-import { AuthChecker } from 'type-graphql';
 import { Secret, verify } from 'jsonwebtoken';
+import { AuthChecker } from 'type-graphql';
 import { MyContext, Payload } from '../myContext';
 
 // create auth checker function
@@ -16,7 +16,7 @@ export const authChecker: AuthChecker<MyContext> = ({ context }, roles) => {
     if (!payload) {
       throw new Error('Not authenticated');
     }
-    context.payload = payload as any;
+    context.payload = payload;
     const role = payload.role;
     if (roles.length === 0) {
       return role !== undefined;
