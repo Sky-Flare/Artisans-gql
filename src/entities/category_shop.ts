@@ -1,51 +1,51 @@
-import { Field, InputType, ObjectType } from 'type-graphql';
-import { ManyToMany } from 'typeorm';
+import { Field, InputType, ObjectType } from "type-graphql";
 import {
+  BaseEntity,
   Column,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
-  Unique,
-  BaseEntity,
-} from 'typeorm';
-import { Shop } from './shop';
+  Unique
+} from "typeorm";
+import { Shop } from "./shop";
 
 @ObjectType()
 @Entity()
-@Unique(['name'])
+@Unique(["name"])
 export class Category_shop extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   public name!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'varchar', nullable: true })
+  @Column({ type: "varchar", nullable: true })
   public picture?: string;
 
   @ManyToMany(() => Shop, (shop) => shop.categoriesShops)
   shops?: Shop[] | null;
 }
 
-@InputType({ description: 'New category shop' })
+@InputType({ description: "New category shop" })
 export class CategoryShopInput {
   @Field()
   public name!: string;
 
-  @Field({ nullable: true })
+  @Field(() => String, { nullable: true })
   public picture: string | undefined;
 }
 
-@InputType({ description: 'Get shops by categories id & zip code ' })
+@InputType({ description: "Get shops by categories id & zip code " })
 export class GetShopCatIdsAndZipCode {
-  @Field((type) => [Number], { nullable: true })
+  @Field(() => [Number], { nullable: true })
   public categoriesIds?: number[];
 
-  @Field((type) => Number, {
+  @Field(() => Number, {
     nullable: true,
-    description: 'if null: zipCode user',
+    description: "if null: zipCode user"
   })
   public zipcode?: number;
 }

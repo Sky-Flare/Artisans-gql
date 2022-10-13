@@ -1,48 +1,47 @@
-import { Field, InputType, ObjectType } from 'type-graphql';
+import { Field, InputType, ObjectType } from "type-graphql";
 import {
+  BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
-  BaseEntity,
+  JoinTable,
   ManyToMany,
   ManyToOne,
-  Unique,
-  JoinTable,
-} from 'typeorm';
-import { Category_product } from './category_product';
-import { Shop } from './shop';
-import { User } from './user';
+  PrimaryGeneratedColumn,
+  UpdateDateColumn
+} from "typeorm";
+import { Category_product } from "./category_product";
+import { Shop } from "./shop";
+import { User } from "./user";
 
 @ObjectType()
 @Entity()
 export class Product extends BaseEntity {
-  @Field((_type) => Number)
+  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   public name!: string;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   public description!: string;
 
   @Field({ nullable: false })
-  @Column({ type: 'float' })
+  @Column({ type: "float" })
   public price!: number;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: "varchar" })
   public picture!: string;
 
   @Field()
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: "integer", default: 1 })
   public enabled!: number;
 
-  @Field((type) => [Category_product], { nullable: true })
+  @Field(() => [Category_product], { nullable: true })
   @ManyToMany(() => Category_product, (cat) => cat.products)
   @JoinTable()
   public categoriesProducts!: Category_product[];
@@ -60,7 +59,7 @@ export class Product extends BaseEntity {
   public updatedAt!: Date;
 }
 
-@InputType({ description: 'New product data' })
+@InputType({ description: "New product data" })
 export class CreateProductInput implements Partial<Product> {
   @Field()
   public name!: string;
@@ -71,12 +70,12 @@ export class CreateProductInput implements Partial<Product> {
   @Field()
   public price!: number;
 
-  @Field()
+  @Field(() => String, { nullable: false })
   public picture!: string;
 
-  @Field((type) => [Number], { nullable: true })
+  @Field(() => [Number], { nullable: true })
   public shopsIds?: number[];
 
-  @Field((type) => [Number], { nullable: true })
+  @Field(() => [Number], { nullable: true })
   public categoriesProductsIds?: number[];
 }

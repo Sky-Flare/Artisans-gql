@@ -1,24 +1,24 @@
 import {
-  Resolver,
-  Query,
-  Mutation,
   Arg,
-  Ctx,
   Authorized,
+  Ctx,
   FieldResolver,
-  Root,
-} from 'type-graphql';
-import { Service } from 'typedi';
+  Mutation,
+  Query,
+  Resolver,
+  Root
+} from "type-graphql";
+import { Service } from "typedi";
 
-import { MyContext } from '../myContext';
-import { AppDataSource } from '../../app-data-source';
-import { Shop } from '../../entities/shop';
-import { User, CreateUserInput } from '../../entities/user';
+import { AppDataSource } from "../../app-data-source";
+import { Shop } from "../../entities/shop";
+import { CreateUserInput, User } from "../../entities/user";
+import { MyContext } from "../myContext";
 
 const UserRepository = AppDataSource.getRepository(User);
 const ShopRepository = AppDataSource.getRepository(Shop);
 
-@Resolver((of) => User)
+@Resolver(() => User)
 @Service()
 export class UserResolvers {
   @FieldResolver()
@@ -26,29 +26,29 @@ export class UserResolvers {
   public async shops(@Root() user: User): Promise<Shop[]> {
     return await ShopRepository.find({
       relations: {
-        user: true,
+        user: true
       },
       where: {
         user: {
-          id: user.id,
-        },
-      },
+          id: user.id
+        }
+      }
     });
   }
 
-  @Query(() => [User], { nullable: true, description: 'Return all users' })
+  @Query(() => [User], { nullable: true, description: "Return all users" })
   @Authorized()
   public async users(): Promise<User[]> {
     return await UserRepository.find({});
   }
 
-  @Query(() => User, { nullable: true, description: 'Return on user' })
+  @Query(() => User, { nullable: true, description: "Return on user" })
   @Authorized()
   public async user(
-    @Arg('userId', { nullable: true }) userId?: number
+    @Arg("userId", { nullable: true }) userId?: number
   ): Promise<User | null> {
     return await UserRepository.findOneBy({
-      id: userId,
+      id: userId
     });
   }
 
@@ -63,10 +63,10 @@ export class UserResolvers {
 
   @Mutation(() => User)
   //todo : just if its me
-  async updateUser(@Arg('id') id: number, @Arg('data') data: CreateUserInput) {
+  async updateUser(@Arg("id") id: number, @Arg("data") data: CreateUserInput) {
     const user = await User.findOne({ where: { id } });
     if (!user) {
-      throw new Error('User not found !');
+      throw new Error("User not found !");
     }
     Object.assign(user, data);
     await user.save();
@@ -74,9 +74,9 @@ export class UserResolvers {
   }
 
   @Mutation(() => Boolean)
-  async deleteUser(@Arg('id') id: number) {
+  async deleteUser(@Arg("id") id: number) {
     const user = await User.findOne({ where: { id } });
-    if (!user) throw new Error('User not found !');
+    if (!user) throw new Error("User not found !");
     return await user
       .remove()
       .then(() => true)

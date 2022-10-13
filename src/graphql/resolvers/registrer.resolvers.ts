@@ -1,11 +1,10 @@
-import { Resolver, Mutation, Arg, Field, ObjectType } from 'type-graphql';
-import { Service } from 'typedi';
-import { compare, hash } from 'bcryptjs';
-import { Secret, sign } from 'jsonwebtoken';
-import axios from 'axios';
-import { AppDataSource } from '../../app-data-source';
-import { User, CreateUserInput, Role } from '../../entities/user';
-import { Siren } from '../../entities/siren';
+import { compare, hash } from "bcryptjs";
+import { Secret, sign } from "jsonwebtoken";
+import { Arg, Field, Mutation, ObjectType, Resolver } from "type-graphql";
+import { Service } from "typedi";
+import { AppDataSource } from "../../app-data-source";
+import { Siren } from "../../entities/siren";
+import { CreateUserInput, Role, User } from "../../entities/user";
 
 @ObjectType()
 class LoginResponse {
@@ -21,13 +20,16 @@ const UserRepository = AppDataSource.getRepository(User);
 export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUp(
-    @Arg('input') inputData?: CreateUserInput
+    @Arg("input") inputData?: CreateUserInput
   ): Promise<LoginResponse | null> {
     const isArtisant = inputData?.role === Role.ARTISAN;
-    const siren = SirenRepository.create({
-      siren: inputData?.sirenNumber,
+    console.log(inputData);
+    const siren = await SirenRepository.create({
+      siren: inputData?.sirenNumber
     });
-    if (isArtisant) {
+    console.log(siren);
+
+    /*  if (isArtisant) {
       if (!inputData.sirenNumber) {
         throw new Error('Siren requier');
       }
@@ -45,9 +47,9 @@ export class RegistrerResolvers {
           throw new Error('Siren not found');
         });
     }
-
+*/
     if (!inputData) {
-      throw new Error('Empty data');
+      throw new Error("Empty data");
     }
 
     const user = UserRepository.create({
@@ -59,7 +61,7 @@ export class RegistrerResolvers {
       city: inputData.city,
       password: await hash(inputData.password, 13),
       role: inputData.role,
-      siren: isArtisant ? await SirenRepository.save(siren) : undefined,
+      siren: isArtisant ? await SirenRepository.save(siren) : undefined
     });
 
     return await UserRepository.save(user)
@@ -69,9 +71,9 @@ export class RegistrerResolvers {
             { userId: user.id, role: user.role },
             process.env.JWT_SECRET as Secret,
             {
-              expiresIn: '60m',
+              expiresIn: "60m"
             }
-          ),
+          )
         };
       })
       .catch((e) => {
@@ -81,19 +83,19 @@ export class RegistrerResolvers {
 
   @Mutation(() => LoginResponse, { nullable: true })
   async singIn(
-    @Arg('email') email: string,
-    @Arg('password') password: string
+    @Arg("email") email: string,
+    @Arg("password") password: string
   ): Promise<LoginResponse | null> {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      throw new Error('Bad credentials');
+      throw new Error("Bad credentials");
     }
 
     const verify = await compare(password, user.password);
 
     if (!verify) {
-      throw new Error('Bad credentials');
+      throw new Error("Bad credentials");
     }
 
     return {
@@ -101,9 +103,9 @@ export class RegistrerResolvers {
         { userId: user.id, role: user.role },
         process.env.JWT_SECRET as Secret,
         {
-          expiresIn: '15m',
+          expiresIn: "15m"
         }
-      ),
+      )
     };
   }
 }
