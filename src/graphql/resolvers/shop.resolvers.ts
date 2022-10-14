@@ -11,22 +11,19 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { AppDataSource } from '../../app-data-source';
-import { Category_product } from '../../entities/category_product';
-import {
-  Category_shop,
-  GetShopCatIdsAndZipCode
-} from '../../entities/category_shop';
-import { Product } from '../../entities/product';
-import { CreateShopInput, Shop } from '../../entities/shop';
-import { Siret } from '../../entities/siret';
-import { Role, User } from '../../entities/user';
-import { Category_productRepository } from '../../repository/category_product';
-import { Category_shopRepository } from '../../repository/category_shop';
-import { ProductRepository } from '../../repository/product';
-import { ShopRepository } from '../../repository/shop';
-import { UserRepository } from '../../repository/user';
-import { MyContext } from '../myContext';
+import { Category_product } from '@entity/category_product';
+import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
+import { Product } from '@entity/product';
+import { CreateShopInput, Shop } from '@entity/shop';
+import { Siret } from '@entity/siret';
+import { Role, User } from '@entity/user';
+import { Category_productRepository } from '@repository/category_product';
+import { Category_shopRepository } from '@repository/category_shop';
+import { ProductRepository } from '@repository/product';
+import { ShopRepository } from '@repository/shop';
+import { UserRepository } from '@repository/user';
+import { AppDataSource } from '~/app-data-source';
+import { MyContext } from '~/graphql/myContext';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 

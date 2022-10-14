@@ -13,11 +13,12 @@ import {
   Unique,
   UpdateDateColumn
 } from 'typeorm';
-import { Category_product } from './category_product';
-import { Category_shop } from './category_shop';
-import { Product } from './product';
-import { Siret } from './siret';
-import { User } from './user';
+
+import { Category_product } from '@entity/category_product';
+import { Category_shop } from '@entity/category_shop';
+import { Product } from '@entity/product';
+import { Siret } from '@entity/siret';
+import { User } from '@entity/user';
 
 @ObjectType()
 @Entity()

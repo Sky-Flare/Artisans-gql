@@ -1,8 +1,9 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { AppDataSource } from '../../app-data-source';
-import { Category_shop } from '../../entities/category_shop';
-import { Role } from '../../entities/user';
+
+import { Category_shop } from '@entity/category_shop';
+import { Role } from '@entity/user';
+import { AppDataSource } from '~/app-data-source';
 
 const CategoryShopRepository = AppDataSource.getRepository(Category_shop);
 

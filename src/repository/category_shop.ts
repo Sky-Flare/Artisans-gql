@@ -1,5 +1,5 @@
-import { AppDataSource } from '../app-data-source';
-import { Category_shop } from '../entities/category_shop';
+import { AppDataSource } from '~/app-data-source';
+import { Category_shop } from '@entity/category_shop';
 
 export const Category_shopRepository = AppDataSource.getRepository(
   Category_shop

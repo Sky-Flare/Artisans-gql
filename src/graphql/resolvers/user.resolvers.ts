@@ -9,13 +9,13 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { Product } from './../../entities/product';
-import { ProductRepository } from './../../repository/product';
 
-import { AppDataSource } from '../../app-data-source';
-import { Shop } from '../../entities/shop';
-import { CreateUserInput, User } from '../../entities/user';
-import { MyContext } from '../myContext';
+import { Product } from '@entity/product';
+import { Shop } from '@entity/shop';
+import { CreateUserInput, User } from '@entity/user';
+import { ProductRepository } from '@repository/product';
+import { AppDataSource } from '~/app-data-source';
+import { MyContext } from '~/graphql/myContext';
 
 const UserRepository = AppDataSource.getRepository(User);
 const ShopRepository = AppDataSource.getRepository(Shop);

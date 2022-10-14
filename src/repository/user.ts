@@ -1,5 +1,5 @@
-import { AppDataSource } from '../app-data-source';
-import { User } from '../entities/user';
+import { User } from '@entity/user';
+import { AppDataSource } from '~/app-data-source';
 
 export const UserRepository = AppDataSource.getRepository(User).extend({
   findUserOfShop(shopId: number): Promise<User | null> {

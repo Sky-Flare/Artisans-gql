@@ -3,9 +3,10 @@ import { compare, hash } from 'bcryptjs';
 import { Secret, sign } from 'jsonwebtoken';
 import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { AppDataSource } from '../../app-data-source';
-import { Siren } from '../../entities/siren';
-import { CreateUserInput, Role, User } from '../../entities/user';
+
+import { Siren } from '@entity/siren';
+import { CreateUserInput, Role, User } from '@entity/user';
+import { AppDataSource } from '~/app-data-source';
 
 @ObjectType()
 class LoginResponse {

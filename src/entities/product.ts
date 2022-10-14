@@ -10,9 +10,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
-import { Category_product } from './category_product';
-import { Shop } from './shop';
-import { User } from './user';
+
+import { Category_product } from '@entity/category_product';
+import { Shop } from '@entity/shop';
+import { User } from '@entity/user';
 
 @ObjectType()
 @Entity()

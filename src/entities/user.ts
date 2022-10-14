@@ -12,9 +12,10 @@ import {
   Unique,
   UpdateDateColumn
 } from 'typeorm';
-import { Product } from './product';
-import { Shop } from './shop';
-import { Siren } from './siren';
+
+import { Product } from '@entity/product';
+import { Shop } from '@entity/shop';
+import { Siren } from '@entity/siren';
 
 export enum Role {
   ADMIN = 'admin',

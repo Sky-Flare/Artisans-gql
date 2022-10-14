@@ -1,5 +1,6 @@
 import { buildSchema, ContainerType } from 'type-graphql';
-import { authChecker } from './middlewares/auth';
+
+import { authChecker } from '@gqlMiddlewares/auth';
 
 export default (Container: ContainerType) => {
   return buildSchema({
