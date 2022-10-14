@@ -35,7 +35,7 @@ export class CategoryShopInput {
   public name!: string;
 
   @Field(() => String, { nullable: true })
-  public picture: string | undefined;
+  public picture?: string;
 }
 
 @InputType({ description: 'Get shops by categories id & zip code ' })

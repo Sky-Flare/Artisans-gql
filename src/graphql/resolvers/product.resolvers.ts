@@ -25,11 +25,15 @@ export class ProductResolvers {
   @Authorized()
   public async categoriesProducts(
     @Root() product: Product
-  ): Promise<Category_product[] | null> {
+  ): Promise<Category_product[]> {
     return await Category_productRepository.findCategoriesProductOfOneProduct(
       product.id
     );
   }
+
+  //TODO: fieldResolver shops
+
+  //TODO: fieldResolver user
 
   @Mutation(() => Product, { nullable: true })
   @Authorized(Role.ARTISAN)

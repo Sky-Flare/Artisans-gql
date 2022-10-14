@@ -11,6 +11,6 @@ export const AppDataSource = new DataSource({
   logger: 'advanced-console',
   logging: 'all',
   cache: true,
-  dropSchema: true,
+  dropSchema: false,
   entities: ['dist/src/entities/*.js']
 });

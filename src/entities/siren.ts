@@ -1,4 +1,3 @@
-import { Field, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -7,15 +6,12 @@ import {
   Unique
 } from 'typeorm';
 
-@ObjectType()
 @Entity()
 @Unique(['siren'])
 export class Siren extends BaseEntity {
-  @Field(() => Number)
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
-  @Field({ nullable: false })
   @Column({ type: 'varchar' })
   public siren!: string;
 }

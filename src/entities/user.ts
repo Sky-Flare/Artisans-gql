@@ -70,15 +70,15 @@ export class User extends BaseEntity {
 
   @Field(() => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
-  shops: Shop[] | undefined;
+  shops?: Shop[];
 
   @Field(() => [Product], { nullable: true })
   @OneToMany(() => Product, (product) => product.user)
-  products: Product[] | undefined;
+  products?: Product[];
 
   @OneToOne(() => Siren)
   @JoinColumn()
-  siren: Siren | undefined;
+  siren?: Siren;
 
   @Field()
   @CreateDateColumn()

@@ -61,19 +61,22 @@ export class ShopResolvers implements ResolverInterface<Shop> {
 
   @FieldResolver()
   @Authorized()
-  public async user(@Root() shop: Shop): Promise<User | null> {
-    return await UserRepository.findUserOfShop(shop.id);
+  public async user(@Root() shop: Shop): Promise<User> {
+    const user = await UserRepository.findUserOfShop(shop.id);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
   }
 
   @FieldResolver({ description: 'All categories of a shop' })
   @Authorized()
-  public async categoriesShops(
-    @Root() shop: Shop
-  ): Promise<Category_shop[] | undefined> {
-    if (!shop.id) {
-      return [];
+  public async categoriesShops(@Root() shop: Shop): Promise<Category_shop[]> {
+    const catShop = await Category_shopRepository.findCategoryOfShop(shop.id);
+    if (!catShop) {
+      throw new Error('Category shop not found');
     }
-    return await Category_shopRepository.findCategoryOfShop(shop.id);
+    return catShop;
   }
 
   @FieldResolver({ description: 'All categoriesProduct of a shop' })
@@ -81,9 +84,6 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   public async categoriesProducts(
     @Root() shop: Shop
   ): Promise<Category_product[] | undefined> {
-    if (!shop.id) {
-      return [];
-    }
     return await Category_productRepository.findCategoriesProductByShop(
       shop.id
     );
@@ -92,9 +92,6 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @FieldResolver({ description: 'All products of a shop' })
   @Authorized()
   public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
-    if (!shop.id) {
-      return [];
-    }
     return await ProductRepository.findProductsOfShop(shop.id);
   }
 
