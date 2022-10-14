@@ -31,9 +31,11 @@ export class ProductResolvers {
     );
   }
 
-  //TODO: fieldResolver shops
-
-  //TODO: fieldResolver user
+  @FieldResolver()
+  @Authorized()
+  public async shops(@Root() product: Product): Promise<Shop[]> {
+    return await ShopRepository.findByProductId(product.id);
+  }
 
   @Mutation(() => Product, { nullable: true })
   @Authorized(Role.ARTISAN)

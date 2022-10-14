@@ -46,6 +46,7 @@ export class Product extends BaseEntity {
   @JoinTable()
   public categoriesProducts!: Category_product[];
 
+  @Field(() => [Shop], { nullable: true })
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
