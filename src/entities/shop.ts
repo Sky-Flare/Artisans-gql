@@ -55,14 +55,14 @@ export class Shop extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field(() => User, { nullable: true })
+  @Field(() => User, { nullable: false })
   @ManyToOne(() => User, (user) => user.shops)
-  public user?: User | null;
+  public user!: User;
 
-  @Field(() => [Category_shop])
+  @Field(() => [Category_shop], { nullable: false })
   @ManyToMany(() => Category_shop, (cat) => cat.shops)
   @JoinTable()
-  public categoriesShops?: Category_shop[];
+  public categoriesShops!: Category_shop[];
 
   @Field(() => [Category_product], { nullable: true })
   @ManyToMany(() => Category_product, (cat) => cat.shops)

@@ -9,6 +9,8 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
+import { Product } from './../../entities/product';
+import { ProductRepository } from './../../repository/product';
 
 import { AppDataSource } from '../../app-data-source';
 import { Shop } from '../../entities/shop';
@@ -34,6 +36,12 @@ export class UserResolvers {
         }
       }
     });
+  }
+
+  @FieldResolver()
+  @Authorized()
+  public async products(@Root() user: User): Promise<Product[]> {
+    return await ProductRepository.findProductsOfUser(user.id);
   }
 
   @Query(() => [User], { nullable: true, description: 'Return all users' })

@@ -1,10 +1,20 @@
-import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
+import {
+  Arg,
+  Authorized,
+  FieldResolver,
+  Mutation,
+  Query,
+  Resolver,
+  Root
+} from 'type-graphql';
 import { Service } from 'typedi';
+import { Product } from './../../entities/product';
 
 import { Shop } from 'src/entities/shop';
 import { Category_product } from '../../entities/category_product';
 import { Role } from '../../entities/user';
 import { Category_productRepository } from '../../repository/category_product';
+import { ProductRepository } from '../../repository/product';
 import { ShopRepository } from '../../repository/shop';
 
 @Resolver(() => Category_product)
@@ -16,6 +26,14 @@ export class CategoryProductResolver {
     @Arg('shopId') shopId: number
   ): Promise<Category_product[]> {
     return await Category_productRepository.findCategoriesProductByShop(shopId);
+  }
+
+  @FieldResolver()
+  @Authorized()
+  public async products(
+    @Root() catProduct: Category_product
+  ): Promise<Product[]> {
+    return await ProductRepository.findProductsByCatgoryProduct(catProduct.id);
   }
 
   @Mutation(() => Category_product)

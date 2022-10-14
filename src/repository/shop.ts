@@ -29,5 +29,11 @@ export const ShopRepository = AppDataSource.getRepository(Shop).extend({
         shopsIds: shopsIds
       })
       .getMany();
+  },
+  findByProductId(productId: number): Promise<Shop[]> {
+    return this.createQueryBuilder('shop')
+      .leftJoin('shop.products', 'product')
+      .where('product.id = :id', { id: productId })
+      .getMany();
   }
 });
