@@ -16,6 +16,7 @@ import {
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Siren } from '@entity/siren';
+import { Cart } from './cart';
 
 export enum Role {
   ADMIN = 'admin',
@@ -72,6 +73,10 @@ export class User extends BaseEntity {
   @Field(() => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.user)
   shops?: Shop[];
+
+  @Field(() => [Cart], { nullable: true })
+  @OneToMany(() => Cart, (cart) => cart.user)
+  cart?: Cart;
 
   @Field(() => [Product], { nullable: true })
   @OneToMany(() => Product, (product) => product.user)

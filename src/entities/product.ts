@@ -10,6 +10,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
+import { Cart } from './cart';
 
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
@@ -50,6 +51,9 @@ export class Product extends BaseEntity {
   @Field(() => [Shop], { nullable: true })
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
+
+  @ManyToMany(() => Cart, (cart) => cart.products)
+  cart?: Cart[];
 
   @ManyToOne(() => User, (user) => user.products)
   user!: User;
