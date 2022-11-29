@@ -15,11 +15,14 @@ import { AppDataSource } from './app-data-source';
 AppDataSource.initialize()
   .then(() => {
     // eslint-disable-next-line no-console
-    console.log('Data Source has been initialized!');
+    console.log('💿💿💿💿💿 Data Source has been initialized ! 💿💿💿💿💿 ');
   })
   .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error('Error during Data Source initialization', err);
+    console.error(
+      '😡💿😡💿😡💿Error during Data Source initialization 💿😡💿😡💿😡',
+      err
+    );
   });
 
 const bootstrap = async () => {
@@ -57,7 +60,7 @@ const bootstrap = async () => {
     });
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error(err);
+    console.error('😡😡😡😡', err);
   }
 };
 
