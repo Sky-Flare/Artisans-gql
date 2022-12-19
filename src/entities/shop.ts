@@ -1,3 +1,4 @@
+import { Artisan } from '@entity/artisan';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -13,11 +14,11 @@ import {
   Unique,
   UpdateDateColumn
 } from 'typeorm';
-import { Category_product } from './category_product';
-import { Category_shop } from './category_shop';
-import { Product } from './product';
-import { Siret } from './siret';
-import { User } from './user';
+
+import { Category_product } from '@entity/category_product';
+import { Category_shop } from '@entity/category_shop';
+import { Product } from '@entity/product';
+import { Siret } from '@entity/siret';
 
 @ObjectType()
 @Entity()
@@ -55,9 +56,9 @@ export class Shop extends BaseEntity {
   @Column({ type: 'integer', default: 1 })
   public enabled!: number;
 
-  @Field(() => User, { nullable: false })
-  @ManyToOne(() => User, (user) => user.shops)
-  public user!: User;
+  @Field(() => Artisan, { nullable: false })
+  @ManyToOne(() => Artisan, (artisan) => artisan.shops)
+  public artisan!: Artisan;
 
   @Field(() => [Category_shop], { nullable: false })
   @ManyToMany(() => Category_shop, (cat) => cat.shops)

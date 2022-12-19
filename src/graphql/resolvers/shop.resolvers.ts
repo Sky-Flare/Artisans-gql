@@ -11,22 +11,20 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { AppDataSource } from '../../app-data-source';
-import { Category_product } from '../../entities/category_product';
-import {
-  Category_shop,
-  GetShopCatIdsAndZipCode
-} from '../../entities/category_shop';
-import { Product } from '../../entities/product';
-import { CreateShopInput, Shop } from '../../entities/shop';
-import { Siret } from '../../entities/siret';
-import { Role, User } from '../../entities/user';
-import { Category_productRepository } from '../../repository/category_product';
-import { Category_shopRepository } from '../../repository/category_shop';
-import { ProductRepository } from '../../repository/product';
-import { ShopRepository } from '../../repository/shop';
-import { UserRepository } from '../../repository/user';
-import { MyContext } from '../myContext';
+import { Category_product } from '@entity/category_product';
+import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
+import { Product } from '@entity/product';
+import { CreateShopInput, Shop } from '@entity/shop';
+import { Siret } from '@entity/siret';
+import { ArtisanRepository } from '@repository/artisan';
+import { Category_productRepository } from '@repository/category_product';
+import { Category_shopRepository } from '@repository/category_shop';
+import { ProductRepository } from '@repository/product';
+import { ShopRepository } from '@repository/shop';
+import { AppDataSource } from '~/app-data-source';
+import { Artisan } from '~/entities/artisan';
+import { Role } from '~/entities/generic/user';
+import { MyContext } from '~/graphql/myContext';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -42,8 +40,8 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   ): Promise<Shop[] | null> {
     let zipCodeSearch = filtersInput?.zipcode;
     if (!zipCodeSearch) {
-      const me = await UserRepository.findOneBy({
-        id: Number(ctx?.payload?.userId)
+      const me = await ArtisanRepository.findOneBy({
+        id: Number(ctx?.payload?.artisanId)
       });
       zipCodeSearch = me?.zipCode;
     }
@@ -61,12 +59,12 @@ export class ShopResolvers implements ResolverInterface<Shop> {
 
   @FieldResolver()
   @Authorized()
-  public async user(@Root() shop: Shop): Promise<User> {
-    const user = await UserRepository.findUserOfShop(shop.id);
-    if (!user) {
-      throw new Error('User not found');
+  public async artisan(@Root() shop: Shop): Promise<Artisan> {
+    const artisan = await ArtisanRepository.findArtisanOfShop(shop.id);
+    if (!artisan) {
+      throw new Error('Artisan not found');
     }
-    return user;
+    return artisan;
   }
 
   @FieldResolver({ description: 'All categories of a shop' })
@@ -101,14 +99,14 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     @Ctx() ctx: MyContext,
     @Arg('createShopInput') createShopInput?: CreateShopInput
   ): Promise<Shop | null> {
-    const user = await User.findOne({
+    const artisan = await Artisan.findOne({
       relations: {
         siren: true
       },
-      where: { id: Number(ctx?.payload?.userId) }
+      where: { id: Number(ctx?.payload?.artisanId) }
     });
 
-    if (user?.role !== Role.ARTISAN) {
+    if (artisan?.role !== Role.ARTISAN) {
       throw new Error('Not authorized');
     }
 
@@ -164,7 +162,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       adress: createShopInput.adress,
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
-      user: user,
+      artisan: artisan,
       siret: await SiretRepository.save(siret),
       categoriesShops: categories
     });

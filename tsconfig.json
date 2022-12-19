@@ -10,7 +10,6 @@
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,   
     "skipLibCheck": true,
     "esModuleInterop": true,
-
     "baseUrl": ".",
     "rootDir": ".",
 //    "importsNotUsedAsValues": "error",
@@ -25,8 +24,14 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": true,
     "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true
-
+    "noImplicitReturns": true,
+    "paths": {
+      "~/*": ["src/*"],
+      "@entity/*": ["src/entities/*"],
+      "@resolver/*": ["src/graphql/resolvers/*"],
+      "@repository/*": ["src/repository/*"],
+      "@gqlMiddlewares/*": ["src/graphql/middlewares/*"],
+    },
   },
   "compileOnSave": true,
   "exclude": ["node_modules"],

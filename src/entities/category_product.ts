@@ -7,8 +7,9 @@ import {
   PrimaryGeneratedColumn,
   Unique
 } from 'typeorm';
-import { Product } from './product';
-import { Shop } from './shop';
+
+import { Product } from '@entity/product';
+import { Shop } from '@entity/shop';
 
 @ObjectType()
 @Entity()

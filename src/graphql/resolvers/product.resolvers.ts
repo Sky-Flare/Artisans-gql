@@ -9,14 +9,15 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { Shop } from 'src/entities/shop';
-import { Category_product } from '../../entities/category_product';
-import { CreateProductInput, Product } from '../../entities/product';
-import { Role, User } from '../../entities/user';
-import { Category_productRepository } from '../../repository/category_product';
-import { ProductRepository } from '../../repository/product';
-import { ShopRepository } from '../../repository/shop';
-import { MyContext } from '../myContext';
+import { Artisan } from '@entity/artisan';
+import { Category_product } from '@entity/category_product';
+import { CreateProductInput, Product } from '@entity/product';
+import { Shop } from '@entity/shop';
+import { Category_productRepository } from '@repository/category_product';
+import { ProductRepository } from '@repository/product';
+import { ShopRepository } from '@repository/shop';
+import { Role } from '~/entities/generic/user';
+import { MyContext } from '~/graphql/myContext';
 
 @Resolver(() => Product)
 @Service()
@@ -51,7 +52,7 @@ export class ProductResolvers {
       categoriesProductsIds
     }: CreateProductInput
   ): Promise<Product | null> {
-    const me = await User.findOneBy({ id: Number(ctx?.payload?.userId) });
+    const me = await Artisan.findOneBy({ id: Number(ctx?.payload?.artisanId) });
 
     if (!me) {
       throw new Error('Artisan not found');
@@ -73,7 +74,7 @@ export class ProductResolvers {
       price,
       picture,
       shops: shopsSlected,
-      user: me,
+      artisan: me,
       categoriesProducts: categoriesProductSlected
     });
 

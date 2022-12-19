@@ -10,9 +10,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
-import { Category_product } from './category_product';
-import { Shop } from './shop';
-import { User } from './user';
+import { Cart } from './cart';
+
+import { Category_product } from '@entity/category_product';
+import { Shop } from '@entity/shop';
+import { Artisan } from '~/entities/artisan';
 
 @ObjectType()
 @Entity()
@@ -50,8 +52,11 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
-  @ManyToOne(() => User, (user) => user.products)
-  user!: User;
+  @ManyToMany(() => Cart, (cart) => cart.products)
+  cart?: Cart[];
+
+  @ManyToOne(() => Artisan, (artisan) => artisan.products)
+  artisan!: Artisan;
 
   @CreateDateColumn()
   public createdAt!: Date;

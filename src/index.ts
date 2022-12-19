@@ -2,9 +2,11 @@ import { ApolloServer } from 'apollo-server-express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import 'module-alias/register';
 import 'reflect-metadata';
 import { Container } from 'typedi';
-import createSchema from './graphql/schema';
+
+import createSchema from '~/graphql/schema';
 
 dotenv.config();
 
@@ -13,11 +15,14 @@ import { AppDataSource } from './app-data-source';
 AppDataSource.initialize()
   .then(() => {
     // eslint-disable-next-line no-console
-    console.log('Data Source has been initialized!');
+    console.log('💿💿💿💿💿 Data Source has been initialized ! 💿💿💿💿💿 ');
   })
   .catch((err) => {
     // eslint-disable-next-line no-console
-    console.error('Error during Data Source initialization', err);
+    console.error(
+      '😡💿😡💿😡💿Error during Data Source initialization 💿😡💿😡💿😡',
+      err
+    );
   });
 
 const bootstrap = async () => {
@@ -55,7 +60,7 @@ const bootstrap = async () => {
     });
   } catch (err) {
     // eslint-disable-next-line no-console
-    console.error(err);
+    console.error('😡😡😡😡', err);
   }
 };
 

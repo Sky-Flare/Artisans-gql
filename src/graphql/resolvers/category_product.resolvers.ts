@@ -8,14 +8,14 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { Product } from './../../entities/product';
 
-import { Shop } from 'src/entities/shop';
-import { Category_product } from '../../entities/category_product';
-import { Role } from '../../entities/user';
-import { Category_productRepository } from '../../repository/category_product';
-import { ProductRepository } from '../../repository/product';
-import { ShopRepository } from '../../repository/shop';
+import { Category_product } from '@entity/category_product';
+import { Product } from '@entity/product';
+import { Shop } from '@entity/shop';
+import { Category_productRepository } from '@repository/category_product';
+import { ProductRepository } from '@repository/product';
+import { ShopRepository } from '@repository/shop';
+import { Role } from '~/entities/generic/user';
 
 @Resolver(() => Category_product)
 @Service()
