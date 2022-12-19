@@ -1,10 +1,10 @@
 import { Product } from '@entity/product';
+import { ProductRepository } from '@repository/product';
 import { Arg, Authorized, Mutation, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { ProductRepository } from './../../repository/product';
 
 import { Cart } from '@entity/cart';
-import { Role } from '@entity/user';
+import { Role } from '~/entities/generic/user';
 
 @Resolver(() => Cart)
 @Service()
@@ -14,7 +14,6 @@ export class CartResolver {
   public async addProductToCart(
     @Arg('productId') productId: number
   ): Promise<Product | null> {
-    console.log(productId);
     return await ProductRepository.findOneBy({
       id: productId
     });

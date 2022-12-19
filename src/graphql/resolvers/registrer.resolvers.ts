@@ -4,9 +4,10 @@ import { Secret, sign } from 'jsonwebtoken';
 import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
 
+import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Siren } from '@entity/siren';
-import { CreateUserInput, Role, User } from '@entity/user';
 import { AppDataSource } from '~/app-data-source';
+import { Role } from '~/entities/generic/user';
 
 @ObjectType()
 class LoginResponse {
@@ -15,44 +16,42 @@ class LoginResponse {
 }
 
 const SirenRepository = AppDataSource.getRepository(Siren);
-const UserRepository = AppDataSource.getRepository(User);
+const ArtisanRepository = AppDataSource.getRepository(Artisan);
 
 @Resolver()
 @Service()
 export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
-  public async signUp(
-    @Arg('input') inputData?: CreateUserInput
+  public async signUpArtisan(
+    @Arg('input') inputData?: CreateArtisanInput
   ): Promise<LoginResponse | null> {
-    const isArtisant = inputData?.role === Role.ARTISAN;
     const siren = SirenRepository.create({
       siren: inputData?.sirenNumber
     });
-
-    if (isArtisant) {
-      if (!inputData.sirenNumber) {
-        throw new Error('Siren requier');
-      }
-      await axios
-        .get(
-          `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.sirenNumber}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.JWT_SIREN}`,
-              Accept: 'application/json'
-            }
-          }
-        )
-        .catch(() => {
-          throw new Error('Siren not found');
-        });
-    }
 
     if (!inputData) {
       throw new Error('Empty data');
     }
 
-    const user = UserRepository.create({
+    if (!inputData.sirenNumber) {
+      throw new Error('Siren requier');
+    }
+
+    await axios
+      .get(
+        `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.sirenNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.JWT_SIREN}`,
+            Accept: 'application/json'
+          }
+        }
+      )
+      .catch((e) => {
+        throw new Error('Siren not found');
+      });
+
+    const artisan = ArtisanRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
       email: inputData.email,
@@ -60,15 +59,15 @@ export class RegistrerResolvers {
       zipCode: inputData.zipCode,
       city: inputData.city,
       password: await hash(inputData.password, 13),
-      role: inputData.role,
-      siren: isArtisant ? await SirenRepository.save(siren) : undefined
+      role: Role.ARTISAN,
+      siren: await SirenRepository.save(siren)
     });
 
-    return await UserRepository.save(user)
+    return await ArtisanRepository.save(artisan)
       .then(() => {
         return {
           accessToken: sign(
-            { userId: user.id, role: user.role },
+            { artisanId: artisan.id, role: artisan.role },
             process.env.JWT_SECRET as Secret,
             {
               expiresIn: '60m'
@@ -86,13 +85,13 @@ export class RegistrerResolvers {
     @Arg('email') email: string,
     @Arg('password') password: string
   ): Promise<LoginResponse | null> {
-    const user = await User.findOne({ where: { email } });
+    const artisan = await Artisan.findOne({ where: { email } });
 
-    if (!user) {
+    if (!artisan) {
       throw new Error('Bad credentials');
     }
 
-    const verify = await compare(password, user.password);
+    const verify = await compare(password, artisan.password);
 
     if (!verify) {
       throw new Error('Bad credentials');
@@ -100,7 +99,7 @@ export class RegistrerResolvers {
 
     return {
       accessToken: sign(
-        { userId: user.id, role: user.role },
+        { artisanId: artisan.id, role: artisan.role },
         process.env.JWT_SECRET as Secret,
         {
           expiresIn: '15m'

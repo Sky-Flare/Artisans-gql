@@ -4,12 +4,10 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  ManyToOne,
   PrimaryGeneratedColumn
 } from 'typeorm';
 
 import { Product } from '@entity/product';
-import { User } from '@entity/user';
 
 @ObjectType()
 @Entity()
@@ -18,12 +16,8 @@ export class Cart extends BaseEntity {
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
-  @Field(() => User, { nullable: false })
-  @ManyToOne(() => User, (user) => user.shops)
-  public user!: User;
-
   @Field(() => [Product], { nullable: true })
-  @ManyToMany(() => Product, (product) => product.shops)
+  @ManyToMany(() => Product, (product) => product.cart)
   @JoinTable()
   public products?: Product[];
 }

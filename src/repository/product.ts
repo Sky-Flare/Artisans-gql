@@ -1,5 +1,5 @@
-import { AppDataSource } from '~/app-data-source';
 import { Product } from '@entity/product';
+import { AppDataSource } from '~/app-data-source';
 
 export const ProductRepository = AppDataSource.getRepository(Product).extend({
   findProductsOfShop(shopId: number): Promise<Product[]> {
@@ -8,10 +8,10 @@ export const ProductRepository = AppDataSource.getRepository(Product).extend({
       .where('shop.id = :id', { id: shopId })
       .getMany();
   },
-  findProductsOfUser(userId: number): Promise<Product[]> {
+  findProductsOfArtisan(artisanId: number): Promise<Product[]> {
     return this.createQueryBuilder('product')
-      .leftJoin('product.user', 'user')
-      .where('user.id = :id', { id: userId })
+      .leftJoin('product.artisan', 'artisan')
+      .where('artisan.id = :id', { id: artisanId })
       .getMany();
   },
   findProductsByCatgoryProduct(catProduct: number): Promise<Product[]> {

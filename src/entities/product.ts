@@ -14,7 +14,7 @@ import { Cart } from './cart';
 
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
-import { User } from '@entity/user';
+import { Artisan } from '~/entities/artisan';
 
 @ObjectType()
 @Entity()
@@ -55,8 +55,8 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Cart, (cart) => cart.products)
   cart?: Cart[];
 
-  @ManyToOne(() => User, (user) => user.products)
-  user!: User;
+  @ManyToOne(() => Artisan, (artisan) => artisan.products)
+  artisan!: Artisan;
 
   @CreateDateColumn()
   public createdAt!: Date;
