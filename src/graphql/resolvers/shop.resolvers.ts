@@ -19,6 +19,7 @@ import { Siret } from '@entity/siret';
 import { ArtisanRepository } from '@repository/artisan';
 import { Category_productRepository } from '@repository/category_product';
 import { Category_shopRepository } from '@repository/category_shop';
+import { ClientRepository } from '@repository/client';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
 import { AppDataSource } from '~/app-data-source';
@@ -40,10 +41,17 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   ): Promise<Shop[] | null> {
     let zipCodeSearch = filtersInput?.zipcode;
     if (!zipCodeSearch) {
-      const me = await ArtisanRepository.findOneBy({
-        id: Number(ctx?.payload?.artisanId)
-      });
-      zipCodeSearch = me?.zipCode;
+      if (ctx?.payload?.role === Role.ARTISAN) {
+        const me = await ArtisanRepository.findOneBy({
+          id: Number(ctx?.payload?.userId)
+        });
+        zipCodeSearch = me?.zipCode;
+      } else {
+        const me = await ClientRepository.findOneBy({
+          id: Number(ctx?.payload?.userId)
+        });
+        zipCodeSearch = me?.zipCode;
+      }
     }
     if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
       return ShopRepository.findByZipCode(zipCodeSearch);
@@ -103,7 +111,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       relations: {
         siren: true
       },
-      where: { id: Number(ctx?.payload?.artisanId) }
+      where: { id: Number(ctx?.payload?.userId) }
     });
 
     if (artisan?.role !== Role.ARTISAN) {

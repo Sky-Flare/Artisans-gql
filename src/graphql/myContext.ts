@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { Role } from '~/entities/generic/user';
 
 export type Payload = {
-  artisanId: string;
+  userId: string;
   role: Role;
 };
 

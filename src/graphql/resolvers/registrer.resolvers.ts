@@ -5,9 +5,10 @@ import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
+import { Client, CreateClientInput } from '@entity/client';
+import { Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
 import { AppDataSource } from '~/app-data-source';
-import { Role } from '~/entities/generic/user';
 
 @ObjectType()
 class LoginResponse {
@@ -17,6 +18,7 @@ class LoginResponse {
 
 const SirenRepository = AppDataSource.getRepository(Siren);
 const ArtisanRepository = AppDataSource.getRepository(Artisan);
+const ClientRepository = AppDataSource.getRepository(Client);
 
 @Resolver()
 @Service()
@@ -67,7 +69,43 @@ export class RegistrerResolvers {
       .then(() => {
         return {
           accessToken: sign(
-            { artisanId: artisan.id, role: artisan.role },
+            { userId: artisan.id, role: artisan.role },
+            process.env.JWT_SECRET as Secret,
+            {
+              expiresIn: '60m'
+            }
+          )
+        };
+      })
+      .catch((e) => {
+        throw new Error(e);
+      });
+  }
+
+  @Mutation(() => LoginResponse, { nullable: true })
+  public async signUpClient(
+    @Arg('input') inputData?: CreateClientInput
+  ): Promise<LoginResponse | null> {
+    if (!inputData) {
+      throw new Error('Empty data');
+    }
+
+    const client = ClientRepository.create({
+      lastName: inputData.lastName,
+      firstName: inputData.firstName,
+      email: inputData.email,
+      adress: inputData.adress,
+      zipCode: inputData.zipCode,
+      city: inputData.city,
+      password: await hash(inputData.password, 13),
+      role: Role.CLIENT
+    });
+
+    return await ClientRepository.save(client)
+      .then(() => {
+        return {
+          accessToken: sign(
+            { userId: client.id, role: client.role },
             process.env.JWT_SECRET as Secret,
             {
               expiresIn: '60m'
@@ -99,7 +137,7 @@ export class RegistrerResolvers {
 
     return {
       accessToken: sign(
-        { artisanId: artisan.id, role: artisan.role },
+        { userId: artisan.id, role: artisan.role },
         process.env.JWT_SECRET as Secret,
         {
           expiresIn: '15m'

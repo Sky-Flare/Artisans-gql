@@ -52,7 +52,7 @@ export class ProductResolvers {
       categoriesProductsIds
     }: CreateProductInput
   ): Promise<Product | null> {
-    const me = await Artisan.findOneBy({ id: Number(ctx?.payload?.artisanId) });
+    const me = await Artisan.findOneBy({ id: Number(ctx?.payload?.userId) });
 
     if (!me) {
       throw new Error('Artisan not found');

@@ -66,11 +66,11 @@ export class ArtisanResolvers {
 
   @Query(() => Artisan, { nullable: true })
   @Authorized(Role.ARTISAN)
-  async me(@Ctx() ctx: MyContext): Promise<Artisan | null> {
-    if (!ctx.payload?.artisanId) {
+  async meArtisan(@Ctx() ctx: MyContext): Promise<Artisan | null> {
+    if (!ctx.payload?.userId) {
       return null;
     }
-    return Artisan.findOne({ where: { id: Number(ctx.payload.artisanId) } });
+    return Artisan.findOne({ where: { id: Number(ctx.payload.userId) } });
   }
 
   @Mutation(() => Artisan)
