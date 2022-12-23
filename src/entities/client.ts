@@ -1,6 +1,6 @@
 import { IsEmail } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
-import { Column, Entity, OneToOne, Unique } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, Unique } from 'typeorm';
 
 import { Role } from '~/entities/generic/user';
 import { Cart } from './cart';
@@ -19,6 +19,7 @@ export class Client extends User {
 
   @Field(() => [Cart], { nullable: true })
   @OneToOne(() => Cart)
+  @JoinColumn()
   cart?: Cart;
 }
 

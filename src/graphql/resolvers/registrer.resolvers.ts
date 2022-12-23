@@ -3,6 +3,7 @@ import { compare, hash } from 'bcryptjs';
 import { Secret, sign } from 'jsonwebtoken';
 import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
+import { CartRepository } from './../../repository/cart';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Client, CreateClientInput } from '@entity/client';
@@ -90,6 +91,9 @@ export class RegistrerResolvers {
       throw new Error('Empty data');
     }
 
+    const cart = CartRepository.create({
+      products: []
+    });
     const client = ClientRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
@@ -98,7 +102,8 @@ export class RegistrerResolvers {
       zipCode: inputData.zipCode,
       city: inputData.city,
       password: await hash(inputData.password, 13),
-      role: Role.CLIENT
+      role: Role.CLIENT,
+      cart: await CartRepository.save(cart)
     });
 
     return await ClientRepository.save(client)
@@ -121,15 +126,21 @@ export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
   async singIn(
     @Arg('email') email: string,
-    @Arg('password') password: string
+    @Arg('password') password: string,
+    @Arg('role') role: Role
   ): Promise<LoginResponse | null> {
-    const artisan = await Artisan.findOne({ where: { email } });
+    let user: Artisan | Client | null;
+    if (role === Role.ARTISAN) {
+      user = await Artisan.findOne({ where: { email } });
+    } else {
+      user = await Client.findOne({ where: { email } });
+    }
 
-    if (!artisan) {
+    if (!user) {
       throw new Error('Bad credentials');
     }
 
-    const verify = await compare(password, artisan.password);
+    const verify = await compare(password, user.password);
 
     if (!verify) {
       throw new Error('Bad credentials');
@@ -137,7 +148,7 @@ export class RegistrerResolvers {
 
     return {
       accessToken: sign(
-        { userId: artisan.id, role: artisan.role },
+        { userId: user.id, role: user.role },
         process.env.JWT_SECRET as Secret,
         {
           expiresIn: '15m'
