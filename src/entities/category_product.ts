@@ -1,3 +1,4 @@
+import { IsString } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -10,7 +11,6 @@ import {
 
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
-import { IsString } from 'class-validator';
 
 @ObjectType()
 @Entity()

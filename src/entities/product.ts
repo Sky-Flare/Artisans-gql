@@ -1,3 +1,4 @@
+import { IsString } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -12,11 +13,10 @@ import {
   UpdateDateColumn
 } from 'typeorm';
 
+import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
+import { ClientToProduct } from '@entity/clientToProduct';
 import { Shop } from '@entity/shop';
-import { IsString } from 'class-validator';
-import { Artisan } from '~/entities/artisan';
-import { ClientToProduct } from './clientToProduct';
 
 @ObjectType()
 @Entity()

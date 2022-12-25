@@ -9,13 +9,13 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { Role } from '~/entities/generic/user';
 
+import { Artisan, CreateArtisanInput } from '@entity/artisan';
+import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { ProductRepository } from '@repository/product';
 import { AppDataSource } from '~/app-data-source';
-import { Artisan, CreateArtisanInput } from '~/entities/artisan';
 import { MyContext } from '~/graphql/myContext';
 
 const ArtisanRepository = AppDataSource.getRepository(Artisan);

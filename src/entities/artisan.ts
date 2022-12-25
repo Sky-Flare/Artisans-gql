@@ -9,10 +9,10 @@ import {
   Unique
 } from 'typeorm';
 
+import { Role, User } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Siren } from '@entity/siren';
-import { Role, User } from '~/entities/generic/user';
 
 @ObjectType()
 @Entity()

@@ -13,12 +13,12 @@ import {
   CategoryProductInput,
   Category_product
 } from '@entity/category_product';
+import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { Role } from '~/entities/generic/user';
 
 @Resolver(() => Category_product)
 @Service()

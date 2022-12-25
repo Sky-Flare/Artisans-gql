@@ -11,8 +11,10 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 
+import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
+import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
 import { Siret } from '@entity/siret';
@@ -23,8 +25,6 @@ import { ClientRepository } from '@repository/client';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
 import { AppDataSource } from '~/app-data-source';
-import { Artisan } from '~/entities/artisan';
-import { Role } from '~/entities/generic/user';
 import { MyContext } from '~/graphql/myContext';
 
 const SiretRepository = AppDataSource.getRepository(Siret);

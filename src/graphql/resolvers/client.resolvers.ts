@@ -1,9 +1,8 @@
 import { Authorized, Ctx, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { ClientToProduct } from '~/entities/clientToProduct';
-import { Role } from '~/entities/generic/user';
-import { Client } from './../../entities/client';
 
+import { Client } from '@entity/client';
+import { Role } from '@entity/generic/user';
 import { MyContext } from '~/graphql/myContext';
 
 @Resolver(() => Client)

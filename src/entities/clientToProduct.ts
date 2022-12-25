@@ -1,5 +1,3 @@
-import { Client } from '@entity/client';
-import { Product } from '@entity/product';
 import { IsInt } from 'class-validator';
 import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
 import {
@@ -11,6 +9,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
+
+import { Client } from '@entity/client';
+import { Product } from '@entity/product';
 
 @ObjectType()
 @Entity()
@@ -51,7 +52,7 @@ registerEnumType(ActionClientToProduct, {
   name: 'ActionClientToProduct'
 });
 
-@InputType({ description: 'New artisan data' })
+@InputType({ description: 'Cart client' })
 export class UpdateClientToProduct implements Partial<ClientToProduct> {
   @IsInt()
   @Field()

@@ -2,9 +2,8 @@ import { IsEmail } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 
-import { Role } from '~/entities/generic/user';
-import { ClientToProduct } from './clientToProduct';
-import { User } from './generic/user';
+import { ClientToProduct } from '@entity/clientToProduct';
+import { Role, User } from '@entity/generic/user';
 
 @ObjectType()
 @Entity()

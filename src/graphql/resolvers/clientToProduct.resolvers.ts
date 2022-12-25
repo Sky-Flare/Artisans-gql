@@ -1,12 +1,12 @@
-import { Client } from '@entity/client';
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
+
+import { Client } from '@entity/client';
 import {
   ActionClientToProduct,
   ClientToProduct,
   UpdateClientToProduct
-} from '~/entities/clientToProduct';
-
+} from '@entity/clientToProduct';
 import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { MyContext } from '~/graphql/myContext';

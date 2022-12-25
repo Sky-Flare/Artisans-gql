@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import { Role } from '~/entities/generic/user';
+
+import { Role } from '@entity/generic/user';
 
 export type Payload = {
   userId: string;
