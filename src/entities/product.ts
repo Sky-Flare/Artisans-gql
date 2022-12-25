@@ -10,11 +10,12 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
-import { Cart } from './cart';
 
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
+import { IsString } from 'class-validator';
 import { Artisan } from '~/entities/artisan';
+import { Cart } from './cart';
 
 @ObjectType()
 @Entity()
@@ -52,8 +53,9 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
-  @ManyToMany(() => Cart, (cart) => cart.products)
-  cart?: Cart[];
+  @ManyToMany((type) => Cart, (cart) => cart.products, { lazy: true })
+  @Field((type) => [Cart])
+  carts?: Promise<Cart[]>;
 
   @ManyToOne(() => Artisan, (artisan) => artisan.products)
   artisan!: Artisan;
@@ -67,13 +69,14 @@ export class Product extends BaseEntity {
 
 @InputType({ description: 'New product data' })
 export class CreateProductInput implements Partial<Product> {
-  @Field()
+  @IsString()
+  @Field(() => String)
   public name!: string;
 
-  @Field()
+  @Field(() => String)
   public description!: string;
 
-  @Field()
+  @Field(() => Number)
   public price!: number;
 
   @Field(() => String, { nullable: false })

@@ -9,7 +9,10 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { Category_product } from '@entity/category_product';
+import {
+  CategoryProductInput,
+  Category_product
+} from '@entity/category_product';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
@@ -39,9 +42,8 @@ export class CategoryProductResolver {
   @Mutation(() => Category_product)
   @Authorized(Role.ARTISAN)
   public async createCategoryProduct(
-    @Arg('name') name: string,
-    @Arg('picture', { nullable: true }) picture?: string,
-    @Arg('shopsIds', () => [Number], { nullable: true }) shopsIds?: number[]
+    @Arg('categoryProductInput')
+    { shopsIds, name, picture }: CategoryProductInput
   ): Promise<Category_product | null> {
     let shops: Shop[] = [];
     if (shopsIds?.length) {

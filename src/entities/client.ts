@@ -17,6 +17,9 @@ export class Client extends User {
   })
   public role!: Role;
 
+  @Column({ nullable: true })
+  cartId!: number;
+
   @Field(() => [Cart], { nullable: true })
   @OneToOne(() => Cart)
   @JoinColumn()

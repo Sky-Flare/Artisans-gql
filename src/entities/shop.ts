@@ -19,6 +19,7 @@ import { Category_product } from '@entity/category_product';
 import { Category_shop } from '@entity/category_shop';
 import { Product } from '@entity/product';
 import { Siret } from '@entity/siret';
+import { IsArray, IsInt, IsString } from 'class-validator';
 
 @ObjectType()
 @Entity()
@@ -85,25 +86,32 @@ export class Shop extends BaseEntity {
 }
 
 @InputType({ description: 'New shop data' })
-export class CreateShopInput implements Partial<Shop> {
+export class CreateShopInput {
+  @IsString()
   @Field()
   public name!: string;
 
+  @IsString()
   @Field()
   public description!: string;
 
+  @IsString()
   @Field()
   public adress!: string;
 
+  @IsInt()
   @Field()
   public zipCode!: number;
 
+  @IsString()
   @Field()
   public city!: string;
 
+  @IsString()
   @Field()
   public siretNumber!: string;
 
+  @IsArray()
   @Field(() => [Number])
   public categoriesIds!: number[];
 }

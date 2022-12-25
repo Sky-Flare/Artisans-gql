@@ -105,7 +105,8 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @Authorized(Role.ARTISAN)
   public async createShop(
     @Ctx() ctx: MyContext,
-    @Arg('createShopInput') createShopInput?: CreateShopInput
+    @Arg('createShopInput')
+    createShopInput: CreateShopInput
   ): Promise<Shop | null> {
     const artisan = await Artisan.findOne({
       relations: {

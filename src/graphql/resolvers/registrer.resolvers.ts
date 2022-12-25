@@ -91,9 +91,7 @@ export class RegistrerResolvers {
       throw new Error('Empty data');
     }
 
-    const cart = CartRepository.create({
-      products: []
-    });
+    const cart = CartRepository.create({});
     const client = ClientRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,

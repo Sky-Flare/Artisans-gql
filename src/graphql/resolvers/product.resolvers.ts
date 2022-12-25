@@ -13,12 +13,12 @@ import { Service } from 'typedi';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
+import { Role } from '@entity/generic/user';
 import { CreateProductInput, Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { Role } from '~/entities/generic/user';
 import { MyContext } from '~/graphql/myContext';
 
 @Resolver(() => Product)
@@ -45,16 +45,15 @@ export class ProductResolvers {
   public async addProductToCart(
     @Ctx() ctx: MyContext,
     @Arg('productId') productId: number
-  ): Promise<Cart | null> {
+  ): Promise<Cart | undefined> {
     const client = await Client.findOne({
-      relations: {
-        cart: true
-      },
       where: { id: Number(ctx?.payload?.userId) }
     });
     if (!client) {
       throw new Error('Client not found');
     }
+    console.log('🙂', client);
+
     const product = await Product.findOne({
       where: { id: productId }
     });
@@ -62,16 +61,22 @@ export class ProductResolvers {
       throw new Error('Product not found');
     }
     const cart = await Cart.findOne({
-      where: { id: client?.cart?.id }
+      where: { id: client?.cartId },
+      relations: { products: true }
     });
     if (!cart) {
       throw new Error('Cart not found');
     }
+    console.log('cart', cart);
+
     if (!cart.products) {
       cart.products = [product];
+      console.log('if', cart);
+
       return await cart.save();
     } else {
       cart.products = [...cart.products, product];
+      console.log('else', cart);
       return await cart.save();
     }
   }

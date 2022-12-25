@@ -10,6 +10,7 @@ import {
 
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
+import { IsString } from 'class-validator';
 
 @ObjectType()
 @Entity()
@@ -37,9 +38,13 @@ export class Category_product extends BaseEntity {
 
 @InputType({ description: 'New category product' })
 export class CategoryProductInput {
+  @IsString()
   @Field()
   public name!: string;
 
   @Field(() => String, { nullable: true })
   public picture: string | undefined;
+
+  @Field(() => [Number], { nullable: true })
+  public shopsIds: number[] = [];
 }

@@ -16,8 +16,18 @@ export class Cart extends BaseEntity {
   @PrimaryGeneratedColumn()
   public readonly id!: number;
 
-  @Field(() => [Product], { nullable: true })
-  @ManyToMany(() => Product, (product) => product.cart)
-  @JoinTable()
+  @ManyToMany(() => Product, (product) => product.carts)
+  @Field(() => [Product])
+  @JoinTable({
+    name: 'cart_product',
+    joinColumn: {
+      name: 'cartId',
+      referencedColumnName: 'id'
+    },
+    inverseJoinColumn: {
+      name: 'productId',
+      referencedColumnName: 'id'
+    }
+  })
   public products?: Product[];
 }

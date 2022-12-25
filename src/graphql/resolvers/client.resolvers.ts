@@ -3,7 +3,6 @@ import { Service } from 'typedi';
 import { Role } from '~/entities/generic/user';
 import { Client } from './../../entities/client';
 
-import { Artisan } from '~/entities/artisan';
 import { MyContext } from '~/graphql/myContext';
 
 @Resolver(() => Client)
@@ -15,6 +14,6 @@ export class ClientResolvers {
     if (!ctx.payload?.userId) {
       return null;
     }
-    return Artisan.findOne({ where: { id: Number(ctx.payload.userId) } });
+    return Client.findOne({ where: { id: Number(ctx.payload.userId) } });
   }
 }
