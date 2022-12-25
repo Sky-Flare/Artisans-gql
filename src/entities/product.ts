@@ -16,7 +16,7 @@ import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
 import { IsString } from 'class-validator';
 import { Artisan } from '~/entities/artisan';
-import { CartToProduct } from './cartToProduct';
+import { ClientToProduct } from './clientToProduct';
 
 @ObjectType()
 @Entity()
@@ -54,8 +54,8 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
-  @OneToMany(() => CartToProduct, (cartToProduct) => cartToProduct.product)
-  public cartToProduct!: CartToProduct[];
+  @OneToMany(() => ClientToProduct, (cTp) => cTp.product)
+  public clientToProduct!: ClientToProduct[];
 
   @ManyToOne(() => Artisan, (artisan) => artisan.products)
   artisan!: Artisan;

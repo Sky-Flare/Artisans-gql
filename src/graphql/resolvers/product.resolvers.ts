@@ -1,5 +1,3 @@
-import { Cart } from '@entity/cart';
-import { Client } from '@entity/client';
 import {
   Arg,
   Authorized,
@@ -10,7 +8,6 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { CartToProduct } from '~/entities/cartToProduct';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
@@ -39,42 +36,6 @@ export class ProductResolvers {
   @Authorized()
   public async shops(@Root() product: Product): Promise<Shop[]> {
     return await ShopRepository.findByProductId(product.id);
-  }
-
-  @Mutation(() => Cart)
-  @Authorized(Role.CLIENT)
-  public async addProductToCart(
-    @Ctx() ctx: MyContext,
-    @Arg('productId') productId: number
-  ): Promise<CartToProduct | undefined> {
-    const client = await Client.findOne({
-      where: { id: Number(ctx?.payload?.userId) }
-    });
-    if (!client) {
-      throw new Error('Client not found');
-    }
-    const product = await Product.findOne({
-      where: { id: productId }
-    });
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    const cartProduct = await CartToProduct.findOne({
-      where: { cartId: client?.cartId, productId: productId }
-    });
-
-    if (cartProduct) {
-      cartProduct.quantity = cartProduct.quantity + 1;
-      return await cartProduct.save();
-    } else {
-      const cartToProduct = CartToProduct.create({
-        cartId: client?.cartId,
-        productId: productId,
-        quantity: 1
-      });
-      return await cartToProduct.save();
-    }
   }
 
   @Mutation(() => Product, { nullable: true })

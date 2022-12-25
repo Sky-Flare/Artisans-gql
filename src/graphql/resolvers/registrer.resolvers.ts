@@ -3,7 +3,6 @@ import { compare, hash } from 'bcryptjs';
 import { Secret, sign } from 'jsonwebtoken';
 import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { CartRepository } from './../../repository/cart';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Client, CreateClientInput } from '@entity/client';
@@ -91,7 +90,6 @@ export class RegistrerResolvers {
       throw new Error('Empty data');
     }
 
-    const cart = CartRepository.create({});
     const client = ClientRepository.create({
       lastName: inputData.lastName,
       firstName: inputData.firstName,
@@ -100,8 +98,7 @@ export class RegistrerResolvers {
       zipCode: inputData.zipCode,
       city: inputData.city,
       password: await hash(inputData.password, 13),
-      role: Role.CLIENT,
-      cart: await CartRepository.save(cart)
+      role: Role.CLIENT
     });
 
     return await ClientRepository.save(client)
