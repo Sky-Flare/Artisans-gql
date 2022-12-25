@@ -1,4 +1,6 @@
-import { ApolloServer } from 'apollo-server-express';
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { json } from 'body-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -35,14 +37,12 @@ const bootstrap = async () => {
       credentials: true,
       origin: [/localhost*/, 'https://studio.apollographql.com']
     };
-    app.use(cors(corsConfig));
 
     const port = 3000;
     // Create GraphQL server
     const server = new ApolloServer({
       schema,
-      context: ({ req, res }) => ({ req, res }),
-      debug: true,
+      includeStacktraceInErrorResponses: true,
       introspection: true,
       apollo: {
         key: process.env.APOLLO_KEY,
@@ -50,12 +50,20 @@ const bootstrap = async () => {
       }
     });
     await server.start();
-    server.applyMiddleware({ app, cors: corsConfig });
 
+    app.use(
+      '/graphql',
+      cors<cors.CorsRequest>(),
+      json(),
+      expressMiddleware(server, {
+        context: async ({ req }) => ({ req })
+      }),
+      cors(corsConfig)
+    );
     app.listen({ port }, () => {
       // eslint-disable-next-line no-console
       console.log(
-        `🚀🚀🚀🚀🚀 Server ready at http://localhost:${port}${server.graphqlPath} 🚀🚀🚀🚀🚀 `
+        `🚀🚀🚀🚀🚀 Server ready at http://localhost:${port}/graphql 🚀🚀🚀🚀🚀 `
       );
     });
   } catch (err) {
