@@ -32,6 +32,7 @@ export class ClientToProduct extends BaseEntity {
   @ManyToOne(() => Client, (client) => client.clientToProduct)
   public client!: Client;
 
+  @Field(() => Product, { nullable: true })
   @ManyToOne(() => Product, (product) => product.clientToProduct)
   public product!: Product;
 

@@ -1,5 +1,5 @@
 import { Client } from '@entity/client';
-import { Arg, Authorized, Ctx, Mutation, Resolver } from 'type-graphql';
+import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
 import {
   ActionClientToProduct,
@@ -14,6 +14,20 @@ import { MyContext } from '~/graphql/myContext';
 @Resolver(() => ClientToProduct)
 @Service()
 export class ClientToProductResolvers {
+  @Query(() => [ClientToProduct], { nullable: true })
+  @Authorized(Role.CLIENT)
+  async clientCart(@Ctx() ctx: MyContext): Promise<ClientToProduct[] | null> {
+    if (!ctx.payload?.userId) {
+      return null;
+    }
+    return await ClientToProduct.find({
+      where: { clientId: Number(ctx.payload.userId) },
+      relations: {
+        product: true
+      }
+    });
+  }
+
   @Mutation(() => ClientToProduct, { nullable: true })
   @Authorized(Role.CLIENT)
   public async updateProductToCart(
