@@ -7,6 +7,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn
 } from 'typeorm';
@@ -15,7 +16,7 @@ import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
 import { IsString } from 'class-validator';
 import { Artisan } from '~/entities/artisan';
-import { Cart } from './cart';
+import { CartToProduct } from './cartToProduct';
 
 @ObjectType()
 @Entity()
@@ -53,9 +54,8 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
-  @ManyToMany((type) => Cart, (cart) => cart.products, { lazy: true })
-  @Field((type) => [Cart])
-  carts?: Promise<Cart[]>;
+  @OneToMany(() => CartToProduct, (cartToProduct) => cartToProduct.product)
+  public cartToProduct!: CartToProduct[];
 
   @ManyToOne(() => Artisan, (artisan) => artisan.products)
   artisan!: Artisan;

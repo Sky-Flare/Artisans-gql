@@ -10,6 +10,7 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
+import { CartToProduct } from '~/entities/cartToProduct';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
@@ -45,39 +46,34 @@ export class ProductResolvers {
   public async addProductToCart(
     @Ctx() ctx: MyContext,
     @Arg('productId') productId: number
-  ): Promise<Cart | undefined> {
+  ): Promise<CartToProduct | undefined> {
     const client = await Client.findOne({
       where: { id: Number(ctx?.payload?.userId) }
     });
     if (!client) {
       throw new Error('Client not found');
     }
-    console.log('🙂', client);
-
     const product = await Product.findOne({
       where: { id: productId }
     });
     if (!product) {
       throw new Error('Product not found');
     }
-    const cart = await Cart.findOne({
-      where: { id: client?.cartId },
-      relations: { products: true }
+
+    const cartProduct = await CartToProduct.findOne({
+      where: { cartId: client?.cartId, productId: productId }
     });
-    if (!cart) {
-      throw new Error('Cart not found');
-    }
-    console.log('cart', cart);
 
-    if (!cart.products) {
-      cart.products = [product];
-      console.log('if', cart);
-
-      return await cart.save();
+    if (cartProduct) {
+      cartProduct.quantity = cartProduct.quantity + 1;
+      return await cartProduct.save();
     } else {
-      cart.products = [...cart.products, product];
-      console.log('else', cart);
-      return await cart.save();
+      const cartToProduct = CartToProduct.create({
+        cartId: client?.cartId,
+        productId: productId,
+        quantity: 1
+      });
+      return await cartToProduct.save();
     }
   }
 
