@@ -49,7 +49,7 @@ export class RegistrerResolvers {
           }
         }
       )
-      .catch((e) => {
+      .catch(() => {
         throw new Error('Siren not found');
       });
 
