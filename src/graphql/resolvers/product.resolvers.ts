@@ -72,8 +72,6 @@ export class ProductResolvers {
       artisan: me,
       categoriesProducts: categoriesProductSlected
     });
-    console.log('⚠️', product);
-
     return await product.save();
   }
 }
