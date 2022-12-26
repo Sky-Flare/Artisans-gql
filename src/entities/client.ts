@@ -2,7 +2,7 @@ import { IsEmail } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import { Column, Entity, OneToMany, Unique } from 'typeorm';
 
-import { ClientToProduct } from '@entity/clientToProduct';
+import { Cart } from '@entity/cart';
 import { Role, User } from '@entity/generic/user';
 
 @ObjectType()
@@ -16,8 +16,9 @@ export class Client extends User {
   })
   public role!: Role;
 
-  @OneToMany(() => ClientToProduct, (cTp) => cTp.client)
-  public clientToProduct!: ClientToProduct[];
+  @Field(() => [Cart], { nullable: true })
+  @OneToMany(() => Cart, (cart) => cart.client)
+  public cart!: Cart[];
 }
 
 @InputType({ description: 'New client data' })

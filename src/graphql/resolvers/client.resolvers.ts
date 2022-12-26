@@ -1,5 +1,13 @@
-import { Authorized, Ctx, Query, Resolver } from 'type-graphql';
+import {
+  Authorized,
+  Ctx,
+  FieldResolver,
+  Query,
+  Resolver,
+  Root
+} from 'type-graphql';
 import { Service } from 'typedi';
+import { Cart } from '~/entities/cart';
 
 import { Client } from '@entity/client';
 import { Role } from '@entity/generic/user';
@@ -15,5 +23,16 @@ export class ClientResolvers {
       return null;
     }
     return Client.findOne({ where: { id: Number(ctx.payload.userId) } });
+  }
+
+  @FieldResolver()
+  @Authorized(Role.CLIENT)
+  public async cart(@Root() client: Client): Promise<Cart[]> {
+    return await Cart.find({
+      where: { clientId: Number(client?.id) },
+      relations: {
+        product: true
+      }
+    });
   }
 }

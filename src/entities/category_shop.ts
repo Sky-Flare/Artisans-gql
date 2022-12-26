@@ -9,6 +9,7 @@ import {
 } from 'typeorm';
 
 import { Shop } from '@entity/shop';
+import { IsString } from 'class-validator';
 
 @ObjectType()
 @Entity()
@@ -32,6 +33,7 @@ export class Category_shop extends BaseEntity {
 
 @InputType({ description: 'New category shop' })
 export class CategoryShopInput {
+  @IsString()
   @Field()
   public name!: string;
 

@@ -25,23 +25,23 @@ const ClientRepository = AppDataSource.getRepository(Client);
 export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpArtisan(
-    @Arg('input') inputData?: CreateArtisanInput
+    @Arg('CreateArtisanInput') createArtisanInput?: CreateArtisanInput
   ): Promise<LoginResponse | null> {
     const siren = SirenRepository.create({
-      siren: inputData?.sirenNumber
+      siren: createArtisanInput?.sirenNumber
     });
 
-    if (!inputData) {
+    if (!createArtisanInput) {
       throw new Error('Empty data');
     }
 
-    if (!inputData.sirenNumber) {
+    if (!createArtisanInput.sirenNumber) {
       throw new Error('Siren requier');
     }
 
     await axios
       .get(
-        `https://api.insee.fr/entreprises/sirene/V3/siren/${inputData.sirenNumber}`,
+        `https://api.insee.fr/entreprises/sirene/V3/siren/${createArtisanInput.sirenNumber}`,
         {
           headers: {
             Authorization: `Bearer ${process.env.JWT_SIREN}`,
@@ -54,13 +54,13 @@ export class RegistrerResolvers {
       });
 
     const artisan = ArtisanRepository.create({
-      lastName: inputData.lastName,
-      firstName: inputData.firstName,
-      email: inputData.email,
-      adress: inputData.adress,
-      zipCode: inputData.zipCode,
-      city: inputData.city,
-      password: await hash(inputData.password, 13),
+      lastName: createArtisanInput.lastName,
+      firstName: createArtisanInput.firstName,
+      email: createArtisanInput.email,
+      adress: createArtisanInput.adress,
+      zipCode: createArtisanInput.zipCode,
+      city: createArtisanInput.city,
+      password: await hash(createArtisanInput.password, 13),
       role: Role.ARTISAN,
       siren: await SirenRepository.save(siren)
     });
@@ -84,20 +84,20 @@ export class RegistrerResolvers {
 
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpClient(
-    @Arg('input') inputData?: CreateClientInput
+    @Arg('CreateClientInput') createClientInput?: CreateClientInput
   ): Promise<LoginResponse | null> {
-    if (!inputData) {
+    if (!createClientInput) {
       throw new Error('Empty data');
     }
 
     const client = ClientRepository.create({
-      lastName: inputData.lastName,
-      firstName: inputData.firstName,
-      email: inputData.email,
-      adress: inputData.adress,
-      zipCode: inputData.zipCode,
-      city: inputData.city,
-      password: await hash(inputData.password, 13),
+      lastName: createClientInput.lastName,
+      firstName: createClientInput.firstName,
+      email: createClientInput.email,
+      adress: createClientInput.adress,
+      zipCode: createClientInput.zipCode,
+      city: createClientInput.city,
+      password: await hash(createClientInput.password, 13),
       role: Role.CLIENT
     });
 

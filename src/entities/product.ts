@@ -15,8 +15,8 @@ import {
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
-import { ClientToProduct } from '@entity/clientToProduct';
 import { Shop } from '@entity/shop';
+import { Cart } from '~/entities/cart';
 
 @ObjectType()
 @Entity()
@@ -54,8 +54,8 @@ export class Product extends BaseEntity {
   @ManyToMany(() => Shop, (shop) => shop.products)
   shops?: Shop[];
 
-  @OneToMany(() => ClientToProduct, (cTp) => cTp.product)
-  public clientToProduct!: ClientToProduct[];
+  @OneToMany(() => Cart, (cart) => cart.product)
+  public cart!: Cart[];
 
   @ManyToOne(() => Artisan, (artisan) => artisan.products)
   artisan!: Artisan;

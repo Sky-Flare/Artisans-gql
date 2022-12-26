@@ -1,7 +1,7 @@
 import { Arg, Authorized, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
 
-import { Category_shop } from '@entity/category_shop';
+import { CategoryShopInput, Category_shop } from '@entity/category_shop';
 import { Role } from '@entity/generic/user';
 import { AppDataSource } from '~/app-data-source';
 
@@ -19,8 +19,7 @@ export class CategoryShopResolver {
   @Mutation(() => Category_shop)
   @Authorized(Role.ARTISAN)
   public async createCategoryShop(
-    @Arg('name') name: string,
-    @Arg('picture', { nullable: true }) picture?: string
+    @Arg('CategoryShopInput') { name, picture }: CategoryShopInput
   ): Promise<Category_shop | null> {
     const categoryShop = CategoryShopRepository.create({
       name: name,

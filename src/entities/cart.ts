@@ -15,7 +15,7 @@ import { Product } from '@entity/product';
 
 @ObjectType()
 @Entity()
-export class ClientToProduct extends BaseEntity {
+export class Cart extends BaseEntity {
   @PrimaryGeneratedColumn()
   public id!: number;
 
@@ -30,11 +30,11 @@ export class ClientToProduct extends BaseEntity {
   @Column()
   public quantity!: number;
 
-  @ManyToOne(() => Client, (client) => client.clientToProduct)
+  @ManyToOne(() => Client, (client) => client.cart)
   public client!: Client;
 
   @Field(() => Product, { nullable: true })
-  @ManyToOne(() => Product, (product) => product.clientToProduct)
+  @ManyToOne(() => Product, (product) => product.cart)
   public product!: Product;
 
   @CreateDateColumn()
@@ -44,20 +44,20 @@ export class ClientToProduct extends BaseEntity {
   public updatedAt!: Date;
 }
 
-export enum ActionClientToProduct {
+export enum ActionCart {
   Add = 'add',
   Remove = 'remove'
 }
-registerEnumType(ActionClientToProduct, {
-  name: 'ActionClientToProduct'
+registerEnumType(ActionCart, {
+  name: 'ActionCart'
 });
 
 @InputType({ description: 'Cart client' })
-export class UpdateClientToProduct implements Partial<ClientToProduct> {
+export class UpdateCart implements Partial<Cart> {
   @IsInt()
   @Field()
   public productId!: number;
 
-  @Field(() => ActionClientToProduct)
-  public action!: ActionClientToProduct;
+  @Field(() => ActionCart)
+  public action!: ActionCart;
 }

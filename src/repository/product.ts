@@ -8,12 +8,6 @@ export const ProductRepository = AppDataSource.getRepository(Product).extend({
       .where('shop.id = :id', { id: shopId })
       .getMany();
   },
-  findProductsOfCart(cartId: number): Promise<Product[]> {
-    return this.createQueryBuilder('product')
-      .leftJoin('cartToProduct.shops', 'shop')
-      .where('shop.id = :id', { id: cartId })
-      .getMany();
-  },
   findProductsOfArtisan(artisanId: number): Promise<Product[]> {
     return this.createQueryBuilder('product')
       .leftJoin('product.artisan', 'artisan')
