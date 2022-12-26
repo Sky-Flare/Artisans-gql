@@ -10,11 +10,13 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
+import { Horaire_shop } from './../../entities/horaire_shop';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
 import { Role } from '@entity/generic/user';
+import { InputHoraireShop } from '@entity/horaire_shop';
 import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
 import { Siret } from '@entity/siret';
@@ -26,6 +28,7 @@ import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
 import { AppDataSource } from '~/app-data-source';
 import { MyContext } from '~/graphql/myContext';
+import { HoraireShopRepository } from '~/repository/horaire_shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 
@@ -101,13 +104,27 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     return await ProductRepository.findProductsOfShop(shop.id);
   }
 
+  @FieldResolver()
+  @Authorized()
+  public async horaireShop(
+    @Root() shop: Shop
+  ): Promise<Horaire_shop[] | undefined> {
+    return await HoraireShopRepository.findHoraireOfShop(shop.id);
+  }
+
   @Mutation(() => Shop, { nullable: true })
   @Authorized(Role.ARTISAN)
   public async createShop(
     @Ctx() ctx: MyContext,
-    @Arg('createShopInput')
-    createShopInput: CreateShopInput
+    @Arg('CreateShopInput')
+    createShopInput: CreateShopInput,
+    @Arg('InputHoraireShop', () => [InputHoraireShop], {
+      nullable: true
+    })
+    inputHoraireShop?: InputHoraireShop[]
   ): Promise<Shop | null> {
+    console.log('inputHoraireShop', inputHoraireShop);
+
     const artisan = await Artisan.findOne({
       relations: {
         siren: true
@@ -175,7 +192,20 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       siret: await SiretRepository.save(siret),
       categoriesShops: categories
     });
-    await ShopRepository.save(shop);
+    const shopSaved = await ShopRepository.save(shop);
+
+    inputHoraireShop?.forEach((h) => {
+      const horaire = HoraireShopRepository.create({
+        dayId: h.dayId,
+        timeAmStart: h.timeAmStart,
+        timeAmEnd: h.timeAmEnd,
+        timePmStart: h.timePmStart,
+        timePmEnd: h.timePmEnd,
+        shop: shopSaved
+      });
+      HoraireShopRepository.save(horaire);
+    });
+
     return shop;
   }
 }

@@ -9,11 +9,13 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   Unique,
   UpdateDateColumn
 } from 'typeorm';
+import { Horaire_shop } from './horaire_shop';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
@@ -52,6 +54,10 @@ export class Shop extends BaseEntity {
   @OneToOne(() => Siret)
   @JoinColumn()
   public siret!: Siret;
+
+  @OneToMany(() => Horaire_shop, (hs) => hs.shop)
+  @Field(() => [Horaire_shop], { nullable: true })
+  public horaireShop?: Horaire_shop[];
 
   @Field()
   @Column({ type: 'integer', default: 1 })
