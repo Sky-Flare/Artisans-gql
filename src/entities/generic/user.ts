@@ -1,4 +1,5 @@
-import { Field, ObjectType, registerEnumType } from 'type-graphql';
+import { IsEmail, IsString } from 'class-validator';
+import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -56,4 +57,18 @@ export class User extends BaseEntity {
   @Field()
   @UpdateDateColumn()
   public updatedAt!: Date;
+}
+
+@InputType()
+export class ConnectUser {
+  @Field(() => Role)
+  public role!: Role;
+
+  @IsString()
+  @Field()
+  public password!: string;
+
+  @IsEmail()
+  @Field()
+  public email!: string;
 }

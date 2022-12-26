@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { compare, hash } from 'bcryptjs';
 import { Secret, sign } from 'jsonwebtoken';
 import { Arg, Field, Mutation, ObjectType, Resolver } from 'type-graphql';
@@ -6,8 +5,9 @@ import { Service } from 'typedi';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Client, CreateClientInput } from '@entity/client';
-import { Role } from '@entity/generic/user';
+import { ConnectUser, Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
+import { checkSiren } from '@repository/artisan';
 import { AppDataSource } from '~/app-data-source';
 
 @ObjectType()
@@ -39,19 +39,17 @@ export class RegistrerResolvers {
       throw new Error('Siren requier');
     }
 
-    await axios
-      .get(
-        `https://api.insee.fr/entreprises/sirene/V3/siren/${createArtisanInput.sirenNumber}`,
-        {
-          headers: {
-            Authorization: `Bearer ${process.env.JWT_SIREN}`,
-            Accept: 'application/json'
-          }
-        }
-      )
-      .catch(() => {
-        throw new Error('Siren not found');
-      });
+    if (
+      await Siren.findOne({
+        where: { siren: createArtisanInput.sirenNumber }
+      })
+    ) {
+      throw new Error('Siren already use');
+    }
+
+    await checkSiren(createArtisanInput.sirenNumber).catch(() => {
+      throw new Error('Siren not found');
+    });
 
     const artisan = ArtisanRepository.create({
       lastName: createArtisanInput.lastName,
@@ -120,9 +118,7 @@ export class RegistrerResolvers {
 
   @Mutation(() => LoginResponse, { nullable: true })
   async singIn(
-    @Arg('email') email: string,
-    @Arg('password') password: string,
-    @Arg('role') role: Role
+    @Arg('ConnectUser') { role, password, email }: ConnectUser
   ): Promise<LoginResponse | null> {
     let user: Artisan | Client | null;
     if (role === Role.ARTISAN) {

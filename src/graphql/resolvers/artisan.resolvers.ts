@@ -1,3 +1,4 @@
+import { Siren } from '@entity/siren';
 import {
   Arg,
   Authorized,
@@ -9,6 +10,7 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
+import { checkSiren } from './../../repository/artisan';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Role } from '@entity/generic/user';
@@ -74,23 +76,45 @@ export class ArtisanResolvers {
   }
 
   @Mutation(() => Artisan)
-  //todo : just if its me
+  @Authorized(Role.ARTISAN)
   async updateArtisan(
-    @Arg('id') id: number,
-    @Arg('data') data: CreateArtisanInput
+    @Ctx() ctx: MyContext,
+    @Arg('CreateArtisanInput') createArtisanInput: CreateArtisanInput
   ) {
-    const artisan = await Artisan.findOne({ where: { id } });
+    const artisan = await Artisan.findOne({
+      where: { id: Number(ctx?.payload?.userId) },
+      relations: { siren: true }
+    });
     if (!artisan) {
       throw new Error('Artisan not found !');
     }
-    Object.assign(artisan, data);
+
+    if (
+      createArtisanInput.sirenNumber &&
+      createArtisanInput.sirenNumber !== artisan.siren?.siren
+    ) {
+      if (
+        await Siren.findOne({
+          where: { siren: createArtisanInput.sirenNumber }
+        })
+      ) {
+        throw new Error('Siren already use');
+      }
+      await checkSiren(createArtisanInput.sirenNumber).catch(() => {
+        throw new Error('Siren not found');
+      });
+    }
+    Object.assign(artisan, createArtisanInput);
     await artisan.save();
     return artisan;
   }
 
   @Mutation(() => Boolean)
-  async deleteArtisan(@Arg('id') id: number) {
-    const artisan = await Artisan.findOne({ where: { id } });
+  @Authorized(Role.ARTISAN)
+  async deleteArtisan(@Ctx() ctx: MyContext) {
+    const artisan = await Artisan.findOne({
+      where: { id: Number(ctx.payload?.userId) }
+    });
     if (!artisan) throw new Error('Artisan not found !');
     return await artisan
       .remove()
