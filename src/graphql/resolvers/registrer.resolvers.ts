@@ -8,6 +8,7 @@ import { Client, CreateClientInput } from '@entity/client';
 import { ConnectUser, Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
 import { checkSiren } from '@repository/artisan';
+import { GraphQLError } from 'graphql';
 import { AppDataSource } from '~/app-data-source';
 
 @ObjectType()
@@ -128,7 +129,11 @@ export class RegistrerResolvers {
     }
 
     if (!user) {
-      throw new Error('Bad credentials');
+      throw new GraphQLError('Utilisateur non identifié', {
+        extensions: {
+          code: 'NOT_FOUND'
+        }
+      });
     }
 
     const verify = await compare(password, user.password);
