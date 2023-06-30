@@ -38,6 +38,35 @@ export class ProductResolvers {
     return await ShopRepository.findByProductId(product.id);
   }
 
+  @Mutation(() => Boolean)
+  @Authorized(Role.ARTISAN)
+  public async deleteProduct(
+    @Ctx() ctx: MyContext,
+    @Arg('id') id: number
+  ): Promise<Product> {
+    const me = await Artisan.findOneBy({ id: Number(ctx?.payload?.userId) });
+    if (!me) {
+      throw new Error('Artisan not found');
+    }
+
+    const product = await ProductRepository.findProductByIdAndByArtisanId(
+      id,
+      Number(ctx?.payload?.userId)
+    );
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    return await product
+      .remove()
+      .then(() => {
+        return product;
+      })
+      .catch(() => {
+        return product;
+      });
+  }
+
   @Mutation(() => Product, { nullable: true })
   @Authorized(Role.ARTISAN)
   public async createProduct(

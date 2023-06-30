@@ -19,5 +19,15 @@ export const ProductRepository = AppDataSource.getRepository(Product).extend({
       .leftJoin('product.categoriesProducts', 'category_product')
       .where('category_product.id = :id', { id: catProduct })
       .getMany();
+  },
+  findProductByIdAndByArtisanId(
+    productId: number,
+    artId: number
+  ): Promise<Product | null> {
+    return this.createQueryBuilder('product')
+      .leftJoin('product.artisan', 'artisan')
+      .where('product.id = :id', { id: productId })
+      .andWhere('artisan.id = :artisanId', { artisanId: artId })
+      .getOne();
   }
 });
