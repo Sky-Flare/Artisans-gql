@@ -43,7 +43,7 @@ export class ProductResolvers {
   public async deleteProduct(
     @Ctx() ctx: MyContext,
     @Arg('id') id: number
-  ): Promise<Product> {
+  ): Promise<boolean> {
     const me = await Artisan.findOneBy({ id: Number(ctx?.payload?.userId) });
     if (!me) {
       throw new Error('Artisan not found');
@@ -60,10 +60,10 @@ export class ProductResolvers {
     return await product
       .remove()
       .then(() => {
-        return product;
+        return true;
       })
       .catch(() => {
-        return product;
+        throw new Error('Product not deleted');
       });
   }
 
