@@ -41,19 +41,19 @@ export class Horaire_shop extends BaseEntity {
   public dayId!: Days;
 
   @Field({ nullable: true })
-  @Column({ type: 'time' })
+  @Column()
   public timeAmStart!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'time' })
+  @Column()
   public timeAmEnd!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'time' })
+  @Column()
   public timePmStart!: string;
 
   @Field({ nullable: true })
-  @Column({ type: 'time' })
+  @Column()
   public timePmEnd!: string;
 
   @CreateDateColumn()

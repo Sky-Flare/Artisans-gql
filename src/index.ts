@@ -29,7 +29,7 @@ AppDataSource.initialize()
 
 const bootstrap = async () => {
   try {
-    const schema = await createSchema(Container);
+    const schema = await createSchema();
 
     const app = express();
     const corsConfig = {
