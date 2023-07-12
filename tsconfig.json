@@ -1,4 +1,9 @@
 {
+  "ts-node": {
+    "transpileOnly": true,
+    "require": ["tsconfig-paths/register", "dotenv/config"]
+  },
+
   "compilerOptions": {
     "target": "ESNext",
     "module": "commonjs",
@@ -15,7 +20,7 @@
 //    "importsNotUsedAsValues": "error",
     "resolveJsonModule": true,
     "pretty": true,
-    "types": ["reflect-metadata", "node"],
+    "types": ["reflect-metadata", "node", "jest"],
     "noEmitOnError": true,
     "strict": true,
     "strictNullChecks": true,
@@ -26,7 +31,7 @@
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "paths": {
-      "~/*": ["src/*"],
+      "@src/*": ["src/*"],
       "@entity/*": ["src/entities/*"],
       "@resolver/*": ["src/graphql/resolvers/*"],
       "@repository/*": ["src/repository/*"],
@@ -35,5 +40,5 @@
   },
   "compileOnSave": true,
   "exclude": ["node_modules"],
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "node_modules/@types/jest"]
 }

@@ -5,7 +5,6 @@ import {
   PrimaryGeneratedColumn,
   Unique
 } from 'typeorm';
-
 @Entity()
 @Unique(['siren'])
 export class Siren extends BaseEntity {

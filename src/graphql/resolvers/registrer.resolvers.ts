@@ -9,7 +9,7 @@ import { ConnectUser, Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
 import { checkSiren } from '@repository/artisan';
 import { GraphQLError } from 'graphql';
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 
 @ObjectType()
 class LoginResponse {
@@ -31,7 +31,6 @@ export class RegistrerResolvers {
     const siren = SirenRepository.create({
       siren: createArtisanInput?.sirenNumber
     });
-
     if (!createArtisanInput) {
       throw new Error('Empty data');
     }

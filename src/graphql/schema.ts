@@ -5,6 +5,7 @@ import { authChecker } from '@gqlMiddlewares/auth';
 export default () => {
   return buildSchema({
     container: Container,
+    emitSchemaFile: true,
     resolvers: [__dirname + '/**/*.resolvers.{ts,js}'],
     authChecker
   });

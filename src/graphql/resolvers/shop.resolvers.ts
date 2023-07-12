@@ -10,7 +10,7 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { Horaire_shop } from './../../entities/horaire_shop';
+import { Horaire_shop } from '@entity/horaire_shop';
 
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
@@ -26,9 +26,9 @@ import { Category_shopRepository } from '@repository/category_shop';
 import { ClientRepository } from '@repository/client';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { AppDataSource } from '~/app-data-source';
-import { MyContext } from '~/graphql/myContext';
-import { HoraireShopRepository } from '~/repository/horaire_shop';
+import { AppDataSource } from '@src/app-data-source';
+import { MyContext } from '@src/graphql/myContext';
+import { HoraireShopRepository } from '@src/repository/horaire_shop';
 
 const SiretRepository = AppDataSource.getRepository(Siret);
 

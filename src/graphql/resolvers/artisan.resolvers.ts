@@ -1,4 +1,3 @@
-import { Siren } from '@entity/siren';
 import {
   Arg,
   Authorized,
@@ -10,15 +9,16 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { checkSiren } from './../../repository/artisan';
+import { checkSiren } from '@repository/artisan';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
+import { Siren } from '@entity/siren';
 import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { ProductRepository } from '@repository/product';
-import { AppDataSource } from '~/app-data-source';
-import { MyContext } from '~/graphql/myContext';
+import { AppDataSource } from '@src/app-data-source';
+import { MyContext } from '@src/graphql/myContext';
 
 const ArtisanRepository = AppDataSource.getRepository(Artisan);
 const ShopRepository = AppDataSource.getRepository(Shop);

@@ -7,11 +7,11 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { Cart } from '~/entities/cart';
+import { Cart } from '@entity/cart';
 
 import { Client } from '@entity/client';
 import { Role } from '@entity/generic/user';
-import { MyContext } from '~/graphql/myContext';
+import { MyContext } from '@src/graphql/myContext';
 
 @Resolver(() => Client)
 @Service()

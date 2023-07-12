@@ -6,9 +6,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import 'module-alias/register';
 import 'reflect-metadata';
-import { Container } from 'typedi';
-
-import createSchema from '~/graphql/schema';
+import createSchema from './graphql/schema';
 
 dotenv.config();
 

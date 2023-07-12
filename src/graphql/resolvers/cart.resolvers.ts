@@ -1,12 +1,12 @@
 import { Arg, Authorized, Ctx, Mutation, Query, Resolver } from 'type-graphql';
 import { Service } from 'typedi';
-import { ActionCart, UpdateCart } from '../../entities/cart';
+import { ActionCart, UpdateCart } from '@entity/cart';
 
 import { Cart } from '@entity/cart';
 import { Client } from '@entity/client';
 import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
-import { MyContext } from '~/graphql/myContext';
+import { MyContext } from '@src/graphql/myContext';
 
 @Resolver(() => Cart)
 @Service()

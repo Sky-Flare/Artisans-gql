@@ -1,5 +1,5 @@
 import { Category_product } from '@entity/category_product';
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 
 export const Category_productRepository = AppDataSource.getRepository(
   Category_product

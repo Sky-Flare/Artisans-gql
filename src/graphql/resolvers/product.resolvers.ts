@@ -17,7 +17,7 @@ import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { MyContext } from '~/graphql/myContext';
+import { MyContext } from '@src/graphql/myContext';
 
 @Resolver(() => Product)
 @Service()

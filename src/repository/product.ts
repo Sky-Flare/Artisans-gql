@@ -1,5 +1,5 @@
 import { Product } from '@entity/product';
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 
 export const ProductRepository = AppDataSource.getRepository(Product).extend({
   findProductsOfShop(shopId: number): Promise<Product[]> {

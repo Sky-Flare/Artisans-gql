@@ -1,5 +1,5 @@
-import { IsInt } from 'class-validator';
 import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
+import { IsInt } from 'class-validator';
 import {
   BaseEntity,
   Column,

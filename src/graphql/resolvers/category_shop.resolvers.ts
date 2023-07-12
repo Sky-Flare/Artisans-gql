@@ -3,7 +3,7 @@ import { Service } from 'typedi';
 
 import { CategoryShopInput, Category_shop } from '@entity/category_shop';
 import { Role } from '@entity/generic/user';
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 
 const CategoryShopRepository = AppDataSource.getRepository(Category_shop);
 

@@ -1,4 +1,4 @@
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 import { Shop } from '@entity/shop';
 
 export const ShopRepository = AppDataSource.getRepository(Shop).extend({

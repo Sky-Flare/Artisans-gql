@@ -1,6 +1,6 @@
 import { Artisan } from '@entity/artisan';
 import axios from 'axios';
-import { AppDataSource } from '~/app-data-source';
+import { AppDataSource } from '@src/app-data-source';
 
 export const ArtisanRepository = AppDataSource.getRepository(Artisan).extend({
   findArtisanOfShop(shopId: number): Promise<Artisan | null> {

@@ -8,9 +8,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   synchronize: true,
-  logger: 'advanced-console',
-  logging: 'all',
   cache: true,
-  dropSchema: false,
-  entities: ['dist/src/entities/*.js']
+  dropSchema: true,
+  entities: [__dirname + '/entities/*{.ts,.js}']
 });
