@@ -3,19 +3,14 @@ import { graphql, GraphQLSchema } from 'graphql';
 
 interface Options {
   source: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   variableValues?: any;
   userId?: number;
-  typeResolver?: any;
 }
 
 let schema: GraphQLSchema;
 
-export const gCall = async ({
-  source,
-  variableValues,
-  userId,
-  typeResolver
-}: Options) => {
+export const gCall = async ({ source, variableValues, userId }: Options) => {
   if (!schema) {
     schema = await createSchema();
   }
@@ -23,7 +18,6 @@ export const gCall = async ({
     schema,
     source,
     variableValues,
-    typeResolver,
     contextValue: {
       req: {
         session: {

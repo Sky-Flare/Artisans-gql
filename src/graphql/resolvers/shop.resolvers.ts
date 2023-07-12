@@ -123,8 +123,6 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     })
     inputHoraireShop?: InputHoraireShop[]
   ): Promise<Shop | null> {
-    console.log('inputHoraireShop', inputHoraireShop);
-
     const artisan = await Artisan.findOne({
       relations: {
         siren: true

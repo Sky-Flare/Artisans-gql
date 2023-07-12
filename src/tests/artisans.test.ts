@@ -1,4 +1,4 @@
-import { Connection, DataSource } from 'typeorm';
+import { Connection } from 'typeorm';
 
 import { testConn } from '@src/test-utils/testConn';
 import { gCall } from '@src/test-utils/gCall';
@@ -6,8 +6,6 @@ import { LoginResponse } from '../generated/graphql';
 
 let conn: Connection;
 beforeAll(async () => {
-  console.log('BEFORE');
-
   conn = await testConn();
 });
 afterAll(async () => {
@@ -42,6 +40,5 @@ describe('Register', () => {
       }
     })) as { data: { signUpArtisan: LoginResponse } };
     expect(response?.data?.signUpArtisan?.accessToken).toBeDefined();
-    console.log('testttttt => ', response?.data);
   });
 });

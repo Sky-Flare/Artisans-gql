@@ -1,4 +1,4 @@
-import { buildSchema, ContainerType } from 'type-graphql';
+import { buildSchema } from 'type-graphql';
 import { Container } from 'typedi';
 import { authChecker } from '@gqlMiddlewares/auth';
 
