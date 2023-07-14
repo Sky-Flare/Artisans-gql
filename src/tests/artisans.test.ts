@@ -39,6 +39,8 @@ describe('Register', () => {
         createArtisanInput: user
       }
     })) as { data: { signUpArtisan: LoginResponse } };
+    console.log(response);
+
     expect(response?.data?.signUpArtisan?.accessToken).toBeDefined();
   });
 });

@@ -10,7 +10,7 @@ export const AppDataSource = new DataSource({
   synchronize: true,
   logger: 'advanced-console',
   logging: 'all',
-  cache: true,
-  dropSchema: true,
+  cache: process.env.DB_DROP_SCHEMA !== 'true',
+  dropSchema: process.env.DB_DROP_SCHEMA === 'true',
   entities: [__dirname + '/entities/*{.ts,.js}']
 });
