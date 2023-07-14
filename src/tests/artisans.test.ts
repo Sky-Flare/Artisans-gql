@@ -19,28 +19,41 @@ mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
     }
   }
 `;
+const artisan = {
+  adress: '37 route de la covasserie',
+  city: 'habere-poche',
+  email: 'test@gmail.com',
+  firstName: 'joss',
+  password: 'test',
+  lastName: 'lebaad',
+  sirenNumber: '309192144',
+  zipCode: 74420
+};
 
 describe('Register', () => {
-  it('create user', async () => {
-    const user = {
-      adress: '37 route de la covasserie',
-      city: 'habere-poche',
-      email: 'test@gmail.com',
-      firstName: 'joss',
-      password: 'test',
-      lastName: 'lebaad',
-      sirenNumber: '309192144',
-      zipCode: 74420
-    };
-
-    const response = (await gCall({
-      source: registerMutation,
-      variableValues: {
-        createArtisanInput: user
-      }
-    })) as { data: { signUpArtisan: LoginResponse } };
-    console.log(response);
-
-    expect(response?.data?.signUpArtisan?.accessToken).toBeDefined();
+  describe('SignUpArtisan', () => {
+    it('should create a user', async () => {
+      const response = (await gCall({
+        source: registerMutation,
+        variableValues: {
+          createArtisanInput: artisan
+        }
+      })) as { data: { signUpArtisan: LoginResponse } };
+      expect(response).toBeDefined();
+      expect(response.data).toBeDefined();
+      expect(response.data.signUpArtisan).toBeDefined();
+      expect(response.data.signUpArtisan.accessToken).toBeDefined();
+    });
+    it('should throw an error if Siren is already used', async () => {
+      const response = await gCall({
+        source: registerMutation,
+        variableValues: {
+          createArtisanInput: artisan
+        }
+      });
+      expect(response).toBeDefined();
+      expect(response.errors).toBeDefined();
+      expect(response.errors?.[0].message).toBe('Siren already use');
+    });
   });
 });
