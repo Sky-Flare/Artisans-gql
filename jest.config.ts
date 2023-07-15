@@ -8,6 +8,14 @@ const jestConfig: JestConfigWithTsJest = {
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest'
   },
+  collectCoverageFrom: [
+    './src/graphql/**/*.ts',
+    './src/graphql/**/**/*.ts',
+    './src/repository/*.ts',
+    '!**/node_modules/**',
+    '!**/vendor/**'
+  ],
+  collectCoverage: true,
   moduleNameMapper: {
     '^@src/(.*)$': '<rootDir>/src/$1',
     '^@entity/(.*)$': '<rootDir>/src/entities/$1',

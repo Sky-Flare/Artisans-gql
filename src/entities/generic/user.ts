@@ -9,9 +9,9 @@ import {
 } from 'typeorm';
 
 export enum Role {
-  ADMIN = 'admin',
-  CLIENT = 'client',
-  ARTISAN = 'artisan'
+  ADMIN = 'ADMIN',
+  CLIENT = 'CLIENT',
+  ARTISAN = 'ARTISAN'
 }
 registerEnumType(Role, {
   name: 'Role'

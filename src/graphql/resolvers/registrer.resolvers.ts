@@ -26,19 +26,11 @@ const ClientRepository = AppDataSource.getRepository(Client);
 export class RegistrerResolvers {
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpArtisan(
-    @Arg('CreateArtisanInput') createArtisanInput?: CreateArtisanInput
+    @Arg('CreateArtisanInput') createArtisanInput: CreateArtisanInput
   ): Promise<LoginResponse | null> {
     const siren = SirenRepository.create({
       siren: createArtisanInput?.sirenNumber
     });
-    if (!createArtisanInput) {
-      throw new Error('Empty data');
-    }
-
-    if (!createArtisanInput.sirenNumber) {
-      throw new Error('Siren requier');
-    }
-
     if (
       await Siren.findOne({
         where: { siren: createArtisanInput.sirenNumber }
@@ -82,12 +74,8 @@ export class RegistrerResolvers {
 
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpClient(
-    @Arg('CreateClientInput') createClientInput?: CreateClientInput
+    @Arg('CreateClientInput') createClientInput: CreateClientInput
   ): Promise<LoginResponse | null> {
-    if (!createClientInput) {
-      throw new Error('Empty data');
-    }
-
     const client = ClientRepository.create({
       lastName: createClientInput.lastName,
       firstName: createClientInput.firstName,
@@ -117,7 +105,7 @@ export class RegistrerResolvers {
   }
 
   @Mutation(() => LoginResponse, { nullable: true })
-  async singIn(
+  async signIn(
     @Arg('ConnectUser') { role, password, email }: ConnectUser
   ): Promise<LoginResponse | null> {
     let user: Artisan | Client | null;

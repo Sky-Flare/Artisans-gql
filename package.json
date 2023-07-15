@@ -25,6 +25,7 @@
     "@gqlMiddlewares": "./dist/src/graphql/middlewares"
   },
   "devDependencies": {
+    "@faker-js/faker": "^8.0.2",
     "@graphql-codegen/cli": "4.0.1",
     "@graphql-codegen/introspection": "4.0.0",
     "@graphql-codegen/typescript": "4.0.1",

@@ -62,6 +62,6 @@ export class CreateArtisanInput implements Partial<Artisan> {
   @Field()
   public password!: string;
 
-  @Field(() => String)
-  public sirenNumber: string | undefined;
+  @Field()
+  public sirenNumber!: string;
 }

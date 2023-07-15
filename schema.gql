@@ -168,9 +168,9 @@ type Mutation {
   createShop(CreateShopInput: CreateShopInput!, InputHoraireShop: [InputHoraireShop!]): Shop
   deleteArtisan: Boolean!
   deleteProduct(id: Float!): Boolean!
+  signIn(ConnectUser: ConnectUser!): LoginResponse
   signUpArtisan(CreateArtisanInput: CreateArtisanInput!): LoginResponse
   signUpClient(CreateClientInput: CreateClientInput!): LoginResponse
-  singIn(ConnectUser: ConnectUser!): LoginResponse
   updateArtisan(CreateArtisanInput: CreateArtisanInput!): Artisan!
   updateCart(UpdateCart: UpdateCart!): Cart
 }
