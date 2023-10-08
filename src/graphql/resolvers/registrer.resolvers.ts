@@ -10,6 +10,7 @@ import { Siren } from '@entity/siren';
 import { checkSiren } from '@repository/artisan';
 import { GraphQLError } from 'graphql';
 import { AppDataSource } from '@src/app-data-source';
+import {authChecker} from "@gqlMiddlewares/auth";
 
 @ObjectType()
 class LoginResponse {
@@ -139,4 +140,31 @@ export class RegistrerResolvers {
       )
     };
   }
+//   describe('Auth Checker', () => {
+//   it('should throw an error if no authorization header', async () => {
+//   const response = (await gCall({
+//     source: signInMutation,
+//     variableValues: {
+//       connectUser: {
+//         email: client.email,
+//         password: client.password,
+//         role: Role.CLIENT
+//       }
+//     }
+//   })) as { data: { signIn: LoginResponse } };
+//   const mockContext = {
+//     req: {
+//       headers: {
+//         authorization: response.data.signIn.accessToken
+//       }
+//     },
+//     payload: {
+//       userId: '1',
+//       role: Role.ARTISAN
+//     }
+//   };
+//
+//   const result = authChecker(mockContext, [Role.ARTISAN]);
+//   expect(result).toBe(true);
+// });
 }

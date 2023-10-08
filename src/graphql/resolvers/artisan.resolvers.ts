@@ -69,6 +69,7 @@ export class ArtisanResolvers {
   @Query(() => Artisan, { nullable: true })
   @Authorized(Role.ARTISAN)
   async meArtisan(@Ctx() ctx: MyContext): Promise<Artisan | null> {
+    console.log(ctx);
     if (!ctx.payload?.userId) {
       return null;
     }

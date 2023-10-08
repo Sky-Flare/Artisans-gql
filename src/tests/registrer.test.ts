@@ -1,4 +1,4 @@
-import { Connection } from 'typeorm';
+import { DataSource} from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 
 import { testConn } from '@src/test-utils/testConn';
@@ -6,15 +6,17 @@ import { gCall } from '@src/test-utils/gCall';
 import { LoginResponse } from '../generated/graphql';
 import { Role } from '@entity/generic/user';
 
-let conn: Connection;
+let conn: DataSource;
 beforeAll(async () => {
   conn = await testConn();
 });
 afterAll(async () => {
-  await conn.destroy();
+  if (conn.isInitialized) {
+    await conn.destroy();
+  }
 });
 
-const signUpArtisanMutation = `
+export const signUpArtisanMutation = `
 mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
     signUpArtisan(CreateArtisanInput: $createArtisanInput) {
       accessToken

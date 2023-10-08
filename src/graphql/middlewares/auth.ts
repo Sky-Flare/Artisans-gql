@@ -5,6 +5,7 @@ import { MyContext, Payload } from '@src/graphql/myContext';
 
 // create auth checker function
 export const authChecker: AuthChecker<MyContext> = ({ context }, roles) => {
+  console.log(context);
   const authorization = context.req.headers['authorization'];
   if (!authorization) {
     throw new Error('Not authenticated');
