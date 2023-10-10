@@ -9,7 +9,6 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-import { checkSiren } from '@repository/artisan';
 
 import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Siren } from '@entity/siren';
@@ -17,19 +16,35 @@ import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { ProductRepository } from '@repository/product';
-import { AppDataSource } from '@src/app-data-source';
+import { dataSource } from '@src/app-data-source';
 import { MyContext } from '@src/graphql/myContext';
-
-const ArtisanRepository = AppDataSource.getRepository(Artisan);
-const ShopRepository = AppDataSource.getRepository(Shop);
+import { SirenRepository } from '@repository/siren';
+import { ArtisanRepository } from '@repository/artisan';
+import { ShopRepository } from '@repository/shop';
 
 @Resolver(() => Artisan)
 @Service()
 export class ArtisanResolvers {
+  private readonly artisanRepository: ArtisanRepository;
+  private readonly sirenRepository: SirenRepository;
+  private readonly shopRepository: ShopRepository;
+  private readonly productRepository: ProductRepository;
+
+  public constructor(
+    artisanService: ArtisanRepository,
+    sirenService: SirenRepository,
+    productService: ProductRepository,
+    shopRepository: ShopRepository
+  ) {
+    this.artisanRepository = artisanService;
+    this.sirenRepository = sirenService;
+    this.productRepository = productService;
+    this.shopRepository = shopRepository;
+  }
   @FieldResolver()
   @Authorized()
   public async shops(@Root() artisan: Artisan): Promise<Shop[]> {
-    return await ShopRepository.find({
+    return await this.shopRepository.find({
       relations: {
         artisan: true
       },
@@ -44,7 +59,7 @@ export class ArtisanResolvers {
   @FieldResolver()
   @Authorized()
   public async products(@Root() artisan: Artisan): Promise<Product[]> {
-    return await ProductRepository.findProductsOfArtisan(artisan.id);
+    return await this.productRepository.findProductsOfArtisan(artisan.id);
   }
 
   @Query(() => [Artisan], {
@@ -53,7 +68,7 @@ export class ArtisanResolvers {
   })
   @Authorized()
   public async artisans(): Promise<Artisan[]> {
-    return await ArtisanRepository.find({});
+    return await this.artisanRepository.find({});
   }
 
   @Query(() => Artisan, { nullable: true, description: 'Return on artisan' })
@@ -61,7 +76,7 @@ export class ArtisanResolvers {
   public async artisan(
     @Arg('artisanId', { nullable: true }) artisanId?: number
   ): Promise<Artisan | null> {
-    return await ArtisanRepository.findOneBy({
+    return await this.artisanRepository.findOneBy({
       id: artisanId
     });
   }
@@ -69,7 +84,6 @@ export class ArtisanResolvers {
   @Query(() => Artisan, { nullable: true })
   @Authorized(Role.ARTISAN)
   async meArtisan(@Ctx() ctx: MyContext): Promise<Artisan | null> {
-    console.log(ctx);
     if (!ctx.payload?.userId) {
       return null;
     }
@@ -101,9 +115,11 @@ export class ArtisanResolvers {
       ) {
         throw new Error('Siren already use');
       }
-      await checkSiren(createArtisanInput.sirenNumber).catch(() => {
-        throw new Error('Siren not found');
-      });
+      await this.sirenRepository
+        .checkSiren(createArtisanInput.sirenNumber)
+        .catch(() => {
+          throw new Error('Siren not found');
+        });
     }
     Object.assign(artisan, createArtisanInput);
     await artisan.save();

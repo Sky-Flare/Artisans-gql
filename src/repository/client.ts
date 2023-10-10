@@ -1,4 +1,14 @@
 import { Client } from '@entity/client';
-import { AppDataSource } from '@src/app-data-source';
+import { Service } from 'typedi';
+import { DataSource, Repository } from 'typeorm';
 
-export const ClientRepository = AppDataSource.getRepository(Client).extend({});
+@Service()
+export class ClientRepository extends Repository<Client> {
+  private readonly sirenRepository: Repository<Client>;
+
+  public constructor(dataSource: DataSource) {
+    super(Client, dataSource.manager);
+
+    this.sirenRepository = dataSource.getRepository(Client);
+  }
+}

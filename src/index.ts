@@ -10,22 +10,28 @@ import createSchema from './graphql/schema';
 
 dotenv.config();
 
-import { AppDataSource } from './app-data-source';
-
-AppDataSource.initialize()
-  .then(() => {
-    // eslint-disable-next-line no-console
-    console.log('💿💿💿💿💿 Data Source has been initialized ! 💿💿💿💿💿 ');
-  })
-  .catch((err) => {
-    // eslint-disable-next-line no-console
-    console.error(
-      '😡💿😡💿😡💿Error during Data Source initialization 💿😡💿😡💿😡',
-      err
-    );
-  });
+import { dataSource } from './app-data-source';
+import { Container } from 'typedi';
+import { DataSource } from 'typeorm';
 
 const bootstrap = async () => {
+  await dataSource
+    .initialize()
+    .then(() => {
+      // eslint-disable-next-line no-console -- Okay in this context
+      console.log('Initializing data source....!');
+    })
+    .then(() => {
+      Container.set(DataSource, dataSource);
+    })
+    .then(() => {
+      // eslint-disable-next-line no-console -- Okay in this context
+      console.log('Data Source has been initialized!');
+    })
+    .catch((err) => {
+      // eslint-disable-next-line no-console -- Okay in this context
+      console.error('Error during Data Source initialization', err);
+    });
   try {
     const schema = await createSchema();
 

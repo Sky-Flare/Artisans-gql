@@ -1,16 +1,20 @@
+import 'dotenv/config';
 import { DataSource } from 'typeorm';
+import { entities } from '@src/config/entities';
 
-export const AppDataSource = new DataSource({
-  type: 'mysql',
-  host: 'localhost',
-  port: 3306,
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
+const dataSource = new DataSource({
   database: process.env.DB_NAME,
-  synchronize: true,
-  logger: 'advanced-console',
+  dropSchema: true,
+  entities: entities,
+  host: 'localhost',
   logging: 'all',
+  password: process.env.DB_PASSWORD,
+  port: 3306,
+  logger: 'advanced-console',
   cache: process.env.DB_DROP_SCHEMA !== 'true',
-  dropSchema: process.env.DB_DROP_SCHEMA === 'true',
-  entities: [__dirname + '/entities/*{.ts,.js}']
+  synchronize: true,
+  type: 'mysql',
+  username: process.env.DB_USERNAME
 });
+
+export { dataSource };

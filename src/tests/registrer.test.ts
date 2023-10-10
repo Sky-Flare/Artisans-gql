@@ -1,20 +1,18 @@
-import { DataSource} from 'typeorm';
+import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 
-import { testConn } from '@src/test-utils/testConn';
-import { gCall } from '@src/test-utils/gCall';
+import { gqlHelper } from '@src/test-utils/gCall';
 import { LoginResponse } from '../generated/graphql';
 import { Role } from '@entity/generic/user';
+import { initializeDataSource } from '@src/test-utils/dataSource';
+let dataSource: DataSource;
 
-let conn: DataSource;
-beforeAll(async () => {
-  conn = await testConn();
+beforeAll(async (): Promise<DataSource> => {
+  dataSource = await initializeDataSource();
+  return dataSource;
 });
-afterAll(async () => {
-  if (conn.isInitialized) {
-    await conn.destroy();
-  }
-});
+
+afterAll(async () => dataSource.destroy());
 
 export const signUpArtisanMutation = `
 mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
@@ -58,7 +56,7 @@ const client = {
 describe('Register', () => {
   describe('SignUpArtisan', () => {
     it('should create a artisan', async () => {
-      const response = (await gCall({
+      const response = (await gqlHelper({
         source: signUpArtisanMutation,
         variableValues: {
           createArtisanInput: artisan
@@ -70,7 +68,7 @@ describe('Register', () => {
       expect(response.data.signUpArtisan.accessToken).toBeDefined();
     });
     it('should throw an error if Siren is already used', async () => {
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signUpArtisanMutation,
         variableValues: {
           createArtisanInput: artisan
@@ -82,7 +80,7 @@ describe('Register', () => {
     });
     it('should throw an error artisan aready exist', async () => {
       artisan.sirenNumber = '350511945';
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signUpArtisanMutation,
         variableValues: {
           createArtisanInput: artisan
@@ -100,7 +98,7 @@ describe('Register', () => {
     });
     it('should throw an error if Siren is not found', async () => {
       artisan.sirenNumber = '123456789';
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signUpArtisanMutation,
         variableValues: {
           createArtisanInput: artisan
@@ -114,7 +112,7 @@ describe('Register', () => {
 
   describe('SignUpClient', () => {
     it('should create a client', async () => {
-      const response = (await gCall({
+      const response = (await gqlHelper({
         source: signUpClientMutation,
         variableValues: {
           createClientInput: client
@@ -126,7 +124,7 @@ describe('Register', () => {
       expect(response.data.signUpClient.accessToken).toBeDefined();
     });
     it('should throw an error if email is already used for client', async () => {
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signUpClientMutation,
         variableValues: {
           createClientInput: client
@@ -146,7 +144,7 @@ describe('Register', () => {
 
   describe('SignIn', () => {
     it('should authenticate a artisan with correct credentials', async () => {
-      const response = (await gCall({
+      const response = (await gqlHelper({
         source: signInMutation,
         variableValues: {
           connectUser: {
@@ -162,7 +160,7 @@ describe('Register', () => {
       expect(response.data.signIn.accessToken).toBeDefined();
     });
     it('should throw an error for incorrect credentials artisan', async () => {
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signInMutation,
         variableValues: {
           connectUser: {
@@ -183,7 +181,7 @@ describe('Register', () => {
       }
     });
     it('should authenticate a client with correct credentials', async () => {
-      const response = (await gCall({
+      const response = (await gqlHelper({
         source: signInMutation,
         variableValues: {
           connectUser: {
@@ -199,7 +197,7 @@ describe('Register', () => {
       expect(response.data.signIn.accessToken).toBeDefined();
     });
     it('should throw an error for unknown user', async () => {
-      const response = await gCall({
+      const response = await gqlHelper({
         source: signInMutation,
         variableValues: {
           connectUser: {

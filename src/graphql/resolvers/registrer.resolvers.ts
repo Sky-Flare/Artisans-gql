@@ -7,10 +7,10 @@ import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Client, CreateClientInput } from '@entity/client';
 import { ConnectUser, Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
-import { checkSiren } from '@repository/artisan';
+import { ArtisanRepository } from '@repository/artisan';
 import { GraphQLError } from 'graphql';
-import { AppDataSource } from '@src/app-data-source';
-import {authChecker} from "@gqlMiddlewares/auth";
+import { SirenRepository } from '@repository/siren';
+import { ClientRepository } from '@repository/client';
 
 @ObjectType()
 class LoginResponse {
@@ -18,18 +18,27 @@ class LoginResponse {
   accessToken!: string;
 }
 
-const SirenRepository = AppDataSource.getRepository(Siren);
-const ArtisanRepository = AppDataSource.getRepository(Artisan);
-const ClientRepository = AppDataSource.getRepository(Client);
-
 @Resolver()
 @Service()
 export class RegistrerResolvers {
+  private readonly artisanRepository: ArtisanRepository;
+  private readonly sirenRepository: SirenRepository;
+  private readonly clientRepository: ClientRepository;
+
+  public constructor(
+    artisanService: ArtisanRepository,
+    sirenService: SirenRepository,
+    clientRepository: ClientRepository
+  ) {
+    this.artisanRepository = artisanService;
+    this.sirenRepository = sirenService;
+    this.clientRepository = clientRepository;
+  }
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpArtisan(
     @Arg('CreateArtisanInput') createArtisanInput: CreateArtisanInput
   ): Promise<LoginResponse | null> {
-    const siren = SirenRepository.create({
+    const siren = this.sirenRepository.create({
       siren: createArtisanInput?.sirenNumber
     });
     if (
@@ -40,11 +49,13 @@ export class RegistrerResolvers {
       throw new Error('Siren already use');
     }
 
-    await checkSiren(createArtisanInput.sirenNumber).catch(() => {
-      throw new Error('Siren not found');
-    });
+    await this.sirenRepository
+      .checkSiren(createArtisanInput.sirenNumber)
+      .catch(() => {
+        throw new Error('Siren not found');
+      });
 
-    const artisan = ArtisanRepository.create({
+    const artisan = this.artisanRepository.create({
       lastName: createArtisanInput.lastName,
       firstName: createArtisanInput.firstName,
       email: createArtisanInput.email,
@@ -53,10 +64,11 @@ export class RegistrerResolvers {
       city: createArtisanInput.city,
       password: await hash(createArtisanInput.password, 13),
       role: Role.ARTISAN,
-      siren: await SirenRepository.save(siren)
+      siren: await this.sirenRepository.save(siren)
     });
 
-    return await ArtisanRepository.save(artisan)
+    return await this.artisanRepository
+      .save(artisan)
       .then(() => {
         return {
           accessToken: sign(
@@ -77,7 +89,7 @@ export class RegistrerResolvers {
   public async signUpClient(
     @Arg('CreateClientInput') createClientInput: CreateClientInput
   ): Promise<LoginResponse | null> {
-    const client = ClientRepository.create({
+    const client = this.clientRepository.create({
       lastName: createClientInput.lastName,
       firstName: createClientInput.firstName,
       email: createClientInput.email,
@@ -88,7 +100,8 @@ export class RegistrerResolvers {
       role: Role.CLIENT
     });
 
-    return await ClientRepository.save(client)
+    return await this.clientRepository
+      .save(client)
       .then(() => {
         return {
           accessToken: sign(
@@ -140,31 +153,4 @@ export class RegistrerResolvers {
       )
     };
   }
-//   describe('Auth Checker', () => {
-//   it('should throw an error if no authorization header', async () => {
-//   const response = (await gCall({
-//     source: signInMutation,
-//     variableValues: {
-//       connectUser: {
-//         email: client.email,
-//         password: client.password,
-//         role: Role.CLIENT
-//       }
-//     }
-//   })) as { data: { signIn: LoginResponse } };
-//   const mockContext = {
-//     req: {
-//       headers: {
-//         authorization: response.data.signIn.accessToken
-//       }
-//     },
-//     payload: {
-//       userId: '1',
-//       role: Role.ARTISAN
-//     }
-//   };
-//
-//   const result = authChecker(mockContext, [Role.ARTISAN]);
-//   expect(result).toBe(true);
-// });
 }

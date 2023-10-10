@@ -26,15 +26,44 @@ import { Category_shopRepository } from '@repository/category_shop';
 import { ClientRepository } from '@repository/client';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { AppDataSource } from '@src/app-data-source';
+import { dataSource } from '@src/app-data-source';
 import { MyContext } from '@src/graphql/myContext';
 import { HoraireShopRepository } from '@src/repository/horaire_shop';
-
-const SiretRepository = AppDataSource.getRepository(Siret);
+import { SirenRepository } from '@repository/siren';
+import SnapshotSerializerPlugin = jest.SnapshotSerializerPlugin;
+import { SiretRepository } from '@repository/siret';
 
 @Resolver(() => Shop)
 @Service()
 export class ShopResolvers implements ResolverInterface<Shop> {
+  private readonly artisanRepository: ArtisanRepository;
+  private readonly shopRepository: ShopRepository;
+  private readonly productRepository: ProductRepository;
+  private readonly category_productRepository: Category_productRepository;
+  private readonly clientRepository: ClientRepository;
+  private readonly category_shopRepository: Category_shopRepository;
+  private readonly horaire_shopRepository: HoraireShopRepository;
+  private readonly siretRepository: SiretRepository;
+
+  public constructor(
+    artisanRepository: ArtisanRepository,
+    productRepository: ProductRepository,
+    shopRepository: ShopRepository,
+    clientRepository: ClientRepository,
+    category_productRepository: Category_productRepository,
+    category_shopRepository: Category_shopRepository,
+    horaire_shopRepository: HoraireShopRepository,
+    siretRepository: SiretRepository
+  ) {
+    this.artisanRepository = artisanRepository;
+    this.productRepository = productRepository;
+    this.shopRepository = shopRepository;
+    this.clientRepository = clientRepository;
+    this.category_productRepository = category_productRepository;
+    this.category_shopRepository = category_shopRepository;
+    this.horaire_shopRepository = horaire_shopRepository;
+    this.siretRepository = siretRepository;
+  }
   @Query(() => [Shop], { nullable: true })
   @Authorized()
   public async shops(
@@ -45,22 +74,22 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     let zipCodeSearch = filtersInput?.zipcode;
     if (!zipCodeSearch) {
       if (ctx?.payload?.role === Role.ARTISAN) {
-        const me = await ArtisanRepository.findOneBy({
+        const me = await this.artisanRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
         zipCodeSearch = me?.zipCode;
       } else {
-        const me = await ClientRepository.findOneBy({
+        const me = await this.clientRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
         zipCodeSearch = me?.zipCode;
       }
     }
     if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
-      return ShopRepository.findByZipCode(zipCodeSearch);
+      return this.shopRepository.findByZipCode(zipCodeSearch);
     }
     if (zipCodeSearch && filtersInput?.categoriesIds) {
-      return ShopRepository.findByCategoriesShopWithZipCode(
+      return this.shopRepository.findByCategoriesShopWithZipCode(
         zipCodeSearch,
         filtersInput?.categoriesIds
       );
@@ -71,7 +100,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @FieldResolver()
   @Authorized()
   public async artisan(@Root() shop: Shop): Promise<Artisan> {
-    const artisan = await ArtisanRepository.findArtisanOfShop(shop.id);
+    const artisan = await this.artisanRepository.findArtisanOfShop(shop.id);
     if (!artisan) {
       throw new Error('Artisan not found');
     }
@@ -81,7 +110,9 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @FieldResolver({ description: 'All categories of a shop' })
   @Authorized()
   public async categoriesShops(@Root() shop: Shop): Promise<Category_shop[]> {
-    const catShop = await Category_shopRepository.findCategoryOfShop(shop.id);
+    const catShop = await this.category_shopRepository.findCategoryOfShop(
+      shop.id
+    );
     if (!catShop) {
       throw new Error('Category shop not found');
     }
@@ -93,7 +124,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   public async categoriesProducts(
     @Root() shop: Shop
   ): Promise<Category_product[] | undefined> {
-    return await Category_productRepository.findCategoriesProductByShop(
+    return await this.category_productRepository.findCategoriesProductByShop(
       shop.id
     );
   }
@@ -101,7 +132,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   @FieldResolver({ description: 'All products of a shop' })
   @Authorized()
   public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
-    return await ProductRepository.findProductsOfShop(shop.id);
+    return await this.productRepository.findProductsOfShop(shop.id);
   }
 
   @FieldResolver()
@@ -109,7 +140,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
   public async horaireShop(
     @Root() shop: Shop
   ): Promise<Horaire_shop[] | undefined> {
-    return await HoraireShopRepository.findHoraireOfShop(shop.id);
+    return await this.horaire_shopRepository.findHoraireOfShop(shop.id);
   }
 
   @Mutation(() => Shop, { nullable: true })
@@ -123,7 +154,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     })
     inputHoraireShop?: InputHoraireShop[]
   ): Promise<Shop | null> {
-    const artisan = await Artisan.findOne({
+    const artisan = await this.artisanRepository.findOne({
       relations: {
         siren: true
       },
@@ -142,7 +173,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       throw new Error('Category required');
     }
 
-    const categories = await Category_shopRepository.findByCategoriesIds(
+    const categories = await this.category_shopRepository.findByCategoriesIds(
       createShopInput?.categoriesIds
     );
 
@@ -150,7 +181,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       throw new Error('Category not found');
     }
 
-    const siret = SiretRepository.create({
+    const siret = this.siretRepository.create({
       siret: createShopInput.siretNumber
     });
 
@@ -180,20 +211,20 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     //     throw new Error(`${e}`);
     //   });
 
-    const shop = ShopRepository.create({
+    const shop = this.shopRepository.create({
       name: createShopInput.name,
       description: createShopInput.city,
       adress: createShopInput.adress,
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
       artisan: artisan,
-      siret: await SiretRepository.save(siret),
+      siret: await this.siretRepository.save(siret),
       categoriesShops: categories
     });
-    const shopSaved = await ShopRepository.save(shop);
+    const shopSaved = await this.shopRepository.save(shop);
 
     inputHoraireShop?.forEach((h) => {
-      const horaire = HoraireShopRepository.create({
+      const horaire = this.horaire_shopRepository.create({
         dayId: h.dayId,
         timeAmStart: h.timeAmStart,
         timeAmEnd: h.timeAmEnd,
@@ -201,7 +232,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
         timePmEnd: h.timePmEnd,
         shop: shopSaved
       });
-      HoraireShopRepository.save(horaire);
+      this.horaire_shopRepository.save(horaire);
     });
 
     return shop;
