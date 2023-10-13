@@ -34,7 +34,7 @@ export class CreateClientInput implements Partial<Client> {
   public email!: string;
 
   @Field()
-  public adress!: string;
+  public address!: string;
 
   @Field()
   public zipCode!: number;

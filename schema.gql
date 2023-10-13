@@ -9,7 +9,7 @@ enum ActionCart {
 }
 
 type Artisan {
-  adress: String!
+  address: String!
   city: String!
   createdAt: DateTime!
   email: String!
@@ -55,7 +55,7 @@ type Category_shop {
 }
 
 type Client {
-  adress: String!
+  address: String!
   cart: [Cart!]
   city: String!
   createdAt: DateTime!
@@ -75,7 +75,7 @@ input ConnectUser {
 
 """New artisan data"""
 input CreateArtisanInput {
-  adress: String!
+  address: String!
   city: String!
   email: String!
   firstName: String!
@@ -87,7 +87,7 @@ input CreateArtisanInput {
 
 """New client data"""
 input CreateClientInput {
-  adress: String!
+  address: String!
   city: String!
   email: String!
   firstName: String!
@@ -108,7 +108,7 @@ input CreateProductInput {
 
 """New shop data"""
 input CreateShopInput {
-  adress: String!
+  address: String!
   categoriesIds: [Float!]!
   city: String!
   description: String!
@@ -207,7 +207,7 @@ enum Role {
 }
 
 type Shop {
-  adress: String!
+  address: String!
   artisan: Artisan!
   categoriesProducts: [Category_product!]
   categoriesShops: [Category_shop!]!
@@ -230,7 +230,7 @@ input UpdateCart {
 }
 
 type User {
-  adress: String!
+  address: String!
   city: String!
   createdAt: DateTime!
   email: String!

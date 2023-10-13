@@ -201,7 +201,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     //     }
     //     if (
     //       Number(
-    //         res.data.etablissement.adresseEtablissement.codePostalEtablissement
+    //         res.data.etablissement.addresseEtablissement.codePostalEtablissement
     //       ) !== createShopInput.zipCode
     //     ) {
     //       throw new Error('not good zip code');
@@ -214,7 +214,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     const shop = this.shopRepository.create({
       name: createShopInput.name,
       description: createShopInput.city,
-      adress: createShopInput.adress,
+      address: createShopInput.address,
       zipCode: createShopInput.zipCode,
       city: createShopInput.city,
       artisan: artisan,

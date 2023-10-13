@@ -37,7 +37,7 @@ export class User extends BaseEntity {
 
   @Field()
   @Column({ type: 'varchar' })
-  public adress!: string;
+  public address!: string;
 
   @Field()
   @Column({ type: 'integer' })

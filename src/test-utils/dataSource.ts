@@ -9,17 +9,17 @@ const testDataSource = (refreshDb = false): DataSource =>
     dropSchema: refreshDb,
     entities: entities,
     host: 'localhost',
-    logging: 'all',
+    logging: false,
     password: process.env.DB_PASSWORD,
     port: 3306,
-    cache: process.env.DB_DROP_SCHEMA !== 'true',
+    cache: false,
     synchronize: refreshDb,
     type: 'mysql',
     username: process.env.DB_USERNAME
   });
 
 const initializeDataSource = async (): Promise<DataSource> => {
-  const dataSource = testDataSource(false);
+  const dataSource = testDataSource(true);
 
   // Initialize the data source and store it in the container. Required for the dependency injection.
   await dataSource

@@ -39,11 +39,16 @@ import type { GraphQLArgs } from 'graphql/graphql';
 
 const gqlHelper = async ({
   source,
-  variableValues
-}: Pick<GraphQLArgs, 'source' | 'variableValues'>): Promise<ExecutionResult> =>
+  variableValues,
+  contextValue
+}: Pick<
+  GraphQLArgs,
+  'source' | 'variableValues' | 'contextValue'
+>): Promise<ExecutionResult> =>
   graphql({
     schema: await createSchema(),
     source,
-    variableValues
+    variableValues,
+    contextValue
   });
 export { gqlHelper };
