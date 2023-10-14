@@ -16,7 +16,6 @@ import { Role } from '@entity/generic/user';
 import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { ProductRepository } from '@repository/product';
-import { dataSource } from '@src/app-data-source';
 import { MyContext } from '@src/graphql/myContext';
 import { SirenRepository } from '@repository/siren';
 import { ArtisanRepository } from '@repository/artisan';

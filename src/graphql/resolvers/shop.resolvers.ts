@@ -19,18 +19,14 @@ import { Role } from '@entity/generic/user';
 import { InputHoraireShop } from '@entity/horaire_shop';
 import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
-import { Siret } from '@entity/siret';
 import { ArtisanRepository } from '@repository/artisan';
 import { Category_productRepository } from '@repository/category_product';
 import { Category_shopRepository } from '@repository/category_shop';
 import { ClientRepository } from '@repository/client';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
-import { dataSource } from '@src/app-data-source';
 import { MyContext } from '@src/graphql/myContext';
 import { HoraireShopRepository } from '@src/repository/horaire_shop';
-import { SirenRepository } from '@repository/siren';
-import SnapshotSerializerPlugin = jest.SnapshotSerializerPlugin;
 import { SiretRepository } from '@repository/siret';
 
 @Resolver(() => Shop)

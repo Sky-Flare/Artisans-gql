@@ -1,15 +1,10 @@
 import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/test-utils/gCall';
-import { Artisan, Category_Shop, Days } from '../generated/graphql';
+import { Days } from '../generated/graphql';
 import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/test-utils/dataSource';
-import { meArtisanQuery } from '@src/tests/queries/artisanQueries';
 import { createArtisan, singIn } from '@src/test-utils/helpers/registrer';
-import {
-  deleteArtisanMutation,
-  updateArtisanMutation
-} from '@src/tests/mutations/artisanMutations';
 import { createShopMutation } from '@src/tests/mutations/shopMutations';
 import { createCategoryShopMutation } from '@src/tests/mutations/category_shopMutations';
 

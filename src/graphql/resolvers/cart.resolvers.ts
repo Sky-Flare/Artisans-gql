@@ -3,13 +3,8 @@ import { Service } from 'typedi';
 import { ActionCart, UpdateCart } from '@entity/cart';
 
 import { Cart } from '@entity/cart';
-import { Client } from '@entity/client';
 import { Role } from '@entity/generic/user';
-import { Product } from '@entity/product';
 import { MyContext } from '@src/graphql/myContext';
-import { ArtisanRepository } from '@repository/artisan';
-import { SirenRepository } from '@repository/siren';
-import { ShopRepository } from '@repository/shop';
 import { ProductRepository } from '@repository/product';
 import { CartRepository } from '@repository/cart';
 import { ClientRepository } from '@repository/client';

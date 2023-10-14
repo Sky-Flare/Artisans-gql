@@ -3,8 +3,7 @@ import {
   signUpArtisanMutation,
   signUpClientMutation
 } from '@src/tests/mutations/registrersMutations';
-import { fakerFR as faker } from '@faker-js/faker';
-import { ConnectUser, Role } from '@entity/generic/user';
+import { ConnectUser } from '@entity/generic/user';
 import { LoginResponse } from '@src/generated/graphql';
 
 type ArtisanFaker = {

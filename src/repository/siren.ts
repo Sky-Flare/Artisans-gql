@@ -1,4 +1,3 @@
-import { Artisan } from '@entity/artisan';
 import axios from 'axios';
 import { Service } from 'typedi';
 import { DataSource, Repository } from 'typeorm';

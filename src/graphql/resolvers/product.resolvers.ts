@@ -8,8 +8,6 @@ import {
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
-
-import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Role } from '@entity/generic/user';
 import { CreateProductInput, Product } from '@entity/product';
@@ -19,7 +17,6 @@ import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
 import { MyContext } from '@src/graphql/myContext';
 import { ArtisanRepository } from '@repository/artisan';
-import { SirenRepository } from '@repository/siren';
 
 @Resolver(() => Product)
 @Service()
