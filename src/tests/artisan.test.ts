@@ -38,7 +38,7 @@ const artisanFaker = {
 
 afterAll(async () => dataSource.destroy());
 describe('Artisan', () => {
-  describe('Me artisan query', () => {
+  describe('meArtisan query', () => {
     it('Should return me artisan', async () => {
       const meArtisanResponse = (await gqlHelper({
         source: meArtisanQuery,
@@ -49,6 +49,8 @@ describe('Artisan', () => {
       expect(meArtisanResponse.data.meArtisan).toBeDefined();
       expect(meArtisanResponse.data.meArtisan.email).toBe(artisanFaker.email);
     });
+  });
+  describe('updateArtisan mutation', () => {
     it('Should update me artisan', async () => {
       artisanFaker.lastName = 'new last name';
       const updateArtisanResponse = (await gqlHelper({
@@ -65,6 +67,8 @@ describe('Artisan', () => {
         'new last name'
       );
     });
+  });
+  describe('deleteArtisan mutation', () => {
     it('Should delete artisan', async () => {
       const deleteArtisanResponse = (await gqlHelper({
         source: deleteArtisanMutation,

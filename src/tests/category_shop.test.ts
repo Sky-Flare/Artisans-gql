@@ -38,51 +38,55 @@ const artisanFaker = {
 
 afterAll(async () => dataSource.destroy());
 describe('Category_shop', () => {
-  it('Should create a category_shop', async () => {
-    const imgUrl = faker.image.url();
-    const creatCategoryShopResponse = (await gqlHelper({
-      source: createCategoryShopMutation,
-      variableValues: {
-        categoryShopInput: {
-          name: 'Boulangerie',
-          picture: imgUrl
-        }
-      },
-      contextValue: token
-    })) as { data: { createCategoryShop: Partial<Category_Shop> } };
-    expect(creatCategoryShopResponse.data.createCategoryShop.name).toBe(
-      'Boulangerie'
-    );
-    expect(creatCategoryShopResponse.data.createCategoryShop.picture).toBe(
-      imgUrl
-    );
-  });
-  it('should return all categories shop', async () => {
-    const categoriesShopResponse = (await gqlHelper({
-      source: categoriesShopQuery,
-      contextValue: token
-    })) as { data: { categories_shop: Category_Shop[] } };
-    expect(categoriesShopResponse.data.categories_shop.length).toBe(1);
-    expect(categoriesShopResponse.data.categories_shop[0].name).toBe(
-      'Boulangerie'
-    );
-    await gqlHelper({
-      source: createCategoryShopMutation,
-      variableValues: {
-        categoryShopInput: {
-          name: 'Patisserie',
-          picture: faker.image.url()
-        }
-      },
-      contextValue: token
+  describe('createCategoryShop mutation', () => {
+    it('Should create a category_shop', async () => {
+      const imgUrl = faker.image.url();
+      const creatCategoryShopResponse = (await gqlHelper({
+        source: createCategoryShopMutation,
+        variableValues: {
+          categoryShopInput: {
+            name: 'Boulangerie',
+            picture: imgUrl
+          }
+        },
+        contextValue: token
+      })) as { data: { createCategoryShop: Partial<Category_Shop> } };
+      expect(creatCategoryShopResponse.data.createCategoryShop.name).toBe(
+        'Boulangerie'
+      );
+      expect(creatCategoryShopResponse.data.createCategoryShop.picture).toBe(
+        imgUrl
+      );
     });
-    const categoriesShopResponseTwo = (await gqlHelper({
-      source: categoriesShopQuery,
-      contextValue: token
-    })) as { data: { categories_shop: Category_Shop[] } };
-    expect(categoriesShopResponseTwo.data.categories_shop.length).toBe(2);
-    expect(categoriesShopResponseTwo.data.categories_shop[1].name).toBe(
-      'Patisserie'
-    );
+  });
+  describe('categories_shop query', () => {
+    it('should return all categories shop', async () => {
+      const categoriesShopResponse = (await gqlHelper({
+        source: categoriesShopQuery,
+        contextValue: token
+      })) as { data: { categories_shop: Category_Shop[] } };
+      expect(categoriesShopResponse.data.categories_shop.length).toBe(1);
+      expect(categoriesShopResponse.data.categories_shop[0].name).toBe(
+        'Boulangerie'
+      );
+      await gqlHelper({
+        source: createCategoryShopMutation,
+        variableValues: {
+          categoryShopInput: {
+            name: 'Patisserie',
+            picture: faker.image.url()
+          }
+        },
+        contextValue: token
+      });
+      const categoriesShopResponseTwo = (await gqlHelper({
+        source: categoriesShopQuery,
+        contextValue: token
+      })) as { data: { categories_shop: Category_Shop[] } };
+      expect(categoriesShopResponseTwo.data.categories_shop.length).toBe(2);
+      expect(categoriesShopResponseTwo.data.categories_shop[1].name).toBe(
+        'Patisserie'
+      );
+    });
   });
 });

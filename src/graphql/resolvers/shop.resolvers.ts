@@ -223,17 +223,22 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     });
     const shopSaved = await this.shopRepository.save(shop);
 
-    inputHoraireShop?.forEach((h) => {
-      const horaire = this.horaire_shopRepository.create({
-        dayId: h.dayId,
-        timeAmStart: h.timeAmStart,
-        timeAmEnd: h.timeAmEnd,
-        timePmStart: h.timePmStart,
-        timePmEnd: h.timePmEnd,
-        shop: shopSaved
-      });
-      this.horaire_shopRepository.save(horaire);
-    });
+    if (inputHoraireShop) {
+      await Promise.all(
+        inputHoraireShop.map((h) => {
+          return this.horaire_shopRepository.save(
+            this.horaire_shopRepository.create({
+              dayId: h.dayId,
+              timeAmStart: h.timeAmStart,
+              timeAmEnd: h.timeAmEnd,
+              timePmStart: h.timePmStart,
+              timePmEnd: h.timePmEnd,
+              shop: shopSaved
+            })
+          );
+        })
+      );
+    }
 
     return shop;
   }

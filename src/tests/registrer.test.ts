@@ -38,7 +38,7 @@ const clientFaker = {
 };
 
 describe('Register', () => {
-  describe('SignUpArtisan', () => {
+  describe('signUpArtisan mutation', () => {
     it('should create a artisan', async () => {
       const { response } = await createArtisan(artisanFaker);
       expect(response).toBeDefined();
@@ -74,7 +74,7 @@ describe('Register', () => {
     });
   });
 
-  describe('SignUpClient', () => {
+  describe('signUpClient mutation', () => {
     it('should create a client', async () => {
       const { response } = await createClient(clientFaker);
       expect(response).toBeDefined();
@@ -96,7 +96,7 @@ describe('Register', () => {
     });
   });
 
-  describe('SignIn', () => {
+  describe('signIn mutation', () => {
     it('should authenticate a artisan with correct credentials', async () => {
       const { response } = await singIn({
         email: artisanFaker.email,
