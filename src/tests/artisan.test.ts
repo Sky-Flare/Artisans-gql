@@ -65,7 +65,7 @@ describe('Artisan', () => {
         'new last name'
       );
     });
-    it('should delete artisan', async () => {
+    it('Should delete artisan', async () => {
       const deleteArtisanResponse = (await gqlHelper({
         source: deleteArtisanMutation,
         contextValue: token
