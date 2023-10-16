@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 import { Role } from '@entity/generic/user';
-import { initializeDataSource } from '@src/test-utils/dataSource';
+import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
   singIn
-} from '@src/test-utils/helpers/registrer';
+} from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
 
@@ -36,15 +36,14 @@ const clientFaker = {
   city: faker.location.city(),
   password: faker.internet.password()
 };
-
 describe('Register', () => {
   describe('signUpArtisan mutation', () => {
     it('should create a artisan', async () => {
       const { response } = await createArtisan(artisanFaker);
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
-      expect(response.data.signUpArtisan).toBeDefined();
-      expect(response.data.signUpArtisan.accessToken).toBeDefined();
+      expect(response.data?.signUpArtisan).toBeDefined();
+      expect(response.data?.signUpArtisan?.accessToken).toBeDefined();
     });
     it('should throw an error if Siren is already used', async () => {
       const { response } = await createArtisan(artisanFaker);
@@ -79,8 +78,8 @@ describe('Register', () => {
       const { response } = await createClient(clientFaker);
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
-      expect(response.data.signUpClient).toBeDefined();
-      expect(response.data.signUpClient.accessToken).toBeDefined();
+      expect(response.data?.signUpClient).toBeDefined();
+      expect(response.data?.signUpClient?.accessToken).toBeDefined();
     });
     it('should throw an error if email is already used for client', async () => {
       const { response } = await createClient(clientFaker);
@@ -105,8 +104,8 @@ describe('Register', () => {
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
-      expect(response.data.signIn).toBeDefined();
-      expect(response.data.signIn.accessToken).toBeDefined();
+      expect(response.data?.signIn).toBeDefined();
+      expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for incorrect credentials artisan', async () => {
       const { response } = await singIn({
@@ -131,8 +130,8 @@ describe('Register', () => {
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
-      expect(response.data.signIn).toBeDefined();
-      expect(response.data.signIn.accessToken).toBeDefined();
+      expect(response.data?.signIn).toBeDefined();
+      expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for unknown user', async () => {
       const { response } = await singIn({

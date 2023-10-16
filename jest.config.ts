@@ -8,6 +8,7 @@ const jestConfig: JestConfigWithTsJest = {
     '^.+\\.(ts|tsx)$': 'ts-jest'
   },
   verbose: true,
+  testMatch: ['**/*.test.ts'],
   collectCoverageFrom: [
     './src/graphql/**/*.ts',
     './src/graphql/**/**/*.ts',

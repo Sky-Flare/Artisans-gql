@@ -1,15 +1,17 @@
 import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
-import { gqlHelper } from '@src/test-utils/gCall';
-import { Artisan } from '../generated/graphql';
-import { Role } from '@entity/generic/user';
-import { initializeDataSource } from '@src/test-utils/dataSource';
-import { meArtisanQuery } from '@src/tests/queries/artisanQueries';
-import { createArtisan, singIn } from '@src/test-utils/helpers/registrer';
+import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
-  deleteArtisanMutation,
-  updateArtisanMutation
-} from '@src/tests/mutations/artisanMutations';
+  DeleteArtisanDocument,
+  DeleteArtisanMutation,
+  MeArtisanDocument,
+  MeArtisanQuery,
+  UpdateArtisanDocument,
+  UpdateArtisanMutation
+} from '../../generated/graphql';
+import { Role } from '@entity/generic/user';
+import { initializeDataSource } from '@src/__tests__/config/dataSource';
+import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
 let token = '';
@@ -21,7 +23,7 @@ beforeAll(async (): Promise<DataSource> => {
     password: artisanFaker.password,
     role: Role.ARTISAN
   });
-  token = response.data.signIn.accessToken;
+  token = response.data?.signIn?.accessToken ?? '';
   return dataSource;
 });
 
@@ -40,46 +42,46 @@ afterAll(async () => dataSource.destroy());
 describe('Artisan', () => {
   describe('meArtisan query', () => {
     it('Should return me artisan', async () => {
-      const meArtisanResponse = (await gqlHelper({
-        source: meArtisanQuery,
+      const meArtisanResponse = await gqlHelper<MeArtisanQuery>({
+        source: MeArtisanDocument,
         contextValue: token
-      })) as { data: { meArtisan: Artisan } };
+      });
       expect(meArtisanResponse).toBeDefined();
       expect(meArtisanResponse.data).toBeDefined();
-      expect(meArtisanResponse.data.meArtisan).toBeDefined();
-      expect(meArtisanResponse.data.meArtisan.email).toBe(artisanFaker.email);
+      expect(meArtisanResponse.data?.meArtisan).toBeDefined();
+      expect(meArtisanResponse.data?.meArtisan?.email).toBe(artisanFaker.email);
     });
   });
   describe('updateArtisan mutation', () => {
     it('Should update me artisan', async () => {
       artisanFaker.lastName = 'new last name';
-      const updateArtisanResponse = (await gqlHelper({
-        source: updateArtisanMutation,
+      const updateArtisanResponse = await gqlHelper<UpdateArtisanMutation>({
+        source: UpdateArtisanDocument,
         variableValues: {
           createArtisanInput: artisanFaker
         },
         contextValue: token
-      })) as { data: { updateArtisan: { lastName: string } } };
+      });
       expect(updateArtisanResponse).toBeDefined();
       expect(updateArtisanResponse.data).toBeDefined();
-      expect(updateArtisanResponse.data.updateArtisan.lastName).toBeDefined();
-      expect(updateArtisanResponse.data.updateArtisan.lastName).toBe(
+      expect(updateArtisanResponse.data?.updateArtisan.lastName).toBeDefined();
+      expect(updateArtisanResponse.data?.updateArtisan.lastName).toBe(
         'new last name'
       );
     });
   });
   describe('deleteArtisan mutation', () => {
     it('Should delete artisan', async () => {
-      const deleteArtisanResponse = (await gqlHelper({
-        source: deleteArtisanMutation,
+      const deleteArtisanResponse = await gqlHelper<DeleteArtisanMutation>({
+        source: DeleteArtisanDocument,
         contextValue: token
-      })) as { data: { deleteArtisan: boolean } };
-      expect(deleteArtisanResponse.data.deleteArtisan).toBeTruthy();
-      const meArtisanResponse = (await gqlHelper({
-        source: meArtisanQuery,
+      });
+      expect(deleteArtisanResponse.data?.deleteArtisan).toBeTruthy();
+      const meArtisanResponse = await gqlHelper<MeArtisanQuery>({
+        source: MeArtisanDocument,
         contextValue: token
-      })) as { data: { meArtisan: Artisan } };
-      expect(meArtisanResponse.data.meArtisan).toBeDefined();
+      });
+      expect(meArtisanResponse.data?.meArtisan).toBeDefined();
     });
   });
 });

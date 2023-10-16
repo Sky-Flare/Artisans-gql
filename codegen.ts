@@ -1,15 +1,21 @@
-
 import type { CodegenConfig } from '@graphql-codegen/cli';
 
 const config: CodegenConfig = {
   overwrite: true,
-  schema: "./schema.gql",
+  schema: './schema.gql',
   generates: {
-    "src/generated/graphql.ts": {
-      plugins: ["typescript", "typescript-resolvers"]
+    'src/generated/graphql.ts': {
+      documents: 'src/**/*.graphql',
+      plugins: [
+        'typescript',
+        'typescript-resolvers',
+        'typescript-graphql-request',
+        'typescript-operations'
+      ],
+      config: { entireFieldWrapperValue: true }
     },
-    "./graphql.schema.json": {
-      plugins: ["introspection"]
+    './graphql.schema.json': {
+      plugins: ['introspection']
     }
   }
 };

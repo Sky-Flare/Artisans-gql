@@ -1,19 +1,18 @@
 import createSchema from '@src/graphql/schema';
-import { graphql } from 'graphql';
+import { DocumentNode, graphql } from 'graphql';
 import type { ExecutionResult } from 'graphql/execution/execute';
 import type { GraphQLArgs } from 'graphql/graphql';
 
-const gqlHelper = async ({
+const gqlHelper = async <TData>({
   source,
   variableValues,
   contextValue
-}: Pick<
-  GraphQLArgs,
-  'source' | 'variableValues' | 'contextValue'
->): Promise<ExecutionResult> =>
-  graphql({
+}: Pick<GraphQLArgs, 'variableValues' | 'contextValue'> & {
+  source: DocumentNode;
+}): Promise<ExecutionResult<TData>> =>
+  (await graphql({
     schema: await createSchema(),
-    source,
+    source: source.loc?.source.body ?? '',
     variableValues,
     contextValue: {
       req: {
@@ -22,5 +21,5 @@ const gqlHelper = async ({
         }
       }
     }
-  });
+  })) as ExecutionResult<TData>;
 export { gqlHelper };

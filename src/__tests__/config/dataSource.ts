@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
 import { Container } from 'typedi';
-import { entities } from '@src/config/entities';
+import { entities } from '@entity/config/entities';
 
 const testDataSource = (refreshDb = false): DataSource =>
   new DataSource({

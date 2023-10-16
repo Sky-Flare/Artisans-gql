@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import { DataSource } from 'typeorm';
-import { entities } from '@src/config/entities';
+import { entities } from '@entity/config/entities';
 
 const dataSource = new DataSource({
   database: process.env.DB_NAME,

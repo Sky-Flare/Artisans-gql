@@ -1,6 +1,12 @@
-export const createShopMutation = `
+query Shops($filtersInput: GetShopCatIdsAndZipCode) {
+  shops(filtersInput: $filtersInput) {
+    name
+    zipCode
+  }
+}
+
 mutation CreateShop($createShopInput: CreateShopInput!, $inputHoraireShop: [InputHoraireShop!]) {
   createShop(CreateShopInput: $createShopInput, InputHoraireShop: $inputHoraireShop) {
     name
   }
-}`;
+}

@@ -1,0 +1,13 @@
+mutation CreateCategoryShop($categoryShopInput: CategoryShopInput!) {
+    createCategoryShop(CategoryShopInput: $categoryShopInput) {
+        name
+        picture
+    }
+}
+
+query CategoriesShop {
+    categories_shop {
+        name
+        picture
+    }
+}

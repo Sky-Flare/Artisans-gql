@@ -1,0 +1,17 @@
+mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
+    signUpArtisan(CreateArtisanInput: $createArtisanInput) {
+        accessToken
+    }
+}
+
+mutation SignUpClient($createClientInput: CreateClientInput!) {
+    signUpClient(CreateClientInput: $createClientInput) {
+        accessToken
+    }
+}
+
+mutation SignIn($connectUser: ConnectUser!) {
+    signIn(ConnectUser: $connectUser) {
+        accessToken
+    }
+}

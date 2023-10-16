@@ -1,10 +1,13 @@
-import { gqlHelper } from '@src/test-utils/gCall';
-import {
-  signUpArtisanMutation,
-  signUpClientMutation
-} from '@src/tests/mutations/registrersMutations';
+import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import { ConnectUser } from '@entity/generic/user';
-import { LoginResponse } from '@src/generated/graphql';
+import {
+  SignInDocument,
+  SignInMutation,
+  SignUpArtisanDocument,
+  SignUpArtisanMutation,
+  SignUpClientDocument,
+  SignUpClientMutation
+} from '@src/generated/graphql';
 
 type ArtisanFaker = {
   lastName: string;
@@ -28,38 +31,28 @@ type ClientFaker = {
 };
 
 export async function createArtisan(artisan: ArtisanFaker) {
-  const response = (await gqlHelper({
-    source: signUpArtisanMutation,
+  const response = await gqlHelper<SignUpArtisanMutation>({
+    source: SignUpArtisanDocument,
     variableValues: {
       createArtisanInput: artisan
     }
-  })) as {
-    data: { signUpArtisan: LoginResponse };
-    errors?: [{ message: string }];
-  };
+  });
   return { response, artisan };
 }
 
 export async function createClient(client: ClientFaker) {
-  const response = (await gqlHelper({
-    source: signUpClientMutation,
+  const response = await gqlHelper<SignUpClientMutation>({
+    source: SignUpClientDocument,
     variableValues: {
       createClientInput: client
     }
-  })) as {
-    data: { signUpClient: LoginResponse };
-    errors?: [{ message: string }];
-  };
+  });
   return { response, client };
 }
 
 export async function singIn(data: ConnectUser) {
-  const response = (await gqlHelper({
-    source: `mutation SingIn($connectUser: ConnectUser!) {
-                     signIn(ConnectUser: $connectUser) {
-                        accessToken
-                     }
-                }`,
+  const response = await gqlHelper<SignInMutation>({
+    source: SignInDocument,
     variableValues: {
       connectUser: {
         email: data.email,
@@ -67,6 +60,6 @@ export async function singIn(data: ConnectUser) {
         role: data.role
       }
     }
-  })) as { data: { signIn: LoginResponse }; errors?: [{ message: string }] };
+  });
   return { response };
 }
