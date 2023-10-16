@@ -73,7 +73,7 @@ export class ArtisanResolvers {
   @Query(() => Artisan, { nullable: true, description: 'Return on artisan' })
   @Authorized()
   public async artisan(
-    @Arg('artisanId', { nullable: true }) artisanId?: number
+    @Arg('artisanId') artisanId: number
   ): Promise<Artisan | null> {
     return await this.artisanRepository.findOneBy({
       id: artisanId

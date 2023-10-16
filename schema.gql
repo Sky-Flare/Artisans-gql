@@ -136,8 +136,8 @@ enum Days {
 input GetShopCatIdsAndZipCode {
   categoriesIds: [Float!]
 
-  """if null: zipCode user"""
-  zipcode: Float
+  """if null use zipCode user"""
+  zipcode: [Float!]
 }
 
 type Horaire_shop {
@@ -188,7 +188,7 @@ type Product {
 
 type Query {
   """Return on artisan"""
-  artisan(artisanId: Float): Artisan
+  artisan(artisanId: Float!): Artisan
 
   """Return all artisans"""
   artisans: [Artisan!]

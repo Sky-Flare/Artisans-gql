@@ -153,8 +153,8 @@ export enum Days {
 /** Get shops by categories id & zip code  */
 export type GetShopCatIdsAndZipCode = {
   categoriesIds?: InputMaybe<Array<Scalars['Float']['input']>>;
-  /** if null: zipCode user */
-  zipcode?: InputMaybe<Scalars['Float']['input']>;
+  /** if null use zipCode user */
+  zipcode?: InputMaybe<Array<Scalars['Float']['input']>>;
 };
 
 export type Horaire_Shop = {
@@ -274,7 +274,7 @@ export type Query = {
 
 
 export type QueryArtisanArgs = {
-  artisanId?: InputMaybe<Scalars['Float']['input']>;
+  artisanId: Scalars['Float']['input'];
 };
 
 
@@ -559,7 +559,7 @@ export type ProductResolvers<ContextType = any, ParentType extends ResolversPare
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  artisan?: Resolver<Maybe<ResolversTypes['Artisan']>, ParentType, ContextType, Partial<QueryArtisanArgs>>;
+  artisan?: Resolver<Maybe<ResolversTypes['Artisan']>, ParentType, ContextType, RequireFields<QueryArtisanArgs, 'artisanId'>>;
   artisans?: Resolver<Maybe<Array<ResolversTypes['Artisan']>>, ParentType, ContextType>;
   categories_productByShop?: Resolver<Array<ResolversTypes['Category_product']>, ParentType, ContextType, RequireFields<QueryCategories_ProductByShopArgs, 'shopId'>>;
   categories_shop?: Resolver<Array<ResolversTypes['Category_shop']>, ParentType, ContextType>;
@@ -633,6 +633,20 @@ export const MeArtisanDocument = gql`
   }
 }
     `;
+export const ArtisanDocument = gql`
+    query Artisan($artisanId: Float!) {
+  artisan(artisanId: $artisanId) {
+    lastName
+  }
+}
+    `;
+export const ArtisansDocument = gql`
+    query Artisans {
+  artisans {
+    firstName
+  }
+}
+    `;
 export const UpdateArtisanDocument = gql`
     mutation UpdateArtisan($createArtisanInput: CreateArtisanInput!) {
   updateArtisan(CreateArtisanInput: $createArtisanInput) {
@@ -683,8 +697,8 @@ export const SignInDocument = gql`
 }
     `;
 export const ShopsDocument = gql`
-    query Shops($filtersInput: GetShopCatIdsAndZipCode) {
-  shops(filtersInput: $filtersInput) {
+    query Shops($shopsFiltersInput: GetShopCatIdsAndZipCode) {
+  shops(filtersInput: $shopsFiltersInput) {
     name
     zipCode
   }
@@ -710,6 +724,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
   return {
     MeArtisan(variables?: MeArtisanQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeArtisanQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<MeArtisanQuery>(MeArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeArtisan', 'query');
+    },
+    Artisan(variables: ArtisanQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ArtisanQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ArtisanQuery>(ArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisan', 'query');
+    },
+    Artisans(variables?: ArtisansQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ArtisansQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ArtisansQuery>(ArtisansDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisans', 'query');
     },
     UpdateArtisan(variables: UpdateArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateArtisanMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<UpdateArtisanMutation>(UpdateArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateArtisan', 'mutation');
@@ -745,6 +765,18 @@ export type MeArtisanQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeArtisanQuery = { __typename?: 'Query', meArtisan?: { __typename?: 'Artisan', address: string, city: string, createdAt: any, email: string, firstName: string, id: number, lastName: string, updatedAt: any, zipCode: number } | null };
+
+export type ArtisanQueryVariables = Exact<{
+  artisanId: Scalars['Float']['input'];
+}>;
+
+
+export type ArtisanQuery = { __typename?: 'Query', artisan?: { __typename?: 'Artisan', lastName: string } | null };
+
+export type ArtisansQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type ArtisansQuery = { __typename?: 'Query', artisans?: Array<{ __typename?: 'Artisan', firstName: string }> | null };
 
 export type UpdateArtisanMutationVariables = Exact<{
   createArtisanInput: CreateArtisanInput;
@@ -792,7 +824,7 @@ export type SignInMutationVariables = Exact<{
 export type SignInMutation = { __typename?: 'Mutation', signIn?: { __typename?: 'LoginResponse', accessToken: string } | null };
 
 export type ShopsQueryVariables = Exact<{
-  filtersInput?: InputMaybe<GetShopCatIdsAndZipCode>;
+  shopsFiltersInput?: InputMaybe<GetShopCatIdsAndZipCode>;
 }>;
 
 

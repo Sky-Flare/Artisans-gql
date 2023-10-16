@@ -3,13 +3,17 @@ import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
   CreateCategoryShopDocument,
+  CreateCategoryShopMutation,
+  CreateCategoryShopMutationVariables,
   CreateShopDocument,
   CreateShopMutation,
+  CreateShopMutationVariables,
   Days,
+  Role,
   ShopsDocument,
-  ShopsQuery
+  ShopsQuery,
+  ShopsQueryVariables
 } from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
@@ -26,14 +30,30 @@ beforeAll(async (): Promise<DataSource> => {
   const { response } = await singIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
-  await gqlHelper<CreateShopMutation>({
+  await gqlHelper<
+    CreateCategoryShopMutation,
+    CreateCategoryShopMutationVariables
+  >({
     source: CreateCategoryShopDocument,
     variableValues: {
       categoryShopInput: {
         name: 'Boulangerie',
+        picture: faker.image.url()
+      }
+    },
+    contextValue: token
+  });
+  await gqlHelper<
+    CreateCategoryShopMutation,
+    CreateCategoryShopMutationVariables
+  >({
+    source: CreateCategoryShopDocument,
+    variableValues: {
+      categoryShopInput: {
+        name: 'Patisserie',
         picture: faker.image.url()
       }
     },
@@ -88,20 +108,26 @@ const inputHoraireShop = [
 });
 describe('Shop', () => {
   describe('createShop mutation', () => {
-    it('Should throw error siren require', async () => {
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+    it('Should throw error siret require', async () => {
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
         },
         contextValue: token
       });
-      expect(createShopResponse.errors?.[0].message).toContain('Siren requier');
+      expect(createShopResponse.errors?.[0].message).toContain('Siret requier');
     });
     it('Should throw error Category required', async () => {
       shopFaker.categoriesIds = [];
       shopFaker.siretNumber = '56789';
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
@@ -113,8 +139,11 @@ describe('Shop', () => {
       );
     });
     it('Should throw error Category not found', async () => {
-      shopFaker.categoriesIds = [2];
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+      shopFaker.categoriesIds = [3];
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
@@ -128,7 +157,10 @@ describe('Shop', () => {
     it('Should create shop', async () => {
       shopFaker.categoriesIds = [1];
 
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker,
@@ -142,7 +174,7 @@ describe('Shop', () => {
       it('should return shops near artisan zipcode', async () => {
         shopFaker.zipCode = clientFaker.zipCode;
         shopFaker.siretNumber = '456758';
-        const shopResponse = await gqlHelper<CreateShopMutation>({
+        await gqlHelper<CreateShopMutation, CreateShopMutationVariables>({
           source: CreateShopDocument,
           variableValues: {
             createShopInput: shopFaker,
@@ -162,7 +194,7 @@ describe('Shop', () => {
         const tokenClient = await singIn({
           email: clientFaker.email,
           password: clientFaker.password,
-          role: Role.CLIENT
+          role: Role.Client
         });
         const response = await gqlHelper<ShopsQuery>({
           source: ShopsDocument,
@@ -170,6 +202,56 @@ describe('Shop', () => {
         });
         expect(response.data?.shops?.length).toBe(1);
         expect(response.data?.shops?.[0].zipCode).toBe(clientFaker.zipCode);
+      });
+      it('should return shop filtered by category or zipcodes', async () => {
+        const responseFilteredZipCodeArtisan = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              categoriesIds: null,
+              zipcode: [zipCodeArtisan]
+            }
+          },
+          contextValue: token
+        });
+        expect(responseFilteredZipCodeArtisan.data?.shops?.length).toBe(1);
+        expect(responseFilteredZipCodeArtisan.data?.shops?.[0].zipCode).toBe(
+          zipCodeArtisan
+        );
+        const responseFilteredZipCodeArtisanAndCategoriesId = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              categoriesIds: [2],
+              zipcode: [zipCodeArtisan]
+            }
+          },
+          contextValue: token
+        });
+        expect(
+          responseFilteredZipCodeArtisanAndCategoriesId.data?.shops?.length
+        ).toBe(0);
+        const responseFilteredZipCodeArtisanAndClient = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              zipcode: [clientFaker.zipCode, artisanFaker.zipCode]
+            }
+          },
+          contextValue: token
+        });
+        expect(
+          responseFilteredZipCodeArtisanAndClient.data?.shops?.length
+        ).toBe(2);
       });
     });
   });

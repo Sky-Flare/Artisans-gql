@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
-import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
   singIn
 } from '@src/__tests__/helpers/registrer';
+import { Role } from '@src/generated/graphql';
 
 let dataSource: DataSource;
 
@@ -100,7 +100,7 @@ describe('Register', () => {
       const { response } = await singIn({
         email: artisanFaker.email,
         password: artisanFaker.password,
-        role: Role.ARTISAN
+        role: Role.Artisan
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
@@ -111,7 +111,7 @@ describe('Register', () => {
       const { response } = await singIn({
         email: artisanFaker.email,
         password: 'not my password',
-        role: Role.ARTISAN
+        role: Role.Artisan
       });
       expect(response).toBeDefined();
       expect(response.errors).toBeDefined();
@@ -126,7 +126,7 @@ describe('Register', () => {
       const { response } = await singIn({
         email: clientFaker.email,
         password: clientFaker.password,
-        role: Role.CLIENT
+        role: Role.Client
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
@@ -137,7 +137,7 @@ describe('Register', () => {
       const { response } = await singIn({
         email: 'notgood@email.com',
         password: clientFaker.password,
-        role: Role.CLIENT
+        role: Role.Client
       });
       expect(response).toBeDefined();
       expect(response.errors).toBeDefined();

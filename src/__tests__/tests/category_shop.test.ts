@@ -5,9 +5,10 @@ import {
   CategoriesShopDocument,
   CategoriesShopQuery,
   CreateCategoryShopDocument,
-  CreateCategoryShopMutation
+  CreateCategoryShopMutation,
+  CreateCategoryShopMutationVariables,
+  Role
 } from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
 
@@ -19,7 +20,7 @@ beforeAll(async (): Promise<DataSource> => {
   const { response } = await singIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
   return dataSource;
@@ -41,17 +42,19 @@ describe('Category_shop', () => {
   describe('createCategoryShop mutation', () => {
     it('Should create a category_shop', async () => {
       const imgUrl = faker.image.url();
-      const creatCategoryShopResponse =
-        await gqlHelper<CreateCategoryShopMutation>({
-          source: CreateCategoryShopDocument,
-          variableValues: {
-            categoryShopInput: {
-              name: 'Boulangerie',
-              picture: imgUrl
-            }
-          },
-          contextValue: token
-        });
+      const creatCategoryShopResponse = await gqlHelper<
+        CreateCategoryShopMutation,
+        CreateCategoryShopMutationVariables
+      >({
+        source: CreateCategoryShopDocument,
+        variableValues: {
+          categoryShopInput: {
+            name: 'Boulangerie',
+            picture: imgUrl
+          }
+        },
+        contextValue: token
+      });
       expect(creatCategoryShopResponse.data?.createCategoryShop.name).toBe(
         'Boulangerie'
       );
@@ -70,7 +73,10 @@ describe('Category_shop', () => {
       expect(categoriesShopResponse.data?.categories_shop[0].name).toBe(
         'Boulangerie'
       );
-      await gqlHelper<CreateCategoryShopMutation>({
+      await gqlHelper<
+        CreateCategoryShopMutation,
+        CreateCategoryShopMutationVariables
+      >({
         source: CreateCategoryShopDocument,
         variableValues: {
           categoryShopInput: {

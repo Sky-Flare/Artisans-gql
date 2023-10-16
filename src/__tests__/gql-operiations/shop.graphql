@@ -1,5 +1,5 @@
-query Shops($filtersInput: GetShopCatIdsAndZipCode) {
-  shops(filtersInput: $filtersInput) {
+query Shops($shopsFiltersInput: GetShopCatIdsAndZipCode) {
+  shops(filtersInput: $shopsFiltersInput) {
     name
     zipCode
   }

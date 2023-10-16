@@ -73,19 +73,19 @@ export class ShopResolvers implements ResolverInterface<Shop> {
         const me = await this.artisanRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
-        zipCodeSearch = me?.zipCode;
+        zipCodeSearch = me?.zipCode ? [me?.zipCode] : undefined;
       } else {
         const me = await this.clientRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
-        zipCodeSearch = me?.zipCode;
+        zipCodeSearch = me?.zipCode ? [me?.zipCode] : undefined;
       }
     }
-    if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
-      return this.shopRepository.findByZipCode(zipCodeSearch);
+    if (!filtersInput?.categoriesIds?.length && zipCodeSearch?.length) {
+      return this.shopRepository.findByZipCodes(zipCodeSearch);
     }
-    if (zipCodeSearch && filtersInput?.categoriesIds) {
-      return this.shopRepository.findByCategoriesShopWithZipCode(
+    if (zipCodeSearch?.length && filtersInput?.categoriesIds) {
+      return this.shopRepository.findByCategoriesShopWithZipCodes(
         zipCodeSearch,
         filtersInput?.categoriesIds
       );
@@ -162,7 +162,7 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     }
 
     if (!createShopInput?.siretNumber) {
-      throw new Error('Siren requier');
+      throw new Error('Siret requier');
     }
 
     if (!createShopInput?.categoriesIds.length) {

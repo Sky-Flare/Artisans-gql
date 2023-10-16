@@ -1,12 +1,15 @@
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
-import { ConnectUser } from '@entity/generic/user';
 import {
+  ConnectUser,
   SignInDocument,
   SignInMutation,
+  SignInMutationVariables,
   SignUpArtisanDocument,
   SignUpArtisanMutation,
+  SignUpArtisanMutationVariables,
   SignUpClientDocument,
-  SignUpClientMutation
+  SignUpClientMutation,
+  SignUpClientMutationVariables
 } from '@src/generated/graphql';
 
 type ArtisanFaker = {
@@ -31,7 +34,10 @@ type ClientFaker = {
 };
 
 export async function createArtisan(artisan: ArtisanFaker) {
-  const response = await gqlHelper<SignUpArtisanMutation>({
+  const response = await gqlHelper<
+    SignUpArtisanMutation,
+    SignUpArtisanMutationVariables
+  >({
     source: SignUpArtisanDocument,
     variableValues: {
       createArtisanInput: artisan
@@ -41,7 +47,10 @@ export async function createArtisan(artisan: ArtisanFaker) {
 }
 
 export async function createClient(client: ClientFaker) {
-  const response = await gqlHelper<SignUpClientMutation>({
+  const response = await gqlHelper<
+    SignUpClientMutation,
+    SignUpClientMutationVariables
+  >({
     source: SignUpClientDocument,
     variableValues: {
       createClientInput: client
@@ -51,7 +60,7 @@ export async function createClient(client: ClientFaker) {
 }
 
 export async function singIn(data: ConnectUser) {
-  const response = await gqlHelper<SignInMutation>({
+  const response = await gqlHelper<SignInMutation, SignInMutationVariables>({
     source: SignInDocument,
     variableValues: {
       connectUser: {

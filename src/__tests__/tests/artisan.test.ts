@@ -2,14 +2,20 @@ import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
+  ArtisanDocument,
+  ArtisanQuery,
+  ArtisanQueryVariables,
+  ArtisansDocument,
+  ArtisansQuery,
   DeleteArtisanDocument,
   DeleteArtisanMutation,
   MeArtisanDocument,
   MeArtisanQuery,
+  Role,
   UpdateArtisanDocument,
-  UpdateArtisanMutation
-} from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
+  UpdateArtisanMutation,
+  UpdateArtisanMutationVariables
+} from '@src/generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
 
@@ -21,7 +27,7 @@ beforeAll(async (): Promise<DataSource> => {
   const { response } = await singIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
   return dataSource;
@@ -55,7 +61,10 @@ describe('Artisan', () => {
   describe('updateArtisan mutation', () => {
     it('Should update me artisan', async () => {
       artisanFaker.lastName = 'new last name';
-      const updateArtisanResponse = await gqlHelper<UpdateArtisanMutation>({
+      const updateArtisanResponse = await gqlHelper<
+        UpdateArtisanMutation,
+        UpdateArtisanMutationVariables
+      >({
         source: UpdateArtisanDocument,
         variableValues: {
           createArtisanInput: artisanFaker
@@ -68,6 +77,39 @@ describe('Artisan', () => {
       expect(updateArtisanResponse.data?.updateArtisan.lastName).toBe(
         'new last name'
       );
+    });
+  });
+  describe('artisans mutation', () => {
+    it('Should return all artisan', async () => {
+      await createArtisan({
+        lastName: faker.person.lastName(),
+        firstName: faker.person.firstName(),
+        email: faker.internet.email(),
+        address: faker.location.streetAddress(),
+        zipCode: Number(faker.location.zipCode()),
+        city: faker.location.city(),
+        password: faker.internet.password(),
+        sirenNumber: '508822855'
+      });
+      const allArtisanResponse = await gqlHelper<ArtisansQuery>({
+        source: ArtisansDocument,
+        contextValue: token
+      });
+      expect(allArtisanResponse.data?.artisans?.length).toBe(2);
+    });
+  });
+  describe('artisan query', () => {
+    it('should return one artisan by id', async () => {
+      const artisanResponse = await gqlHelper<
+        ArtisanQuery,
+        ArtisanQueryVariables
+      >({
+        source: ArtisanDocument,
+        variableValues: {
+          artisanId: 1
+        },
+        contextValue: token
+      });
     });
   });
   describe('deleteArtisan mutation', () => {

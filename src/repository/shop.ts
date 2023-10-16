@@ -12,8 +12,8 @@ export class ShopRepository extends Repository<Shop> {
     this.shopRepository = dataSource.getRepository(Shop);
   }
 
-  public findByCategoriesShopWithZipCode(
-    zipCode: number,
+  public findByCategoriesShopWithZipCodes(
+    zipCodes: number[],
     categoriesIds: number[]
   ): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
@@ -21,15 +21,15 @@ export class ShopRepository extends Repository<Shop> {
       .where('category_shop.id IN (:...catIds)', {
         catIds: categoriesIds
       })
-      .andWhere('shop.zipCode = :zipCodeNumber', {
-        zipCodeNumber: zipCode
+      .andWhere('shop.zipCode IN (:zipCodesNumber)', {
+        zipCodesNumber: zipCodes
       })
       .getMany();
   }
-  public findByZipCode(zipCode: number): Promise<Shop[]> {
+  public findByZipCodes(zipCodes: number[]): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
-      .where('shop.zipCode = :zipCodeNumber', {
-        zipCodeNumber: zipCode
+      .where('shop.zipCode IN (:zipCodesNumber)', {
+        zipCodesNumber: zipCodes
       })
       .getMany();
   }

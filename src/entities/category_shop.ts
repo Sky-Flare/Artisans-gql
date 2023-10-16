@@ -1,4 +1,4 @@
-import { Field, InputType, ObjectType } from 'type-graphql';
+import { Field, InputType, Int, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 import { Shop } from '@entity/shop';
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 @ObjectType()
 @Entity()
@@ -43,12 +43,14 @@ export class CategoryShopInput {
 
 @InputType({ description: 'Get shops by categories id & zip code ' })
 export class GetShopCatIdsAndZipCode {
+  @IsArray()
   @Field(() => [Number], { nullable: true })
   public categoriesIds?: number[];
 
-  @Field(() => Number, {
+  @IsArray()
+  @Field(() => [Number], {
     nullable: true,
-    description: 'if null: zipCode user'
+    description: 'if null use zipCode user'
   })
-  public zipcode?: number;
+  public zipcode?: number[];
 }
