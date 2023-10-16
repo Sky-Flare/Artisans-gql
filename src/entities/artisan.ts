@@ -51,7 +51,7 @@ export class CreateArtisanInput implements Partial<Artisan> {
   public email!: string;
 
   @Field()
-  public adress!: string;
+  public address!: string;
 
   @Field()
   public zipCode!: number;
@@ -62,6 +62,6 @@ export class CreateArtisanInput implements Partial<Artisan> {
   @Field()
   public password!: string;
 
-  @Field(() => String)
-  public sirenNumber: string | undefined;
+  @Field()
+  public sirenNumber!: string;
 }

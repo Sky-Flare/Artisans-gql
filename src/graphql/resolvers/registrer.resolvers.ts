@@ -7,8 +7,10 @@ import { Artisan, CreateArtisanInput } from '@entity/artisan';
 import { Client, CreateClientInput } from '@entity/client';
 import { ConnectUser, Role } from '@entity/generic/user';
 import { Siren } from '@entity/siren';
-import { checkSiren } from '@repository/artisan';
-import { AppDataSource } from '~/app-data-source';
+import { ArtisanRepository } from '@repository/artisan';
+import { GraphQLError } from 'graphql';
+import { SirenRepository } from '@repository/siren';
+import { ClientRepository } from '@repository/client';
 
 @ObjectType()
 class LoginResponse {
@@ -16,29 +18,29 @@ class LoginResponse {
   accessToken!: string;
 }
 
-const SirenRepository = AppDataSource.getRepository(Siren);
-const ArtisanRepository = AppDataSource.getRepository(Artisan);
-const ClientRepository = AppDataSource.getRepository(Client);
-
 @Resolver()
 @Service()
 export class RegistrerResolvers {
+  private readonly artisanRepository: ArtisanRepository;
+  private readonly sirenRepository: SirenRepository;
+  private readonly clientRepository: ClientRepository;
+
+  public constructor(
+    artisanService: ArtisanRepository,
+    sirenService: SirenRepository,
+    clientRepository: ClientRepository
+  ) {
+    this.artisanRepository = artisanService;
+    this.sirenRepository = sirenService;
+    this.clientRepository = clientRepository;
+  }
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpArtisan(
-    @Arg('CreateArtisanInput') createArtisanInput?: CreateArtisanInput
+    @Arg('CreateArtisanInput') createArtisanInput: CreateArtisanInput
   ): Promise<LoginResponse | null> {
-    const siren = SirenRepository.create({
+    const siren = this.sirenRepository.create({
       siren: createArtisanInput?.sirenNumber
     });
-
-    if (!createArtisanInput) {
-      throw new Error('Empty data');
-    }
-
-    if (!createArtisanInput.sirenNumber) {
-      throw new Error('Siren requier');
-    }
-
     if (
       await Siren.findOne({
         where: { siren: createArtisanInput.sirenNumber }
@@ -47,23 +49,26 @@ export class RegistrerResolvers {
       throw new Error('Siren already use');
     }
 
-    await checkSiren(createArtisanInput.sirenNumber).catch(() => {
-      throw new Error('Siren not found');
-    });
+    await this.sirenRepository
+      .checkSiren(createArtisanInput.sirenNumber)
+      .catch(() => {
+        throw new Error('Siren not found');
+      });
 
-    const artisan = ArtisanRepository.create({
+    const artisan = this.artisanRepository.create({
       lastName: createArtisanInput.lastName,
       firstName: createArtisanInput.firstName,
       email: createArtisanInput.email,
-      adress: createArtisanInput.adress,
+      address: createArtisanInput.address,
       zipCode: createArtisanInput.zipCode,
       city: createArtisanInput.city,
       password: await hash(createArtisanInput.password, 13),
       role: Role.ARTISAN,
-      siren: await SirenRepository.save(siren)
+      siren: await this.sirenRepository.save(siren)
     });
 
-    return await ArtisanRepository.save(artisan)
+    return await this.artisanRepository
+      .save(artisan)
       .then(() => {
         return {
           accessToken: sign(
@@ -82,24 +87,21 @@ export class RegistrerResolvers {
 
   @Mutation(() => LoginResponse, { nullable: true })
   public async signUpClient(
-    @Arg('CreateClientInput') createClientInput?: CreateClientInput
+    @Arg('CreateClientInput') createClientInput: CreateClientInput
   ): Promise<LoginResponse | null> {
-    if (!createClientInput) {
-      throw new Error('Empty data');
-    }
-
-    const client = ClientRepository.create({
+    const client = this.clientRepository.create({
       lastName: createClientInput.lastName,
       firstName: createClientInput.firstName,
       email: createClientInput.email,
-      adress: createClientInput.adress,
+      address: createClientInput.address,
       zipCode: createClientInput.zipCode,
       city: createClientInput.city,
       password: await hash(createClientInput.password, 13),
       role: Role.CLIENT
     });
 
-    return await ClientRepository.save(client)
+    return await this.clientRepository
+      .save(client)
       .then(() => {
         return {
           accessToken: sign(
@@ -117,7 +119,7 @@ export class RegistrerResolvers {
   }
 
   @Mutation(() => LoginResponse, { nullable: true })
-  async singIn(
+  async signIn(
     @Arg('ConnectUser') { role, password, email }: ConnectUser
   ): Promise<LoginResponse | null> {
     let user: Artisan | Client | null;
@@ -128,7 +130,11 @@ export class RegistrerResolvers {
     }
 
     if (!user) {
-      throw new Error('Bad credentials');
+      throw new GraphQLError('Utilisateur non identifié', {
+        extensions: {
+          code: 'NOT_FOUND'
+        }
+      });
     }
 
     const verify = await compare(password, user.password);

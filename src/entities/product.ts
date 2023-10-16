@@ -16,7 +16,7 @@ import {
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
-import { Cart } from '~/entities/cart';
+import { Cart } from '@entity/cart';
 
 @ObjectType()
 @Entity()

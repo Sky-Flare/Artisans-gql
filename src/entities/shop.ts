@@ -41,7 +41,7 @@ export class Shop extends BaseEntity {
 
   @Field({ nullable: false })
   @Column({ type: 'varchar' })
-  public adress!: string;
+  public address!: string;
 
   @Field({ nullable: false })
   @Column({ type: 'integer' })
@@ -103,7 +103,7 @@ export class CreateShopInput {
 
   @IsString()
   @Field()
-  public adress!: string;
+  public address!: string;
 
   @IsInt()
   @Field()

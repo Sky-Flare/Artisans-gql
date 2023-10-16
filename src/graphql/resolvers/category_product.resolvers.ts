@@ -23,12 +23,27 @@ import { ShopRepository } from '@repository/shop';
 @Resolver(() => Category_product)
 @Service()
 export class CategoryProductResolver {
+  private readonly shopRepository: ShopRepository;
+  private readonly productRepository: ProductRepository;
+  private readonly category_productRepository: Category_productRepository;
+
+  public constructor(
+    productService: ProductRepository,
+    shopRepository: ShopRepository,
+    category_productRepository: Category_productRepository
+  ) {
+    this.productRepository = productService;
+    this.shopRepository = shopRepository;
+    this.category_productRepository = category_productRepository;
+  }
   @Query(() => [Category_product])
   @Authorized()
   public async categories_productByShop(
     @Arg('shopId') shopId: number
   ): Promise<Category_product[]> {
-    return await Category_productRepository.findCategoriesProductByShop(shopId);
+    return await this.category_productRepository.findCategoriesProductByShop(
+      shopId
+    );
   }
 
   @FieldResolver()
@@ -36,7 +51,9 @@ export class CategoryProductResolver {
   public async products(
     @Root() catProduct: Category_product
   ): Promise<Product[]> {
-    return await ProductRepository.findProductsByCatgoryProduct(catProduct.id);
+    return await this.productRepository.findProductsByCatgoryProduct(
+      catProduct.id
+    );
   }
 
   @Mutation(() => Category_product)
@@ -47,15 +64,15 @@ export class CategoryProductResolver {
   ): Promise<Category_product | null> {
     let shops: Shop[] = [];
     if (shopsIds?.length) {
-      shops = await ShopRepository.findByShopsIds(shopsIds);
+      shops = await this.shopRepository.findByShopsIds(shopsIds);
     }
 
-    const categoryProduct = Category_productRepository.create({
+    const categoryProduct = this.category_productRepository.create({
       name: name,
       picture: picture,
       shops: shops
     });
 
-    return await Category_productRepository.save(categoryProduct);
+    return await this.category_productRepository.save(categoryProduct);
   }
 }

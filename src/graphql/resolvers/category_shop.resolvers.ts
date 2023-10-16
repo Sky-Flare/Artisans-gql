@@ -3,17 +3,20 @@ import { Service } from 'typedi';
 
 import { CategoryShopInput, Category_shop } from '@entity/category_shop';
 import { Role } from '@entity/generic/user';
-import { AppDataSource } from '~/app-data-source';
-
-const CategoryShopRepository = AppDataSource.getRepository(Category_shop);
+import { Category_shopRepository } from '@repository/category_shop';
 
 @Resolver(() => Category_shop)
 @Service()
 export class CategoryShopResolver {
+  private readonly category_shopRepository: Category_shopRepository;
+
+  public constructor(category_shopRepository: Category_shopRepository) {
+    this.category_shopRepository = category_shopRepository;
+  }
   @Query(() => [Category_shop])
   @Authorized()
   public async categories_shop(): Promise<Category_shop[]> {
-    return await CategoryShopRepository.find();
+    return await this.category_shopRepository.find();
   }
 
   @Mutation(() => Category_shop)
@@ -21,11 +24,11 @@ export class CategoryShopResolver {
   public async createCategoryShop(
     @Arg('CategoryShopInput') { name, picture }: CategoryShopInput
   ): Promise<Category_shop | null> {
-    const categoryShop = CategoryShopRepository.create({
+    const categoryShop = this.category_shopRepository.create({
       name: name,
       picture: picture
     });
-    await CategoryShopRepository.save(categoryShop);
+    await this.category_shopRepository.save(categoryShop);
     return categoryShop;
   }
 }
