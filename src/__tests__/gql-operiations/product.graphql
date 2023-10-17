@@ -1,0 +1,21 @@
+mutation CreateProduct($createProductInput: CreateProductInput!) {
+    createProduct(createProductInput: $createProductInput) {
+        id
+        name
+        enabled
+        description
+        categoriesProducts {
+            name
+            picture
+        }
+        picture
+        price
+        shops {
+            name
+        }
+    }
+}
+
+mutation DeleteProduct($deleteProductId: Float!) {
+    deleteProduct(id: $deleteProductId)
+}

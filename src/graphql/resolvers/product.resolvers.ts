@@ -101,16 +101,30 @@ export class ProductResolvers {
     }
     let shopsSlected: Shop[] = [];
     if (createProductInput.shopsIds?.length) {
-      shopsSlected = await this.shopRepository.findByShopsIds(
-        createProductInput.shopsIds
-      );
+      await this.shopRepository
+        .findByShopsIds(createProductInput.shopsIds)
+        .then((shops) => {
+          if (shops.length === createProductInput.shopsIds?.length) {
+            shopsSlected = shops;
+          } else {
+            throw new Error('Shop not found');
+          }
+        });
     }
     let categoriesProductSlected: Category_product[] = [];
     if (createProductInput.categoriesProductsIds?.length) {
-      categoriesProductSlected =
-        await this.category_productRepository.findCategoriesProductByIds(
-          createProductInput.categoriesProductsIds
-        );
+      await this.category_productRepository
+        .findCategoriesProductByIds(createProductInput.categoriesProductsIds)
+        .then((categoriesProduct) => {
+          if (
+            categoriesProduct.length ===
+            createProductInput.categoriesProductsIds?.length
+          ) {
+            categoriesProductSlected = categoriesProduct;
+          } else {
+            throw new Error('Categories product not found');
+          }
+        });
     }
     const product = this.productRepository.create({
       name: createProductInput.name,

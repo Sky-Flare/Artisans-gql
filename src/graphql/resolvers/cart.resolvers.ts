@@ -16,7 +16,6 @@ export class CartResolvers {
   private readonly cartRepository: CartRepository;
   private readonly productRepository: ProductRepository;
   private readonly clientRepository: ClientRepository;
-  private readonly siretRepository: SiretRepository;
 
   public constructor(
     cartRepository: CartRepository,
@@ -27,7 +26,6 @@ export class CartResolvers {
     this.cartRepository = cartRepository;
     this.clientRepository = clientRepository;
     this.productRepository = productRepository;
-    this.siretRepository = siretRepository;
   }
   @Query(() => [Cart], { nullable: true })
   @Authorized(Role.CLIENT)

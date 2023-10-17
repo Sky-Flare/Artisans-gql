@@ -51,17 +51,14 @@ beforeAll(async (): Promise<DataSource> => {
     },
     contextValue: token
   });
-  const test = await gqlHelper<CreateShopMutation, CreateShopMutationVariables>(
-    {
-      source: CreateShopDocument,
-      variableValues: {
-        createShopInput: shopFaker,
-        inputHoraireShop: inputHoraireShop
-      },
-      contextValue: token
-    }
-  );
-  console.log(test);
+  await gqlHelper<CreateShopMutation, CreateShopMutationVariables>({
+    source: CreateShopDocument,
+    variableValues: {
+      createShopInput: shopFaker,
+      inputHoraireShop: inputHoraireShop
+    },
+    contextValue: token
+  });
   return dataSource;
 });
 afterAll(async () => dataSource.destroy());

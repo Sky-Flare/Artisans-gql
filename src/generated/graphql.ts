@@ -706,6 +706,30 @@ export const MeClientDocument = gql`
   }
 }
     `;
+export const CreateProductDocument = gql`
+    mutation CreateProduct($createProductInput: CreateProductInput!) {
+  createProduct(createProductInput: $createProductInput) {
+    id
+    name
+    enabled
+    description
+    categoriesProducts {
+      name
+      picture
+    }
+    picture
+    price
+    shops {
+      name
+    }
+  }
+}
+    `;
+export const DeleteProductDocument = gql`
+    mutation DeleteProduct($deleteProductId: Float!) {
+  deleteProduct(id: $deleteProductId)
+}
+    `;
 export const SignUpArtisanDocument = gql`
     mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
   signUpArtisan(CreateArtisanInput: $createArtisanInput) {
@@ -790,6 +814,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     MeClient(variables?: MeClientQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeClientQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<MeClientQuery>(MeClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeClient', 'query');
     },
+    CreateProduct(variables: CreateProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateProductMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateProductMutation>(CreateProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateProduct', 'mutation');
+    },
+    DeleteProduct(variables: DeleteProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteProductMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteProductMutation>(DeleteProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteProduct', 'mutation');
+    },
     SignUpArtisan(variables: SignUpArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SignUpArtisanMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignUpArtisanMutation>(SignUpArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpArtisan', 'mutation');
     },
@@ -870,6 +900,20 @@ export type MeClientQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeClientQuery = { __typename?: 'Query', meClient?: { __typename?: 'Client', email: string } | null };
+
+export type CreateProductMutationVariables = Exact<{
+  createProductInput: CreateProductInput;
+}>;
+
+
+export type CreateProductMutation = { __typename?: 'Mutation', createProduct?: { __typename?: 'Product', id: number, name: string, enabled: number, description: string, picture: string, price: number, categoriesProducts?: Array<{ __typename?: 'Category_product', name: string, picture?: string | null }> | null, shops?: Array<{ __typename?: 'Shop', name: string }> | null } | null };
+
+export type DeleteProductMutationVariables = Exact<{
+  deleteProductId: Scalars['Float']['input'];
+}>;
+
+
+export type DeleteProductMutation = { __typename?: 'Mutation', deleteProduct: boolean };
 
 export type SignUpArtisanMutationVariables = Exact<{
   createArtisanInput: CreateArtisanInput;
