@@ -1,5 +1,5 @@
 import { IsEmail } from 'class-validator';
-import { Field, InputType, ObjectType } from 'type-graphql';
+import { Authorized, Field, InputType, ObjectType } from 'type-graphql';
 import {
   Column,
   Entity,

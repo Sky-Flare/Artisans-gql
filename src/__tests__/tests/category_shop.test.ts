@@ -8,16 +8,16 @@ import {
   CreateCategoryShopMutation,
   CreateCategoryShopMutationVariables,
   Role
-} from '../../generated/graphql';
+} from '@src/generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
-import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
+import { createArtisan, signIn } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
 let token = '';
 beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
     role: Role.Artisan

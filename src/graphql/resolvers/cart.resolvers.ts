@@ -20,8 +20,7 @@ export class CartResolvers {
   public constructor(
     cartRepository: CartRepository,
     clientRepository: ClientRepository,
-    productRepository: ProductRepository,
-    siretRepository: SiretRepository
+    productRepository: ProductRepository
   ) {
     this.cartRepository = cartRepository;
     this.clientRepository = clientRepository;
@@ -45,7 +44,7 @@ export class CartResolvers {
   @Authorized(Role.CLIENT)
   public async updateCart(
     @Ctx() ctx: MyContext,
-    @Arg('UpdateCart') { productId, action }: UpdateCart
+    @Arg('UpdateCart') { productId, action, quantity }: UpdateCart
   ): Promise<Cart | null> {
     const client = await this.clientRepository.findOne({
       where: { id: Number(ctx?.payload?.userId) }
@@ -64,23 +63,32 @@ export class CartResolvers {
       where: { clientId: client?.id, productId: productId },
       relations: { product: true }
     });
+    if (action === ActionCart.Remove && !cart) {
+      throw new Error('Cart not found');
+    }
 
     if (cart) {
-      if (action === ActionCart.Remove && cart.quantity === 1) {
+      if (action === ActionCart.Remove && cart.quantity === quantity) {
         await cart.remove();
         return null;
       } else {
         cart.quantity =
-          action === ActionCart.Remove ? cart.quantity - 1 : cart.quantity + 1;
+          action === ActionCart.Remove
+            ? cart.quantity - quantity
+            : cart.quantity + quantity;
         return await cart.save();
       }
     } else {
       const cart = this.cartRepository.create({
         clientId: client?.id,
         productId: productId,
-        quantity: 1
+        quantity: quantity
       });
-      return await cart.save();
+      await cart.save();
+      return await this.cartRepository.findOne({
+        where: { clientId: client?.id, productId: productId },
+        relations: { product: true }
+      });
     }
   }
 }

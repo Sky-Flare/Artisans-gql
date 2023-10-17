@@ -229,6 +229,7 @@ type Shop {
 input UpdateCart {
   action: ActionCart!
   productId: Float!
+  quantity: Float!
 }
 
 type User {

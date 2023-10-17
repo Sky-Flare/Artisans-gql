@@ -21,7 +21,7 @@ import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
@@ -30,7 +30,7 @@ beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
 
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
     role: Role.Artisan
@@ -221,7 +221,7 @@ describe('Shop', () => {
       });
       it('should return shop near client zipcode', async () => {
         await createClient(clientFaker);
-        const tokenClient = await singIn({
+        const tokenClient = await signIn({
           email: clientFaker.email,
           password: clientFaker.password,
           role: Role.Client

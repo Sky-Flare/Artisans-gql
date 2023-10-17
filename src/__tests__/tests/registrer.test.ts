@@ -4,7 +4,7 @@ import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
 import { Role } from '@src/generated/graphql';
 
@@ -97,7 +97,7 @@ describe('Register', () => {
 
   describe('signIn mutation', () => {
     it('should authenticate a artisan with correct credentials', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: artisanFaker.email,
         password: artisanFaker.password,
         role: Role.Artisan
@@ -108,7 +108,7 @@ describe('Register', () => {
       expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for incorrect credentials artisan', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: artisanFaker.email,
         password: 'not my password',
         role: Role.Artisan
@@ -123,7 +123,7 @@ describe('Register', () => {
       }
     });
     it('should authenticate a client with correct credentials', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: clientFaker.email,
         password: clientFaker.password,
         role: Role.Client
@@ -134,7 +134,7 @@ describe('Register', () => {
       expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for unknown user', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: 'notgood@email.com',
         password: clientFaker.password,
         role: Role.Client

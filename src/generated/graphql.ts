@@ -322,6 +322,7 @@ export type Shop = {
 export type UpdateCart = {
   action: ActionCart;
   productId: Scalars['Float']['input'];
+  quantity: Scalars['Float']['input'];
 };
 
 export type User = {
@@ -668,6 +669,32 @@ export const DeleteArtisanDocument = gql`
   deleteArtisan
 }
     `;
+export const UpdateCartDocument = gql`
+    mutation UpdateCart($updateCart: UpdateCart!) {
+  updateCart(UpdateCart: $updateCart) {
+    quantity
+    productId
+    product {
+      name
+    }
+  }
+}
+    `;
+export const CartDocument = gql`
+    query Cart {
+  clientCart {
+    product {
+      name
+      price
+      shops {
+        name
+      }
+    }
+    productId
+    quantity
+  }
+}
+    `;
 export const CreateCategoryProductDocument = gql`
     mutation CreateCategoryProduct($categoryProductInput: CategoryProductInput!) {
   createCategoryProduct(categoryProductInput: $categoryProductInput) {
@@ -799,6 +826,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     DeleteArtisan(variables?: DeleteArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteArtisanMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteArtisanMutation>(DeleteArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteArtisan', 'mutation');
     },
+    UpdateCart(variables: UpdateCartMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCartMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCartMutation>(UpdateCartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCart', 'mutation');
+    },
+    Cart(variables?: CartQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CartQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CartQuery>(CartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Cart', 'query');
+    },
     CreateCategoryProduct(variables: CreateCategoryProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCategoryProductMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryProductMutation>(CreateCategoryProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryProduct', 'mutation');
     },
@@ -869,6 +902,18 @@ export type DeleteArtisanMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DeleteArtisanMutation = { __typename?: 'Mutation', deleteArtisan: boolean };
+
+export type UpdateCartMutationVariables = Exact<{
+  updateCart: UpdateCart;
+}>;
+
+
+export type UpdateCartMutation = { __typename?: 'Mutation', updateCart?: { __typename?: 'Cart', quantity: number, productId: number, product?: { __typename?: 'Product', name: string } | null } | null };
+
+export type CartQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type CartQuery = { __typename?: 'Query', clientCart?: Array<{ __typename?: 'Cart', productId: number, quantity: number, product?: { __typename?: 'Product', name: string, price: number, shops?: Array<{ __typename?: 'Shop', name: string }> | null } | null }> | null };
 
 export type CreateCategoryProductMutationVariables = Exact<{
   categoryProductInput: CategoryProductInput;

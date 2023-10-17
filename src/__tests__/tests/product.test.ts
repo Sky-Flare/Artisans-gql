@@ -31,7 +31,7 @@ import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
@@ -39,7 +39,7 @@ let token = '';
 beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
     role: Role.Artisan
@@ -118,7 +118,7 @@ const inputHoraireShop = [
 });
 const productFaker = {
   categoriesProductsIds: [1],
-  description: faker.lorem.text(),
+  description: faker.lorem.sentence(10),
   name: faker.commerce.productName(),
   picture: faker.image.url(),
   price: Number(faker.commerce.price({ min: 1, max: 100 })),

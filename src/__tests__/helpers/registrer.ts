@@ -59,7 +59,7 @@ export async function createClient(client: ClientFaker) {
   return { response, client };
 }
 
-export async function singIn(data: ConnectUser) {
+export async function signIn(data: ConnectUser) {
   const response = await gqlHelper<SignInMutation, SignInMutationVariables>({
     source: SignInDocument,
     variableValues: {

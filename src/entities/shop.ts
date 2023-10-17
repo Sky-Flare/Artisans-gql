@@ -36,7 +36,7 @@ export class Shop extends BaseEntity {
   public name!: string;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', length: 500 })
   public description!: string;
 
   @Field({ nullable: false })

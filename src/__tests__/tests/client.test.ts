@@ -22,7 +22,7 @@ import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
@@ -30,7 +30,7 @@ let token = '';
 beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
   await createClient(clientFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: clientFaker.email,
     password: clientFaker.password,
     role: Role.Client
