@@ -60,6 +60,15 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     this.horaire_shopRepository = horaire_shopRepository;
     this.siretRepository = siretRepository;
   }
+
+  @Query(() => Shop, { nullable: true })
+  @Authorized()
+  public async shop(@Arg('shopId') shopId: number): Promise<Shop | null> {
+    return await this.shopRepository.findOneBy({
+      id: shopId
+    });
+  }
+
   @Query(() => [Shop], { nullable: true })
   @Authorized()
   public async shops(

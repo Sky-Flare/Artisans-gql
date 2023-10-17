@@ -40,7 +40,7 @@ const artisanFaker = {
 afterAll(async () => dataSource.destroy());
 describe('Category_shop', () => {
   describe('createCategoryShop mutation', () => {
-    it('Should create a category_shop', async () => {
+    it('should create a category_shop', async () => {
       const imgUrl = faker.image.url();
       const creatCategoryShopResponse = await gqlHelper<
         CreateCategoryShopMutation,

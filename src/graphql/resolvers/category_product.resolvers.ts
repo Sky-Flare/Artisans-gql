@@ -51,9 +51,15 @@ export class CategoryProductResolver {
   public async products(
     @Root() catProduct: Category_product
   ): Promise<Product[]> {
-    return await this.productRepository.findProductsByCatgoryProduct(
+    return await this.productRepository.findProductsByCategoryProduct(
       catProduct.id
     );
+  }
+
+  @FieldResolver()
+  @Authorized()
+  public async shops(@Root() catProduct: Category_product): Promise<Shop[]> {
+    return await this.shopRepository.findShopByCategoryProduct(catProduct.id);
   }
 
   @Mutation(() => Category_product)

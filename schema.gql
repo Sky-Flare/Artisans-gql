@@ -46,6 +46,7 @@ type Category_product {
   name: String!
   picture: String
   products: [Product!]
+  shops: [Shop!]
 }
 
 type Category_shop {
@@ -197,6 +198,7 @@ type Query {
   clientCart: [Cart!]
   meArtisan: Artisan
   meClient: Client
+  shop(shopId: Float!): Shop
   shops(filtersInput: GetShopCatIdsAndZipCode): [Shop!]
 }
 

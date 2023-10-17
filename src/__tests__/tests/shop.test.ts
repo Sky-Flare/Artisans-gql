@@ -10,6 +10,9 @@ import {
   CreateShopMutationVariables,
   Days,
   Role,
+  ShopDocument,
+  ShopQuery,
+  ShopQueryVariables,
   ShopsDocument,
   ShopsQuery,
   ShopsQueryVariables
@@ -108,7 +111,7 @@ const inputHoraireShop = [
 });
 describe('Shop', () => {
   describe('createShop mutation', () => {
-    it('Should throw error siret require', async () => {
+    it('should throw error siret require', async () => {
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
         CreateShopMutationVariables
@@ -121,7 +124,7 @@ describe('Shop', () => {
       });
       expect(createShopResponse.errors?.[0].message).toContain('Siret requier');
     });
-    it('Should throw error Category required', async () => {
+    it('should throw error Category required', async () => {
       shopFaker.categoriesIds = [];
       shopFaker.siretNumber = '56789';
       const createShopResponse = await gqlHelper<
@@ -138,7 +141,7 @@ describe('Shop', () => {
         'Category required'
       );
     });
-    it('Should throw error Category not found', async () => {
+    it('should throw error Category not found', async () => {
       shopFaker.categoriesIds = [3];
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
@@ -154,9 +157,8 @@ describe('Shop', () => {
         'Category not found'
       );
     });
-    it('Should create shop', async () => {
+    it('should create shop', async () => {
       shopFaker.categoriesIds = [1];
-
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
         CreateShopMutationVariables
@@ -169,6 +171,34 @@ describe('Shop', () => {
         contextValue: token
       });
       expect(createShopResponse.data?.createShop?.name).toBe(shopFaker.name);
+    });
+    describe('shop query', () => {
+      it('should return nul', async () => {
+        const shopQueryResponse = await gqlHelper<
+          ShopQuery,
+          ShopQueryVariables
+        >({
+          source: ShopDocument,
+          variableValues: {
+            shopId: 3
+          },
+          contextValue: token
+        });
+        expect(shopQueryResponse.data?.shop).toBeNull();
+      });
+      it('should return shop by id', async () => {
+        const shopQueryResponse = await gqlHelper<
+          ShopQuery,
+          ShopQueryVariables
+        >({
+          source: ShopDocument,
+          variableValues: {
+            shopId: 1
+          },
+          contextValue: token
+        });
+        expect(shopQueryResponse.data?.shop?.name).toBe(shopFaker.name);
+      });
     });
     describe('shops query', () => {
       it('should return shops near artisan zipcode', async () => {

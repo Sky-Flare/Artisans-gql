@@ -67,6 +67,7 @@ export type Category_Product = {
   name: Scalars['String']['output'];
   picture?: Maybe<Scalars['String']['output']>;
   products?: Maybe<Array<Product>>;
+  shops?: Maybe<Array<Shop>>;
 };
 
 export type Category_Shop = {
@@ -269,6 +270,7 @@ export type Query = {
   clientCart?: Maybe<Array<Cart>>;
   meArtisan?: Maybe<Artisan>;
   meClient?: Maybe<Client>;
+  shop?: Maybe<Shop>;
   shops?: Maybe<Array<Shop>>;
 };
 
@@ -279,6 +281,11 @@ export type QueryArtisanArgs = {
 
 
 export type QueryCategories_ProductByShopArgs = {
+  shopId: Scalars['Float']['input'];
+};
+
+
+export type QueryShopArgs = {
   shopId: Scalars['Float']['input'];
 };
 
@@ -489,6 +496,7 @@ export type Category_ProductResolvers<ContextType = any, ParentType extends Reso
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
+  shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -566,6 +574,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   clientCart?: Resolver<Maybe<Array<ResolversTypes['Cart']>>, ParentType, ContextType>;
   meArtisan?: Resolver<Maybe<ResolversTypes['Artisan']>, ParentType, ContextType>;
   meClient?: Resolver<Maybe<ResolversTypes['Client']>, ParentType, ContextType>;
+  shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'shopId'>>;
   shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType, Partial<QueryShopsArgs>>;
 };
 
@@ -659,6 +668,21 @@ export const DeleteArtisanDocument = gql`
   deleteArtisan
 }
     `;
+export const CreateCategoryProductDocument = gql`
+    mutation CreateCategoryProduct($categoryProductInput: CategoryProductInput!) {
+  createCategoryProduct(categoryProductInput: $categoryProductInput) {
+    picture
+    name
+  }
+}
+    `;
+export const Categories_ProductByShopDocument = gql`
+    query Categories_productByShop($shopId: Float!) {
+  categories_productByShop(shopId: $shopId) {
+    name
+  }
+}
+    `;
 export const CreateCategoryShopDocument = gql`
     mutation CreateCategoryShop($categoryShopInput: CategoryShopInput!) {
   createCategoryShop(CategoryShopInput: $categoryShopInput) {
@@ -704,6 +728,13 @@ export const ShopsDocument = gql`
   }
 }
     `;
+export const ShopDocument = gql`
+    query Shop($shopId: Float!) {
+  shop(shopId: $shopId) {
+    name
+  }
+}
+    `;
 export const CreateShopDocument = gql`
     mutation CreateShop($createShopInput: CreateShopInput!, $inputHoraireShop: [InputHoraireShop!]) {
   createShop(
@@ -737,6 +768,12 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     DeleteArtisan(variables?: DeleteArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteArtisanMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<DeleteArtisanMutation>(DeleteArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteArtisan', 'mutation');
     },
+    CreateCategoryProduct(variables: CreateCategoryProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCategoryProductMutation> {
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryProductMutation>(CreateCategoryProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryProduct', 'mutation');
+    },
+    Categories_productByShop(variables: Categories_ProductByShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Categories_ProductByShopQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<Categories_ProductByShopQuery>(Categories_ProductByShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Categories_productByShop', 'query');
+    },
     CreateCategoryShop(variables: CreateCategoryShopMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCategoryShopMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryShopMutation>(CreateCategoryShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryShop', 'mutation');
     },
@@ -754,6 +791,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     },
     Shops(variables?: ShopsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ShopsQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<ShopsQuery>(ShopsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shops', 'query');
+    },
+    Shop(variables: ShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ShopQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<ShopQuery>(ShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shop', 'query');
     },
     CreateShop(variables: CreateShopMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateShopMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<CreateShopMutation>(CreateShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateShop', 'mutation');
@@ -789,6 +829,20 @@ export type DeleteArtisanMutationVariables = Exact<{ [key: string]: never; }>;
 
 
 export type DeleteArtisanMutation = { __typename?: 'Mutation', deleteArtisan: boolean };
+
+export type CreateCategoryProductMutationVariables = Exact<{
+  categoryProductInput: CategoryProductInput;
+}>;
+
+
+export type CreateCategoryProductMutation = { __typename?: 'Mutation', createCategoryProduct: { __typename?: 'Category_product', picture?: string | null, name: string } };
+
+export type Categories_ProductByShopQueryVariables = Exact<{
+  shopId: Scalars['Float']['input'];
+}>;
+
+
+export type Categories_ProductByShopQuery = { __typename?: 'Query', categories_productByShop: Array<{ __typename?: 'Category_product', name: string }> };
 
 export type CreateCategoryShopMutationVariables = Exact<{
   categoryShopInput: CategoryShopInput;
@@ -829,6 +883,13 @@ export type ShopsQueryVariables = Exact<{
 
 
 export type ShopsQuery = { __typename?: 'Query', shops?: Array<{ __typename?: 'Shop', name: string, zipCode: number }> | null };
+
+export type ShopQueryVariables = Exact<{
+  shopId: Scalars['Float']['input'];
+}>;
+
+
+export type ShopQuery = { __typename?: 'Query', shop?: { __typename?: 'Shop', name: string } | null };
 
 export type CreateShopMutationVariables = Exact<{
   createShopInput: CreateShopInput;

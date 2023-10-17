@@ -47,7 +47,7 @@ const artisanFaker = {
 afterAll(async () => dataSource.destroy());
 describe('Artisan', () => {
   describe('meArtisan query', () => {
-    it('Should return me artisan', async () => {
+    it('should return me artisan', async () => {
       const meArtisanResponse = await gqlHelper<MeArtisanQuery>({
         source: MeArtisanDocument,
         contextValue: token
@@ -59,7 +59,7 @@ describe('Artisan', () => {
     });
   });
   describe('updateArtisan mutation', () => {
-    it('Should update me artisan', async () => {
+    it('should update me artisan', async () => {
       artisanFaker.lastName = 'new last name';
       const updateArtisanResponse = await gqlHelper<
         UpdateArtisanMutation,
@@ -80,7 +80,7 @@ describe('Artisan', () => {
     });
   });
   describe('artisans mutation', () => {
-    it('Should return all artisan', async () => {
+    it('should return all artisan', async () => {
       await createArtisan({
         lastName: faker.person.lastName(),
         firstName: faker.person.firstName(),
@@ -113,7 +113,7 @@ describe('Artisan', () => {
     });
   });
   describe('deleteArtisan mutation', () => {
-    it('Should delete artisan', async () => {
+    it('should delete artisan', async () => {
       const deleteArtisanResponse = await gqlHelper<DeleteArtisanMutation>({
         source: DeleteArtisanDocument,
         contextValue: token

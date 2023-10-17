@@ -24,7 +24,7 @@ export class ProductRepository extends Repository<Product> {
       .where('artisan.id = :id', { id: artisanId })
       .getMany();
   }
-  public findProductsByCatgoryProduct(catProduct: number): Promise<Product[]> {
+  public findProductsByCategoryProduct(catProduct: number): Promise<Product[]> {
     return this.createQueryBuilder('product')
       .leftJoin('product.categoriesProducts', 'category_product')
       .where('category_product.id = :id', { id: catProduct })

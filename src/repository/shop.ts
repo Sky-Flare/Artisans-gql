@@ -46,4 +46,11 @@ export class ShopRepository extends Repository<Shop> {
       .where('product.id = :id', { id: productId })
       .getMany();
   }
+
+  public findShopByCategoryProduct(categoryProductId: number): Promise<Shop[]> {
+    return this.createQueryBuilder('shop')
+      .leftJoin('shop.categoriesShops', 'category_shop')
+      .where('category_shop.id = :id', { id: categoryProductId })
+      .getMany();
+  }
 }

@@ -5,6 +5,12 @@ query Shops($shopsFiltersInput: GetShopCatIdsAndZipCode) {
   }
 }
 
+query Shop($shopId: Float!) {
+  shop(shopId: $shopId) {
+    name
+  }
+}
+
 mutation CreateShop($createShopInput: CreateShopInput!, $inputHoraireShop: [InputHoraireShop!]) {
   createShop(CreateShopInput: $createShopInput, InputHoraireShop: $inputHoraireShop) {
     name

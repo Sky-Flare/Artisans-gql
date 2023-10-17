@@ -1,0 +1,13 @@
+mutation CreateCategoryProduct($categoryProductInput: CategoryProductInput!) {
+    createCategoryProduct(categoryProductInput: $categoryProductInput) {
+        picture
+        name
+    }
+}
+
+
+query Categories_productByShop($shopId: Float!) {
+    categories_productByShop(shopId: $shopId) {
+        name
+    }
+}

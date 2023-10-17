@@ -32,6 +32,7 @@ export class Category_product extends BaseEntity {
   @ManyToMany(() => Product, (product) => product.categoriesProducts)
   products?: Product[];
 
+  @Field(() => [Shop], { nullable: true })
   @ManyToMany(() => Shop, (shop) => shop.categoriesProducts)
   shops?: Shop[];
 }
