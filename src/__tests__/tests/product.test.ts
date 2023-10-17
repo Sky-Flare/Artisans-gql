@@ -169,7 +169,6 @@ describe('Product', () => {
         },
         contextValue: token
       });
-      console.log(createProductResponse);
       expect(createProductResponse.data?.createProduct?.name).toBe(
         productFaker.name
       );
@@ -208,7 +207,6 @@ describe('Product', () => {
         },
         contextValue: token
       });
-      console.log(deleteProductResponse);
       expect(deleteProductResponse.data?.deleteProduct).toBeTruthy();
     });
   });

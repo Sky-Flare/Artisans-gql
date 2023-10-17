@@ -1,5 +1,11 @@
 import { IsEmail, IsString } from 'class-validator';
-import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
+import {
+  Authorized,
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType
+} from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -11,7 +17,8 @@ import {
 export enum Role {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  ARTISAN = 'ARTISAN'
+  ARTISAN = 'ARTISAN',
+  OWNER = 'OWNER'
 }
 registerEnumType(Role, {
   name: 'Role'
@@ -30,22 +37,6 @@ export class User extends BaseEntity {
   @Field()
   @Column({ type: 'varchar' })
   public lastName!: string;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public email!: string;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public address!: string;
-
-  @Field()
-  @Column({ type: 'integer' })
-  public zipCode!: number;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public city!: string;
 
   @Column({ type: 'varchar' })
   public password!: string;

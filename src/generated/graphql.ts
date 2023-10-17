@@ -297,7 +297,8 @@ export type QueryShopsArgs = {
 export enum Role {
   Admin = 'ADMIN',
   Artisan = 'ARTISAN',
-  Client = 'CLIENT'
+  Client = 'CLIENT',
+  Owner = 'OWNER'
 }
 
 export type Shop = {
@@ -327,15 +328,11 @@ export type UpdateCart = {
 
 export type User = {
   __typename?: 'User';
-  address: Scalars['String']['output'];
-  city: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['Float']['output'];
   lastName: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];
-  zipCode: Scalars['Float']['output'];
 };
 
 
@@ -598,15 +595,11 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
-  address?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  city?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  email?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   firstName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   lastName?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
-  zipCode?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 

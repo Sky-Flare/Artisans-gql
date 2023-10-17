@@ -25,6 +25,26 @@ export class Artisan extends User {
   })
   public role!: Role;
 
+  @Authorized(Role.OWNER, Role.ARTISAN)
+  @Field()
+  @Column({ type: 'varchar' })
+  public address!: string;
+
+  @Authorized(Role.OWNER, Role.ARTISAN)
+  @Field()
+  @Column({ type: 'integer' })
+  public zipCode!: number;
+
+  @Authorized(Role.OWNER, Role.ARTISAN)
+  @Field()
+  @Column({ type: 'varchar' })
+  public city!: string;
+
+  @Authorized(Role.OWNER, Role.ARTISAN)
+  @Field()
+  @Column({ type: 'varchar' })
+  public email!: string;
+
   @Field(() => [Shop], { nullable: true })
   @OneToMany(() => Shop, (shop) => shop.artisan)
   shops?: Shop[];

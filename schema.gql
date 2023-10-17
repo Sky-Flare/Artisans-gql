@@ -206,6 +206,7 @@ enum Role {
   ADMIN
   ARTISAN
   CLIENT
+  OWNER
 }
 
 type Shop {
@@ -233,13 +234,9 @@ input UpdateCart {
 }
 
 type User {
-  address: String!
-  city: String!
   createdAt: DateTime!
-  email: String!
   firstName: String!
   id: Float!
   lastName: String!
   updatedAt: DateTime!
-  zipCode: Float!
 }
