@@ -699,6 +699,13 @@ export const CategoriesShopDocument = gql`
   }
 }
     `;
+export const MeClientDocument = gql`
+    query MeClient {
+  meClient {
+    email
+  }
+}
+    `;
 export const SignUpArtisanDocument = gql`
     mutation SignUpArtisan($createArtisanInput: CreateArtisanInput!) {
   signUpArtisan(CreateArtisanInput: $createArtisanInput) {
@@ -780,6 +787,9 @@ export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = 
     CategoriesShop(variables?: CategoriesShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CategoriesShopQuery> {
       return withWrapper((wrappedRequestHeaders) => client.request<CategoriesShopQuery>(CategoriesShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CategoriesShop', 'query');
     },
+    MeClient(variables?: MeClientQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeClientQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<MeClientQuery>(MeClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeClient', 'query');
+    },
     SignUpArtisan(variables: SignUpArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SignUpArtisanMutation> {
       return withWrapper((wrappedRequestHeaders) => client.request<SignUpArtisanMutation>(SignUpArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpArtisan', 'mutation');
     },
@@ -855,6 +865,11 @@ export type CategoriesShopQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CategoriesShopQuery = { __typename?: 'Query', categories_shop: Array<{ __typename?: 'Category_shop', name: string, picture?: string | null }> };
+
+export type MeClientQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MeClientQuery = { __typename?: 'Query', meClient?: { __typename?: 'Client', email: string } | null };
 
 export type SignUpArtisanMutationVariables = Exact<{
   createArtisanInput: CreateArtisanInput;

@@ -1,0 +1,5 @@
+query MeClient {
+    meClient {
+        email
+    }
+}
