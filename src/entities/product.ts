@@ -89,6 +89,12 @@ export class CreateProductInput implements Partial<Product> {
   public categoriesProductsIds?: number[];
 }
 
+@InputType({ description: 'Update product data' })
+export class UpdateProductInput extends CreateProductInput {
+  @Field(() => Number)
+  public productId!: number;
+}
+
 @InputType({ description: 'Get products filters' })
 export class ProductsFilters {
   @Field(() => Number)

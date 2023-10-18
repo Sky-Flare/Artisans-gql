@@ -180,6 +180,7 @@ type Mutation {
   updateArtisan(CreateArtisanInput: CreateArtisanInput!): Artisan!
   updateCart(UpdateCart: UpdateCart!): Cart
   updateCategoryProduct(categoryProductUpdate: CategoryProductUpdate!): Category_product
+  updateProduct(createProductInput: UpdateProductInput!): Product
 }
 
 type Product {
@@ -243,6 +244,17 @@ input UpdateCart {
   action: ActionCart!
   productId: Float!
   quantity: Float!
+}
+
+"""Update product data"""
+input UpdateProductInput {
+  categoriesProductsIds: [Float!]
+  description: String!
+  name: String!
+  picture: String!
+  price: Float!
+  productId: Float!
+  shopsIds: [Float!]
 }
 
 type User {
