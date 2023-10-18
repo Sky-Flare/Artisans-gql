@@ -134,12 +134,6 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     );
   }
 
-  @FieldResolver({ description: 'All products of a shop' })
-  @Authorized()
-  public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
-    return await this.productRepository.findProductsOfShop(shop.id);
-  }
-
   @FieldResolver()
   @Authorized()
   public async horaireShop(
@@ -174,12 +168,12 @@ export class ShopResolvers implements ResolverInterface<Shop> {
       throw new Error('Siret requier');
     }
 
-    if (!createShopInput?.categoriesIds.length) {
+    if (!createShopInput?.shopCategoriesIds.length) {
       throw new Error('Category required');
     }
 
     const categories = await this.category_shopRepository.findByCategoriesIds(
-      createShopInput?.categoriesIds
+      createShopInput?.shopCategoriesIds
     );
 
     if (!categories.length) {

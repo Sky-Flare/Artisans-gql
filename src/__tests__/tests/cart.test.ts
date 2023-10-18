@@ -118,7 +118,7 @@ const artisanFaker = {
 };
 const shopFaker = {
   address: faker.location.streetAddress(),
-  categoriesIds: [1],
+  shopCategoriesIds: [1],
   city: faker.location.city(),
   description: faker.lorem.sentence(10),
   name: faker.company.name(),

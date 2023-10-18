@@ -1,9 +1,10 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
   Column,
   Entity,
+  JoinTable,
   ManyToMany,
   PrimaryGeneratedColumn,
   Unique
@@ -28,7 +29,6 @@ export class Category_product extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   public picture?: string;
 
-  @Field(() => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.categoriesProducts)
   products?: Product[];
 
@@ -48,4 +48,14 @@ export class CategoryProductInput {
 
   @Field(() => [Number], { nullable: true })
   public shopsIds: number[] = [];
+}
+
+@InputType({ description: 'Update category product' })
+export class CategoryProductUpdate {
+  @IsArray()
+  @Field(() => [Number], { nullable: true })
+  public shopsIds?: number[] = [];
+
+  @Field(() => Number)
+  public categoryProductId!: number;
 }

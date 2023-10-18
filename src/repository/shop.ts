@@ -33,11 +33,16 @@ export class ShopRepository extends Repository<Shop> {
       })
       .getMany();
   }
-  public findByShopsIds(shopsIds: number[]): Promise<Shop[]> {
+  public findByShopsIds(
+    shopsIds: number[],
+    artisanId: number
+  ): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
+      .leftJoin('shop.artisan', 'artisan')
       .where('shop.id IN (:...shopsIds)', {
         shopsIds: shopsIds
       })
+      .andWhere('artisan.id = :artisanId', { artisanId: artisanId })
       .getMany();
   }
   public findByProductId(productId: number): Promise<Shop[]> {

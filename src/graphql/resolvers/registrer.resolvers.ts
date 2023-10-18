@@ -108,7 +108,7 @@ export class RegistrerResolvers {
             { userId: client.id, role: client.role },
             process.env.JWT_SECRET as Secret,
             {
-              expiresIn: '60m'
+              expiresIn: '8h'
             }
           )
         };
@@ -148,7 +148,7 @@ export class RegistrerResolvers {
         { userId: user.id, role: user.role },
         process.env.JWT_SECRET as Secret,
         {
-          expiresIn: '15m'
+          expiresIn: '8h'
         }
       )
     };

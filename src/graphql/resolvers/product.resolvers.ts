@@ -4,13 +4,14 @@ import {
   Ctx,
   FieldResolver,
   Mutation,
+  Query,
   Resolver,
   Root
 } from 'type-graphql';
 import { Service } from 'typedi';
 import { Category_product } from '@entity/category_product';
 import { Role } from '@entity/generic/user';
-import { CreateProductInput, Product } from '@entity/product';
+import { CreateProductInput, Product, ProductsFilters } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
 import { ProductRepository } from '@repository/product';
@@ -36,6 +37,30 @@ export class ProductResolvers {
     this.productRepository = productRepository;
     this.shopRepository = shopRepository;
     this.category_productRepository = category_productRepository;
+  }
+
+  @Query(() => [Product], { nullable: true })
+  @Authorized()
+  public async products(
+    @Ctx() ctx: MyContext,
+    @Arg('filtersProducts')
+    productsFilters?: ProductsFilters
+  ): Promise<Product[] | null> {
+    if (!productsFilters?.shopId) {
+      return null;
+    }
+    let catsProducts: number[] = (productsFilters.categoriesProductsIds = []);
+    if (!productsFilters?.categoriesProductsIds?.length) {
+      await this.category_productRepository
+        .findCategoriesProductByShop(productsFilters.shopId)
+        .then((cats) => {
+          catsProducts = cats.map((cat) => cat.id);
+        });
+    }
+    return this.productRepository.findProductsOfShop(
+      productsFilters?.shopId,
+      catsProducts
+    );
   }
 
   @FieldResolver()
@@ -102,7 +127,7 @@ export class ProductResolvers {
     let shopsSlected: Shop[] = [];
     if (createProductInput.shopsIds?.length) {
       await this.shopRepository
-        .findByShopsIds(createProductInput.shopsIds)
+        .findByShopsIds(createProductInput.shopsIds, me.id)
         .then((shops) => {
           if (shops.length === createProductInput.shopsIds?.length) {
             shopsSlected = shops;

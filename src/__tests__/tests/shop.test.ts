@@ -88,7 +88,7 @@ const clientFaker = {
 };
 const shopFaker = {
   address: faker.location.streetAddress(),
-  categoriesIds: [1],
+  shopCategoriesIds: [1],
   city: faker.location.city(),
   description: faker.lorem.text(),
   name: faker.company.name(),
@@ -125,7 +125,7 @@ describe('Shop', () => {
       expect(createShopResponse.errors?.[0].message).toContain('Siret requier');
     });
     it('should throw error Category required', async () => {
-      shopFaker.categoriesIds = [];
+      shopFaker.shopCategoriesIds = [];
       shopFaker.siretNumber = '56789';
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
@@ -142,7 +142,7 @@ describe('Shop', () => {
       );
     });
     it('should throw error Category not found', async () => {
-      shopFaker.categoriesIds = [3];
+      shopFaker.shopCategoriesIds = [3];
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
         CreateShopMutationVariables
@@ -158,7 +158,7 @@ describe('Shop', () => {
       );
     });
     it('should create shop', async () => {
-      shopFaker.categoriesIds = [1];
+      shopFaker.shopCategoriesIds = [1];
       const createShopResponse = await gqlHelper<
         CreateShopMutation,
         CreateShopMutationVariables

@@ -55,6 +55,12 @@ export type CategoryProductInput = {
   shopsIds?: InputMaybe<Array<Scalars['Float']['input']>>;
 };
 
+/** Update category product */
+export type CategoryProductUpdate = {
+  categoryProductId: Scalars['Float']['input'];
+  shopsIds?: InputMaybe<Array<Scalars['Float']['input']>>;
+};
+
 /** New category shop */
 export type CategoryShopInput = {
   name: Scalars['String']['input'];
@@ -66,7 +72,6 @@ export type Category_Product = {
   id: Scalars['Float']['output'];
   name: Scalars['String']['output'];
   picture?: Maybe<Scalars['String']['output']>;
-  products?: Maybe<Array<Product>>;
   shops?: Maybe<Array<Shop>>;
 };
 
@@ -133,10 +138,10 @@ export type CreateProductInput = {
 /** New shop data */
 export type CreateShopInput = {
   address: Scalars['String']['input'];
-  categoriesIds: Array<Scalars['Float']['input']>;
   city: Scalars['String']['input'];
   description: Scalars['String']['input'];
   name: Scalars['String']['input'];
+  shopCategoriesIds: Array<Scalars['Float']['input']>;
   siretNumber: Scalars['String']['input'];
   zipCode: Scalars['Float']['input'];
 };
@@ -194,6 +199,7 @@ export type Mutation = {
   signUpClient?: Maybe<LoginResponse>;
   updateArtisan: Artisan;
   updateCart?: Maybe<Cart>;
+  updateCategoryProduct?: Maybe<Category_Product>;
 };
 
 
@@ -247,6 +253,11 @@ export type MutationUpdateCartArgs = {
   UpdateCart: UpdateCart;
 };
 
+
+export type MutationUpdateCategoryProductArgs = {
+  categoryProductUpdate: CategoryProductUpdate;
+};
+
 export type Product = {
   __typename?: 'Product';
   categoriesProducts?: Maybe<Array<Category_Product>>;
@@ -257,6 +268,12 @@ export type Product = {
   picture: Scalars['String']['output'];
   price: Scalars['Float']['output'];
   shops?: Maybe<Array<Shop>>;
+};
+
+/** Get products filters */
+export type ProductsFilters = {
+  categoriesProductsIds?: InputMaybe<Array<Scalars['Float']['input']>>;
+  shopId: Scalars['Float']['input'];
 };
 
 export type Query = {
@@ -270,6 +287,7 @@ export type Query = {
   clientCart?: Maybe<Array<Cart>>;
   meArtisan?: Maybe<Artisan>;
   meClient?: Maybe<Client>;
+  products?: Maybe<Array<Product>>;
   shop?: Maybe<Shop>;
   shops?: Maybe<Array<Shop>>;
 };
@@ -282,6 +300,11 @@ export type QueryArtisanArgs = {
 
 export type QueryCategories_ProductByShopArgs = {
   shopId: Scalars['Float']['input'];
+};
+
+
+export type QueryProductsArgs = {
+  filtersProducts: ProductsFilters;
 };
 
 
@@ -314,7 +337,6 @@ export type Shop = {
   horaireShop?: Maybe<Array<Horaire_Shop>>;
   id: Scalars['Float']['output'];
   name: Scalars['String']['output'];
-  products?: Maybe<Array<Product>>;
   updatedAt: Scalars['DateTime']['output'];
   zipCode: Scalars['Float']['output'];
 };
@@ -411,6 +433,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Cart: ResolverTypeWrapper<Cart>;
   CategoryProductInput: CategoryProductInput;
+  CategoryProductUpdate: CategoryProductUpdate;
   CategoryShopInput: CategoryShopInput;
   Category_product: ResolverTypeWrapper<Category_Product>;
   Category_shop: ResolverTypeWrapper<Category_Shop>;
@@ -429,6 +452,7 @@ export type ResolversTypes = {
   LoginResponse: ResolverTypeWrapper<LoginResponse>;
   Mutation: ResolverTypeWrapper<{}>;
   Product: ResolverTypeWrapper<Product>;
+  ProductsFilters: ProductsFilters;
   Query: ResolverTypeWrapper<{}>;
   Role: Role;
   Shop: ResolverTypeWrapper<Shop>;
@@ -443,6 +467,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Cart: Cart;
   CategoryProductInput: CategoryProductInput;
+  CategoryProductUpdate: CategoryProductUpdate;
   CategoryShopInput: CategoryShopInput;
   Category_product: Category_Product;
   Category_shop: Category_Shop;
@@ -460,6 +485,7 @@ export type ResolversParentTypes = {
   LoginResponse: LoginResponse;
   Mutation: {};
   Product: Product;
+  ProductsFilters: ProductsFilters;
   Query: {};
   Shop: Shop;
   String: Scalars['String']['output'];
@@ -493,7 +519,6 @@ export type Category_ProductResolvers<ContextType = any, ParentType extends Reso
   id?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   picture?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
   shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -550,6 +575,7 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   signUpClient?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationSignUpClientArgs, 'CreateClientInput'>>;
   updateArtisan?: Resolver<ResolversTypes['Artisan'], ParentType, ContextType, RequireFields<MutationUpdateArtisanArgs, 'CreateArtisanInput'>>;
   updateCart?: Resolver<Maybe<ResolversTypes['Cart']>, ParentType, ContextType, RequireFields<MutationUpdateCartArgs, 'UpdateCart'>>;
+  updateCategoryProduct?: Resolver<Maybe<ResolversTypes['Category_product']>, ParentType, ContextType, RequireFields<MutationUpdateCategoryProductArgs, 'categoryProductUpdate'>>;
 };
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
@@ -572,6 +598,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   clientCart?: Resolver<Maybe<Array<ResolversTypes['Cart']>>, ParentType, ContextType>;
   meArtisan?: Resolver<Maybe<ResolversTypes['Artisan']>, ParentType, ContextType>;
   meClient?: Resolver<Maybe<ResolversTypes['Client']>, ParentType, ContextType>;
+  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType, RequireFields<QueryProductsArgs, 'filtersProducts'>>;
   shop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<QueryShopArgs, 'shopId'>>;
   shops?: Resolver<Maybe<Array<ResolversTypes['Shop']>>, ParentType, ContextType, Partial<QueryShopsArgs>>;
 };
@@ -588,7 +615,6 @@ export type ShopResolvers<ContextType = any, ParentType extends ResolversParentT
   horaireShop?: Resolver<Maybe<Array<ResolversTypes['Horaire_shop']>>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  products?: Resolver<Maybe<Array<ResolversTypes['Product']>>, ParentType, ContextType>;
   updatedAt?: Resolver<ResolversTypes['DateTime'], ParentType, ContextType>;
   zipCode?: Resolver<ResolversTypes['Float'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;

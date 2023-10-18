@@ -77,7 +77,6 @@ export class Shop extends BaseEntity {
   @JoinTable()
   public categoriesProducts?: Category_product[];
 
-  @Field(() => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.shops)
   @JoinTable()
   public products?: Product[];
@@ -119,5 +118,5 @@ export class CreateShopInput {
 
   @IsArray()
   @Field(() => [Number])
-  public categoriesIds!: number[];
+  public shopCategoriesIds!: number[];
 }

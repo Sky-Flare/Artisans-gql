@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -86,5 +86,17 @@ export class CreateProductInput implements Partial<Product> {
   public shopsIds?: number[];
 
   @Field(() => [Number], { nullable: true })
+  public categoriesProductsIds?: number[];
+}
+
+@InputType({ description: 'Get products filters' })
+export class ProductsFilters {
+  @Field(() => Number)
+  public shopId!: number;
+
+  @IsArray()
+  @Field(() => [Number], {
+    nullable: true
+  })
   public categoriesProductsIds?: number[];
 }
