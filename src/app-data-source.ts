@@ -11,7 +11,7 @@ const dataSource = new DataSource({
   password: process.env.DB_PASSWORD,
   port: 3306,
   logger: 'advanced-console',
-  cache: process.env.DB_DROP_SCHEMA !== 'true',
+  cache: false,
   synchronize: false,
   type: 'mysql',
   username: process.env.DB_USERNAME

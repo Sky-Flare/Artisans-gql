@@ -10,7 +10,11 @@ import {
 } from 'type-graphql';
 import { Service } from 'typedi';
 import { Category_product } from '@entity/category_product';
-import { Role } from '@entity/generic/user';
+import {
+  getStatusModeration,
+  Role,
+  StatusModeration
+} from '@entity/generic/user';
 import {
   CreateProductInput,
   Product,
@@ -68,7 +72,8 @@ export class ProductResolvers {
     }
     return this.productRepository.findProductsOfShopAndCatsProduct(
       productsFilters?.shopId,
-      catsProducts
+      catsProducts,
+      getStatusModeration(ctx.payload?.role)
     );
   }
 
@@ -116,6 +121,28 @@ export class ProductResolvers {
       })
       .catch(() => {
         throw new Error('Product not deleted');
+      });
+  }
+
+  @Mutation(() => Boolean)
+  @Authorized(Role.ADMIN)
+  public async moderateProduct(
+    @Ctx() ctx: MyContext,
+    @Arg('id') id: number,
+    @Arg('statusModeration') statusModeration: StatusModeration
+  ): Promise<boolean> {
+    const product = await this.productRepository.findOne({
+      where: { id }
+    });
+    if (!product) {
+      throw new Error('Product not found');
+    }
+    product.enabled = statusModeration;
+    return await product
+      .save()
+      .then(() => true)
+      .catch(() => {
+        throw new Error('Product not moderated');
       });
   }
 
@@ -245,7 +272,6 @@ export class ProductResolvers {
         }
       }
     }
-    console.log(product);
     this.productRepository.merge(product, {
       name: updateProductInput.name,
       description: updateProductInput.description,

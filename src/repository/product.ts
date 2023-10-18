@@ -14,12 +14,14 @@ export class ProductRepository extends Repository<Product> {
 
   public findProductsOfShopAndCatsProduct(
     shopId: number,
-    catsProduct: number[]
+    catsProduct: number[],
+    enabledId: number[]
   ): Promise<Product[]> {
     return this.createQueryBuilder('product')
       .leftJoin('product.shops', 'shop')
       .leftJoin('product.categoriesProducts', 'category_product')
-      .where('shop.id = :id', { id: shopId })
+      .where('product.enabled IN (:...enabledId)', { enabledId: enabledId })
+      .andWhere('shop.id = :id', { id: shopId })
       .andWhere('category_product.id IN (:...catsProduct)', {
         catsProduct: catsProduct
       })

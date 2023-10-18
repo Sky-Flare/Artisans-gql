@@ -65,13 +65,13 @@ export class ArtisanResolvers {
     nullable: true,
     description: 'Return all artisans'
   })
-  @Authorized()
+  @Authorized(Role.ADMIN)
   public async artisans(): Promise<Artisan[]> {
     return await this.artisanRepository.find({});
   }
 
   @Query(() => Artisan, { nullable: true, description: 'Return on artisan' })
-  @Authorized()
+  @Authorized(Role.ADMIN)
   public async artisan(
     @Arg('artisanId') artisanId: number
   ): Promise<Artisan | null> {

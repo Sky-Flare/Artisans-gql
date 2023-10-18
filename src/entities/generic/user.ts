@@ -20,6 +20,25 @@ export enum Role {
   ARTISAN = 'ARTISAN',
   OWNER = 'OWNER'
 }
+export enum StatusModeration {
+  PENDING = 1,
+  ACCEPTED = 2,
+  REFUSED = 3
+}
+
+export function getStatusModeration(currentRole?: Role): StatusModeration[] {
+  const statusMode = [StatusModeration.ACCEPTED];
+  if (!currentRole) {
+    return statusMode;
+  }
+  if (currentRole === Role.ADMIN || currentRole === Role.ARTISAN) {
+    statusMode.push(StatusModeration.PENDING);
+  }
+  if (currentRole === Role.ADMIN) {
+    statusMode.push(StatusModeration.REFUSED);
+  }
+  return statusMode;
+}
 registerEnumType(Role, {
   name: 'Role'
 });

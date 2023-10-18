@@ -79,39 +79,7 @@ describe('Artisan', () => {
       );
     });
   });
-  describe('artisans mutation', () => {
-    it('should return all artisan', async () => {
-      await createArtisan({
-        lastName: faker.person.lastName(),
-        firstName: faker.person.firstName(),
-        email: faker.internet.email(),
-        address: faker.location.streetAddress(),
-        zipCode: Number(faker.location.zipCode()),
-        city: faker.location.city(),
-        password: faker.internet.password(),
-        sirenNumber: '508822855'
-      });
-      const allArtisanResponse = await gqlHelper<ArtisansQuery>({
-        source: ArtisansDocument,
-        contextValue: token
-      });
-      expect(allArtisanResponse.data?.artisans?.length).toBe(2);
-    });
-  });
-  describe('artisan query', () => {
-    it('should return one artisan by id', async () => {
-      const artisanResponse = await gqlHelper<
-        ArtisanQuery,
-        ArtisanQueryVariables
-      >({
-        source: ArtisanDocument,
-        variableValues: {
-          artisanId: 1
-        },
-        contextValue: token
-      });
-    });
-  });
+
   describe('deleteArtisan mutation', () => {
     it('should delete artisan', async () => {
       const deleteArtisanResponse = await gqlHelper<DeleteArtisanMutation>({

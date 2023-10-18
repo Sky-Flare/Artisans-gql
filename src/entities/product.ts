@@ -17,6 +17,7 @@ import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
 import { Cart } from '@entity/cart';
+import { StatusModeration } from '@entity/generic/user';
 
 @ObjectType()
 @Entity()
@@ -42,7 +43,7 @@ export class Product extends BaseEntity {
   public picture!: string;
 
   @Field()
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: 'integer', default: StatusModeration.PENDING })
   public enabled!: number;
 
   @Field(() => [Category_product], { nullable: true })

@@ -29,8 +29,8 @@ export const authChecker: AuthChecker<MyContext> = (MyContext, roles) => {
     }
 
     if (
-      roles.includes(Role.OWNER) &&
-      roles.includes(payload.role) &&
+      ((roles.length === 1 && roles[0] === Role.OWNER) ||
+        (roles.includes(Role.OWNER) && roles.includes(payload.role))) &&
       MyContext.root?.id === payload.userId
     ) {
       return true;

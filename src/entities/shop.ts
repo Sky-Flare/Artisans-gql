@@ -22,6 +22,7 @@ import { Category_product } from '@entity/category_product';
 import { Category_shop } from '@entity/category_shop';
 import { Product } from '@entity/product';
 import { Siret } from '@entity/siret';
+import { StatusModeration } from '@entity/generic/user';
 
 @ObjectType()
 @Entity()
@@ -60,7 +61,7 @@ export class Shop extends BaseEntity {
   public horaireShop?: Horaire_shop[];
 
   @Field()
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: 'integer', default: StatusModeration.PENDING })
   public enabled!: number;
 
   @Field(() => Artisan, { nullable: false })

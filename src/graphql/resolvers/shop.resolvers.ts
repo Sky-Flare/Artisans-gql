@@ -15,7 +15,7 @@ import { Horaire_shop } from '@entity/horaire_shop';
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
-import { Role } from '@entity/generic/user';
+import { Role, StatusModeration } from '@entity/generic/user';
 import { InputHoraireShop } from '@entity/horaire_shop';
 import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
@@ -240,5 +240,27 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     }
 
     return shop;
+  }
+
+  @Mutation(() => Boolean)
+  @Authorized(Role.ADMIN)
+  public async moderateShop(
+    @Ctx() ctx: MyContext,
+    @Arg('id') id: number,
+    @Arg('statusModeration') statusModeration: StatusModeration
+  ): Promise<boolean> {
+    const shop = await this.shopRepository.findOne({
+      where: { id }
+    });
+    if (!shop) {
+      throw new Error('Product not found');
+    }
+    shop.enabled = statusModeration;
+    return await shop
+      .save()
+      .then(() => true)
+      .catch(() => {
+        throw new Error('Product not moderated');
+      });
   }
 }
