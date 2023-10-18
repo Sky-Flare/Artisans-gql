@@ -39,6 +39,7 @@ export class ShopRepository extends Repository<Shop> {
   ): Promise<Shop[]> {
     return this.createQueryBuilder('shop')
       .leftJoin('shop.artisan', 'artisan')
+      .leftJoinAndSelect('shop.categoriesProducts', 'category_product')
       .where('shop.id IN (:...shopsIds)', {
         shopsIds: shopsIds
       })

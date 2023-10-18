@@ -49,15 +49,19 @@ export class ProductResolvers {
     if (!productsFilters?.shopId) {
       return null;
     }
-    let catsProducts: number[] = (productsFilters.categoriesProductsIds = []);
+    let catsProducts: number[] = productsFilters.categoriesProductsIds ?? [];
+
     if (!productsFilters?.categoriesProductsIds?.length) {
       await this.category_productRepository
         .findCategoriesProductByShop(productsFilters.shopId)
         .then((cats) => {
-          catsProducts = cats.map((cat) => cat.id);
+          catsProducts = cats.length ? cats.map((cat) => cat.id) : [];
         });
     }
-    return this.productRepository.findProductsOfShop(
+    if (!catsProducts.length) {
+      return [];
+    }
+    return this.productRepository.findProductsOfShopAndCatsProduct(
       productsFilters?.shopId,
       catsProducts
     );
@@ -126,31 +130,45 @@ export class ProductResolvers {
     }
     let shopsSlected: Shop[] = [];
     if (createProductInput.shopsIds?.length) {
-      await this.shopRepository
+      shopsSlected = await this.shopRepository
         .findByShopsIds(createProductInput.shopsIds, me.id)
         .then((shops) => {
           if (shops.length === createProductInput.shopsIds?.length) {
-            shopsSlected = shops;
+            return shops;
           } else {
             throw new Error('Shop not found');
           }
         });
     }
+
     let categoriesProductSlected: Category_product[] = [];
     if (createProductInput.categoriesProductsIds?.length) {
-      await this.category_productRepository
+      categoriesProductSlected = await this.category_productRepository
         .findCategoriesProductByIds(createProductInput.categoriesProductsIds)
         .then((categoriesProduct) => {
           if (
             categoriesProduct.length ===
             createProductInput.categoriesProductsIds?.length
           ) {
-            categoriesProductSlected = categoriesProduct;
+            return categoriesProduct;
           } else {
             throw new Error('Categories product not found');
           }
         });
     }
+
+    // I verify that the categories product are in the shop
+    for (const shop of shopsSlected) {
+      for (const cat of categoriesProductSlected) {
+        if (
+          !shop.categoriesProducts?.some((catShop) => catShop.id === cat.id)
+        ) {
+          shop.categoriesProducts?.push(cat);
+          await shop.save();
+        }
+      }
+    }
+
     const product = this.productRepository.create({
       name: createProductInput.name,
       description: createProductInput.description,

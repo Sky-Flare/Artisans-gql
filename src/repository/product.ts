@@ -12,7 +12,7 @@ export class ProductRepository extends Repository<Product> {
     this.productRepository = dataSource.getRepository(Product);
   }
 
-  public findProductsOfShop(
+  public findProductsOfShopAndCatsProduct(
     shopId: number,
     catsProduct: number[]
   ): Promise<Product[]> {
