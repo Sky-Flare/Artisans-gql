@@ -1,6 +1,5 @@
 import { GraphQLResolveInfo, GraphQLScalarType, GraphQLScalarTypeConfig } from 'graphql';
-import { GraphQLClient } from 'graphql-request';
-import { GraphQLClientRequestHeaders } from 'graphql-request/build/cjs/types';
+import { GraphQLClient, RequestOptions } from 'graphql-request';
 import gql from 'graphql-tag';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
@@ -10,6 +9,7 @@ export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Mayb
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
 export type RequireFields<T, K extends keyof T> = Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+type GraphQLClientRequestHeaders = RequestOptions['requestHeaders'];
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -194,12 +194,15 @@ export type Mutation = {
   createShop?: Maybe<Shop>;
   deleteArtisan: Scalars['Boolean']['output'];
   deleteProduct: Scalars['Boolean']['output'];
+  moderateProduct: Scalars['Boolean']['output'];
+  moderateShop: Scalars['Boolean']['output'];
   signIn?: Maybe<LoginResponse>;
   signUpArtisan?: Maybe<LoginResponse>;
   signUpClient?: Maybe<LoginResponse>;
   updateArtisan: Artisan;
   updateCart?: Maybe<Cart>;
   updateCategoryProduct?: Maybe<Category_Product>;
+  updateProduct?: Maybe<Product>;
 };
 
 
@@ -226,6 +229,18 @@ export type MutationCreateShopArgs = {
 
 export type MutationDeleteProductArgs = {
   id: Scalars['Float']['input'];
+};
+
+
+export type MutationModerateProductArgs = {
+  id: Scalars['Float']['input'];
+  statusModeration: Scalars['Float']['input'];
+};
+
+
+export type MutationModerateShopArgs = {
+  id: Scalars['Float']['input'];
+  statusModeration: Scalars['Float']['input'];
 };
 
 
@@ -256,6 +271,11 @@ export type MutationUpdateCartArgs = {
 
 export type MutationUpdateCategoryProductArgs = {
   categoryProductUpdate: CategoryProductUpdate;
+};
+
+
+export type MutationUpdateProductArgs = {
+  createProductInput: UpdateProductInput;
 };
 
 export type Product = {
@@ -346,6 +366,17 @@ export type UpdateCart = {
   action: ActionCart;
   productId: Scalars['Float']['input'];
   quantity: Scalars['Float']['input'];
+};
+
+/** Update product data */
+export type UpdateProductInput = {
+  categoriesProductsIds?: InputMaybe<Array<Scalars['Float']['input']>>;
+  description: Scalars['String']['input'];
+  name: Scalars['String']['input'];
+  picture: Scalars['String']['input'];
+  price: Scalars['Float']['input'];
+  productId: Scalars['Float']['input'];
+  shopsIds?: InputMaybe<Array<Scalars['Float']['input']>>;
 };
 
 export type User = {
@@ -458,6 +489,7 @@ export type ResolversTypes = {
   Shop: ResolverTypeWrapper<Shop>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   UpdateCart: UpdateCart;
+  UpdateProductInput: UpdateProductInput;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -490,6 +522,7 @@ export type ResolversParentTypes = {
   Shop: Shop;
   String: Scalars['String']['output'];
   UpdateCart: UpdateCart;
+  UpdateProductInput: UpdateProductInput;
   User: User;
 };
 
@@ -570,12 +603,15 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   createShop?: Resolver<Maybe<ResolversTypes['Shop']>, ParentType, ContextType, RequireFields<MutationCreateShopArgs, 'CreateShopInput'>>;
   deleteArtisan?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   deleteProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationDeleteProductArgs, 'id'>>;
+  moderateProduct?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationModerateProductArgs, 'id' | 'statusModeration'>>;
+  moderateShop?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType, RequireFields<MutationModerateShopArgs, 'id' | 'statusModeration'>>;
   signIn?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationSignInArgs, 'ConnectUser'>>;
   signUpArtisan?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationSignUpArtisanArgs, 'CreateArtisanInput'>>;
   signUpClient?: Resolver<Maybe<ResolversTypes['LoginResponse']>, ParentType, ContextType, RequireFields<MutationSignUpClientArgs, 'CreateClientInput'>>;
   updateArtisan?: Resolver<ResolversTypes['Artisan'], ParentType, ContextType, RequireFields<MutationUpdateArtisanArgs, 'CreateArtisanInput'>>;
   updateCart?: Resolver<Maybe<ResolversTypes['Cart']>, ParentType, ContextType, RequireFields<MutationUpdateCartArgs, 'UpdateCart'>>;
   updateCategoryProduct?: Resolver<Maybe<ResolversTypes['Category_product']>, ParentType, ContextType, RequireFields<MutationUpdateCategoryProductArgs, 'categoryProductUpdate'>>;
+  updateProduct?: Resolver<Maybe<ResolversTypes['Product']>, ParentType, ContextType, RequireFields<MutationUpdateProductArgs, 'createProductInput'>>;
 };
 
 export type ProductResolvers<ContextType = any, ParentType extends ResolversParentTypes['Product'] = ResolversParentTypes['Product']> = {
@@ -823,72 +859,72 @@ export const CreateShopDocument = gql`
 }
     `;
 
-export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string) => Promise<T>;
+export type SdkFunctionWrapper = <T>(action: (requestHeaders?:Record<string, string>) => Promise<T>, operationName: string, operationType?: string, variables?: any) => Promise<T>;
 
 
-const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType) => action();
+const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationType, _variables) => action();
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
     MeArtisan(variables?: MeArtisanQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeArtisanQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<MeArtisanQuery>(MeArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeArtisan', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<MeArtisanQuery>(MeArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeArtisan', 'query', variables);
     },
     Artisan(variables: ArtisanQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ArtisanQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<ArtisanQuery>(ArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisan', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<ArtisanQuery>(ArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisan', 'query', variables);
     },
     Artisans(variables?: ArtisansQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ArtisansQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<ArtisansQuery>(ArtisansDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisans', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<ArtisansQuery>(ArtisansDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Artisans', 'query', variables);
     },
     UpdateArtisan(variables: UpdateArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateArtisanMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UpdateArtisanMutation>(UpdateArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateArtisan', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateArtisanMutation>(UpdateArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateArtisan', 'mutation', variables);
     },
     DeleteArtisan(variables?: DeleteArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteArtisanMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteArtisanMutation>(DeleteArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteArtisan', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteArtisanMutation>(DeleteArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteArtisan', 'mutation', variables);
     },
     UpdateCart(variables: UpdateCartMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<UpdateCartMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCartMutation>(UpdateCartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCart', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<UpdateCartMutation>(UpdateCartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'UpdateCart', 'mutation', variables);
     },
     Cart(variables?: CartQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CartQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CartQuery>(CartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Cart', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<CartQuery>(CartDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Cart', 'query', variables);
     },
     CreateCategoryProduct(variables: CreateCategoryProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCategoryProductMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryProductMutation>(CreateCategoryProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryProduct', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryProductMutation>(CreateCategoryProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryProduct', 'mutation', variables);
     },
     Categories_productByShop(variables: Categories_ProductByShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<Categories_ProductByShopQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<Categories_ProductByShopQuery>(Categories_ProductByShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Categories_productByShop', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<Categories_ProductByShopQuery>(Categories_ProductByShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Categories_productByShop', 'query', variables);
     },
     CreateCategoryShop(variables: CreateCategoryShopMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateCategoryShopMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryShopMutation>(CreateCategoryShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryShop', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateCategoryShopMutation>(CreateCategoryShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateCategoryShop', 'mutation', variables);
     },
     CategoriesShop(variables?: CategoriesShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CategoriesShopQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CategoriesShopQuery>(CategoriesShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CategoriesShop', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<CategoriesShopQuery>(CategoriesShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CategoriesShop', 'query', variables);
     },
     MeClient(variables?: MeClientQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<MeClientQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<MeClientQuery>(MeClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeClient', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<MeClientQuery>(MeClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'MeClient', 'query', variables);
     },
     CreateProduct(variables: CreateProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateProductMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreateProductMutation>(CreateProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateProduct', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateProductMutation>(CreateProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateProduct', 'mutation', variables);
     },
     DeleteProduct(variables: DeleteProductMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<DeleteProductMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<DeleteProductMutation>(DeleteProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteProduct', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<DeleteProductMutation>(DeleteProductDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'DeleteProduct', 'mutation', variables);
     },
     SignUpArtisan(variables: SignUpArtisanMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SignUpArtisanMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<SignUpArtisanMutation>(SignUpArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpArtisan', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<SignUpArtisanMutation>(SignUpArtisanDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpArtisan', 'mutation', variables);
     },
     SignUpClient(variables: SignUpClientMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SignUpClientMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<SignUpClientMutation>(SignUpClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpClient', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<SignUpClientMutation>(SignUpClientDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignUpClient', 'mutation', variables);
     },
     SignIn(variables: SignInMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<SignInMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<SignInMutation>(SignInDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignIn', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<SignInMutation>(SignInDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'SignIn', 'mutation', variables);
     },
     Shops(variables?: ShopsQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ShopsQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<ShopsQuery>(ShopsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shops', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<ShopsQuery>(ShopsDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shops', 'query', variables);
     },
     Shop(variables: ShopQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<ShopQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<ShopQuery>(ShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shop', 'query');
+      return withWrapper((wrappedRequestHeaders) => client.request<ShopQuery>(ShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'Shop', 'query', variables);
     },
     CreateShop(variables: CreateShopMutationVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<CreateShopMutation> {
-      return withWrapper((wrappedRequestHeaders) => client.request<CreateShopMutation>(CreateShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateShop', 'mutation');
+      return withWrapper((wrappedRequestHeaders) => client.request<CreateShopMutation>(CreateShopDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'CreateShop', 'mutation', variables);
     }
   };
 }

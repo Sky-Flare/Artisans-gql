@@ -16,15 +16,12 @@ import {
   CategoryProductUpdate
 } from '@entity/category_product';
 import { Role } from '@entity/generic/user';
-import { Product } from '@entity/product';
 import { Shop } from '@entity/shop';
 import { Category_productRepository } from '@repository/category_product';
 import { ProductRepository } from '@repository/product';
 import { ShopRepository } from '@repository/shop';
 import { ArtisanRepository } from '@repository/artisan';
 import { MyContext } from '@src/graphql/myContext';
-import { Artisan, CreateArtisanInput } from '@entity/artisan';
-import { th } from '@faker-js/faker';
 
 @Resolver(() => Category_product)
 @Service()
