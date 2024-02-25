@@ -12,6 +12,18 @@ query MeArtisan {
     }
 }
 
+query Artisan($artisanId: Float!) {
+    artisan(artisanId: $artisanId) {
+        lastName
+    }
+}
+
+query Artisans {
+    artisans {
+        firstName
+    }
+}
+
 mutation UpdateArtisan($createArtisanInput: CreateArtisanInput!) {
         updateArtisan(CreateArtisanInput: $createArtisanInput) {
         lastName

@@ -1,0 +1,24 @@
+mutation UpdateCart($updateCart: UpdateCart!) {
+    updateCart(UpdateCart: $updateCart) {
+        quantity
+        productId
+        product {
+            name
+        }
+    }
+}
+
+
+query Cart {
+    clientCart {
+        product {
+            name
+            price
+            shops {
+                name
+            }
+        }
+        productId
+        quantity
+    }
+}

@@ -22,6 +22,7 @@ import { Category_product } from '@entity/category_product';
 import { Category_shop } from '@entity/category_shop';
 import { Product } from '@entity/product';
 import { Siret } from '@entity/siret';
+import { StatusModeration } from '@entity/generic/user';
 
 @ObjectType()
 @Entity()
@@ -36,7 +37,7 @@ export class Shop extends BaseEntity {
   public name!: string;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', length: 500 })
   public description!: string;
 
   @Field({ nullable: false })
@@ -60,7 +61,7 @@ export class Shop extends BaseEntity {
   public horaireShop?: Horaire_shop[];
 
   @Field()
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: 'integer', default: StatusModeration.PENDING })
   public enabled!: number;
 
   @Field(() => Artisan, { nullable: false })
@@ -77,7 +78,6 @@ export class Shop extends BaseEntity {
   @JoinTable()
   public categoriesProducts?: Category_product[];
 
-  @Field(() => [Product], { nullable: true })
   @ManyToMany(() => Product, (product) => product.shops)
   @JoinTable()
   public products?: Product[];
@@ -119,5 +119,5 @@ export class CreateShopInput {
 
   @IsArray()
   @Field(() => [Number])
-  public categoriesIds!: number[];
+  public shopCategoriesIds!: number[];
 }

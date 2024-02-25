@@ -1,7 +1,13 @@
-query Shops($filtersInput: GetShopCatIdsAndZipCode) {
-  shops(filtersInput: $filtersInput) {
+query Shops($shopsFiltersInput: GetShopCatIdsAndZipCode) {
+  shops(filtersInput: $shopsFiltersInput) {
     name
     zipCode
+  }
+}
+
+query Shop($shopId: Float!) {
+  shop(shopId: $shopId) {
+    name
   }
 }
 

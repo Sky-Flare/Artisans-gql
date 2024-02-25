@@ -4,15 +4,15 @@ import { entities } from '@entity/config/entities';
 
 const dataSource = new DataSource({
   database: process.env.DB_NAME,
-  dropSchema: true,
+  dropSchema: false,
   entities: entities,
   host: 'localhost',
   logging: 'all',
   password: process.env.DB_PASSWORD,
   port: 3306,
   logger: 'advanced-console',
-  cache: process.env.DB_DROP_SCHEMA !== 'true',
-  synchronize: true,
+  cache: false,
+  synchronize: false,
   type: 'mysql',
   username: process.env.DB_USERNAME
 });

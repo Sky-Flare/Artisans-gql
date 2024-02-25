@@ -12,10 +12,19 @@ export class ProductRepository extends Repository<Product> {
     this.productRepository = dataSource.getRepository(Product);
   }
 
-  public findProductsOfShop(shopId: number): Promise<Product[]> {
+  public findProductsOfShopAndCatsProduct(
+    shopId: number,
+    catsProduct: number[],
+    enabledId: number[]
+  ): Promise<Product[]> {
     return this.createQueryBuilder('product')
       .leftJoin('product.shops', 'shop')
-      .where('shop.id = :id', { id: shopId })
+      .leftJoin('product.categoriesProducts', 'category_product')
+      .where('product.enabled IN (:...enabledId)', { enabledId: enabledId })
+      .andWhere('shop.id = :id', { id: shopId })
+      .andWhere('category_product.id IN (:...catsProduct)', {
+        catsProduct: catsProduct
+      })
       .getMany();
   }
   public findProductsOfArtisan(artisanId: number): Promise<Product[]> {
@@ -24,7 +33,7 @@ export class ProductRepository extends Repository<Product> {
       .where('artisan.id = :id', { id: artisanId })
       .getMany();
   }
-  public findProductsByCatgoryProduct(catProduct: number): Promise<Product[]> {
+  public findProductsByCategoryProduct(catProduct: number): Promise<Product[]> {
     return this.createQueryBuilder('product')
       .leftJoin('product.categoriesProducts', 'category_product')
       .where('category_product.id = :id', { id: catProduct })

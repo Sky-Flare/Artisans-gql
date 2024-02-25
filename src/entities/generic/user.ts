@@ -1,5 +1,11 @@
 import { IsEmail, IsString } from 'class-validator';
-import { Field, InputType, ObjectType, registerEnumType } from 'type-graphql';
+import {
+  Authorized,
+  Field,
+  InputType,
+  ObjectType,
+  registerEnumType
+} from 'type-graphql';
 import {
   BaseEntity,
   Column,
@@ -11,7 +17,27 @@ import {
 export enum Role {
   ADMIN = 'ADMIN',
   CLIENT = 'CLIENT',
-  ARTISAN = 'ARTISAN'
+  ARTISAN = 'ARTISAN',
+  OWNER = 'OWNER'
+}
+export enum StatusModeration {
+  PENDING = 1,
+  ACCEPTED = 2,
+  REFUSED = 3
+}
+
+export function getStatusModeration(currentRole?: Role): StatusModeration[] {
+  const statusMode = [StatusModeration.ACCEPTED];
+  if (!currentRole) {
+    return statusMode;
+  }
+  if (currentRole === Role.ADMIN || currentRole === Role.ARTISAN) {
+    statusMode.push(StatusModeration.PENDING);
+  }
+  if (currentRole === Role.ADMIN) {
+    statusMode.push(StatusModeration.REFUSED);
+  }
+  return statusMode;
 }
 registerEnumType(Role, {
   name: 'Role'
@@ -30,22 +56,6 @@ export class User extends BaseEntity {
   @Field()
   @Column({ type: 'varchar' })
   public lastName!: string;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public email!: string;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public address!: string;
-
-  @Field()
-  @Column({ type: 'integer' })
-  public zipCode!: number;
-
-  @Field()
-  @Column({ type: 'varchar' })
-  public city!: string;
 
   @Column({ type: 'varchar' })
   public password!: string;

@@ -1,12 +1,12 @@
 import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
-import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
+import { Role } from '@src/generated/graphql';
 
 let dataSource: DataSource;
 
@@ -97,10 +97,10 @@ describe('Register', () => {
 
   describe('signIn mutation', () => {
     it('should authenticate a artisan with correct credentials', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: artisanFaker.email,
         password: artisanFaker.password,
-        role: Role.ARTISAN
+        role: Role.Artisan
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
@@ -108,10 +108,10 @@ describe('Register', () => {
       expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for incorrect credentials artisan', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: artisanFaker.email,
         password: 'not my password',
-        role: Role.ARTISAN
+        role: Role.Artisan
       });
       expect(response).toBeDefined();
       expect(response.errors).toBeDefined();
@@ -123,10 +123,10 @@ describe('Register', () => {
       }
     });
     it('should authenticate a client with correct credentials', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: clientFaker.email,
         password: clientFaker.password,
-        role: Role.CLIENT
+        role: Role.Client
       });
       expect(response).toBeDefined();
       expect(response.data).toBeDefined();
@@ -134,10 +134,10 @@ describe('Register', () => {
       expect(response.data?.signIn?.accessToken).toBeDefined();
     });
     it('should throw an error for unknown user', async () => {
-      const { response } = await singIn({
+      const { response } = await signIn({
         email: 'notgood@email.com',
         password: clientFaker.password,
-        role: Role.CLIENT
+        role: Role.Client
       });
       expect(response).toBeDefined();
       expect(response.errors).toBeDefined();

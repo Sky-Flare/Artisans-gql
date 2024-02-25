@@ -15,7 +15,7 @@ import { Horaire_shop } from '@entity/horaire_shop';
 import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
-import { Role } from '@entity/generic/user';
+import { Role, StatusModeration } from '@entity/generic/user';
 import { InputHoraireShop } from '@entity/horaire_shop';
 import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
@@ -60,6 +60,15 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     this.horaire_shopRepository = horaire_shopRepository;
     this.siretRepository = siretRepository;
   }
+
+  @Query(() => Shop, { nullable: true })
+  @Authorized()
+  public async shop(@Arg('shopId') shopId: number): Promise<Shop | null> {
+    return await this.shopRepository.findOneBy({
+      id: shopId
+    });
+  }
+
   @Query(() => [Shop], { nullable: true })
   @Authorized()
   public async shops(
@@ -73,19 +82,19 @@ export class ShopResolvers implements ResolverInterface<Shop> {
         const me = await this.artisanRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
-        zipCodeSearch = me?.zipCode;
+        zipCodeSearch = me?.zipCode ? [me?.zipCode] : undefined;
       } else {
         const me = await this.clientRepository.findOneBy({
           id: Number(ctx?.payload?.userId)
         });
-        zipCodeSearch = me?.zipCode;
+        zipCodeSearch = me?.zipCode ? [me?.zipCode] : undefined;
       }
     }
-    if (!filtersInput?.categoriesIds?.length && zipCodeSearch) {
-      return this.shopRepository.findByZipCode(zipCodeSearch);
+    if (!filtersInput?.categoriesIds?.length && zipCodeSearch?.length) {
+      return this.shopRepository.findByZipCodes(zipCodeSearch);
     }
-    if (zipCodeSearch && filtersInput?.categoriesIds) {
-      return this.shopRepository.findByCategoriesShopWithZipCode(
+    if (zipCodeSearch?.length && filtersInput?.categoriesIds) {
+      return this.shopRepository.findByCategoriesShopWithZipCodes(
         zipCodeSearch,
         filtersInput?.categoriesIds
       );
@@ -125,12 +134,6 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     );
   }
 
-  @FieldResolver({ description: 'All products of a shop' })
-  @Authorized()
-  public async products(@Root() shop: Shop): Promise<Product[] | undefined> {
-    return await this.productRepository.findProductsOfShop(shop.id);
-  }
-
   @FieldResolver()
   @Authorized()
   public async horaireShop(
@@ -162,15 +165,15 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     }
 
     if (!createShopInput?.siretNumber) {
-      throw new Error('Siren requier');
+      throw new Error('Siret requier');
     }
 
-    if (!createShopInput?.categoriesIds.length) {
+    if (!createShopInput?.shopCategoriesIds.length) {
       throw new Error('Category required');
     }
 
     const categories = await this.category_shopRepository.findByCategoriesIds(
-      createShopInput?.categoriesIds
+      createShopInput?.shopCategoriesIds
     );
 
     if (!categories.length) {
@@ -237,5 +240,27 @@ export class ShopResolvers implements ResolverInterface<Shop> {
     }
 
     return shop;
+  }
+
+  @Mutation(() => Boolean)
+  @Authorized(Role.ADMIN)
+  public async moderateShop(
+    @Ctx() ctx: MyContext,
+    @Arg('id') id: number,
+    @Arg('statusModeration') statusModeration: StatusModeration
+  ): Promise<boolean> {
+    const shop = await this.shopRepository.findOne({
+      where: { id }
+    });
+    if (!shop) {
+      throw new Error('Product not found');
+    }
+    shop.enabled = statusModeration;
+    return await shop
+      .save()
+      .then(() => true)
+      .catch(() => {
+        throw new Error('Product not moderated');
+      });
   }
 }

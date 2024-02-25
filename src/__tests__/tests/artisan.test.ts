@@ -2,26 +2,32 @@ import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
+  ArtisanDocument,
+  ArtisanQuery,
+  ArtisanQueryVariables,
+  ArtisansDocument,
+  ArtisansQuery,
   DeleteArtisanDocument,
   DeleteArtisanMutation,
   MeArtisanDocument,
   MeArtisanQuery,
+  Role,
   UpdateArtisanDocument,
-  UpdateArtisanMutation
-} from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
+  UpdateArtisanMutation,
+  UpdateArtisanMutationVariables
+} from '@src/generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
-import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
+import { createArtisan, signIn } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
 let token = '';
 beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
   return dataSource;
@@ -41,7 +47,7 @@ const artisanFaker = {
 afterAll(async () => dataSource.destroy());
 describe('Artisan', () => {
   describe('meArtisan query', () => {
-    it('Should return me artisan', async () => {
+    it('should return me artisan', async () => {
       const meArtisanResponse = await gqlHelper<MeArtisanQuery>({
         source: MeArtisanDocument,
         contextValue: token
@@ -53,9 +59,12 @@ describe('Artisan', () => {
     });
   });
   describe('updateArtisan mutation', () => {
-    it('Should update me artisan', async () => {
+    it('should update me artisan', async () => {
       artisanFaker.lastName = 'new last name';
-      const updateArtisanResponse = await gqlHelper<UpdateArtisanMutation>({
+      const updateArtisanResponse = await gqlHelper<
+        UpdateArtisanMutation,
+        UpdateArtisanMutationVariables
+      >({
         source: UpdateArtisanDocument,
         variableValues: {
           createArtisanInput: artisanFaker
@@ -70,8 +79,9 @@ describe('Artisan', () => {
       );
     });
   });
+
   describe('deleteArtisan mutation', () => {
-    it('Should delete artisan', async () => {
+    it('should delete artisan', async () => {
       const deleteArtisanResponse = await gqlHelper<DeleteArtisanMutation>({
         source: DeleteArtisanDocument,
         contextValue: token

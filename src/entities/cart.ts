@@ -53,11 +53,15 @@ registerEnumType(ActionCart, {
 });
 
 @InputType({ description: 'Cart client' })
-export class UpdateCart implements Partial<Cart> {
+export class UpdateCart {
   @IsInt()
   @Field()
   public productId!: number;
 
   @Field(() => ActionCart)
   public action!: ActionCart;
+
+  @IsInt()
+  @Field()
+  public quantity!: number;
 }

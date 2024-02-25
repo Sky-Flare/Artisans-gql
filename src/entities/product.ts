@@ -1,4 +1,4 @@
-import { IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 import { Field, InputType, ObjectType } from 'type-graphql';
 import {
   BaseEntity,
@@ -17,6 +17,7 @@ import { Artisan } from '@entity/artisan';
 import { Category_product } from '@entity/category_product';
 import { Shop } from '@entity/shop';
 import { Cart } from '@entity/cart';
+import { StatusModeration } from '@entity/generic/user';
 
 @ObjectType()
 @Entity()
@@ -30,7 +31,7 @@ export class Product extends BaseEntity {
   public name!: string;
 
   @Field({ nullable: false })
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', length: 500 })
   public description!: string;
 
   @Field({ nullable: false })
@@ -42,7 +43,7 @@ export class Product extends BaseEntity {
   public picture!: string;
 
   @Field()
-  @Column({ type: 'integer', default: 1 })
+  @Column({ type: 'integer', default: StatusModeration.PENDING })
   public enabled!: number;
 
   @Field(() => [Category_product], { nullable: true })
@@ -86,5 +87,23 @@ export class CreateProductInput implements Partial<Product> {
   public shopsIds?: number[];
 
   @Field(() => [Number], { nullable: true })
+  public categoriesProductsIds?: number[];
+}
+
+@InputType({ description: 'Update product data' })
+export class UpdateProductInput extends CreateProductInput {
+  @Field(() => Number)
+  public productId!: number;
+}
+
+@InputType({ description: 'Get products filters' })
+export class ProductsFilters {
+  @Field(() => Number)
+  public shopId!: number;
+
+  @IsArray()
+  @Field(() => [Number], {
+    nullable: true
+  })
   public categoriesProductsIds?: number[];
 }

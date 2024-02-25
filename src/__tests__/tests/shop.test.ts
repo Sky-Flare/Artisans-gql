@@ -3,18 +3,25 @@ import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
   CreateCategoryShopDocument,
+  CreateCategoryShopMutation,
+  CreateCategoryShopMutationVariables,
   CreateShopDocument,
   CreateShopMutation,
+  CreateShopMutationVariables,
   Days,
+  Role,
+  ShopDocument,
+  ShopQuery,
+  ShopQueryVariables,
   ShopsDocument,
-  ShopsQuery
+  ShopsQuery,
+  ShopsQueryVariables
 } from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
   createClient,
-  singIn
+  signIn
 } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
@@ -23,17 +30,33 @@ beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
 
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
-  await gqlHelper<CreateShopMutation>({
+  await gqlHelper<
+    CreateCategoryShopMutation,
+    CreateCategoryShopMutationVariables
+  >({
     source: CreateCategoryShopDocument,
     variableValues: {
       categoryShopInput: {
         name: 'Boulangerie',
+        picture: faker.image.url()
+      }
+    },
+    contextValue: token
+  });
+  await gqlHelper<
+    CreateCategoryShopMutation,
+    CreateCategoryShopMutationVariables
+  >({
+    source: CreateCategoryShopDocument,
+    variableValues: {
+      categoryShopInput: {
+        name: 'Patisserie',
         picture: faker.image.url()
       }
     },
@@ -65,7 +88,7 @@ const clientFaker = {
 };
 const shopFaker = {
   address: faker.location.streetAddress(),
-  categoriesIds: [1],
+  shopCategoriesIds: [1],
   city: faker.location.city(),
   description: faker.lorem.text(),
   name: faker.company.name(),
@@ -88,20 +111,26 @@ const inputHoraireShop = [
 });
 describe('Shop', () => {
   describe('createShop mutation', () => {
-    it('Should throw error siren require', async () => {
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+    it('should throw error siret require', async () => {
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
         },
         contextValue: token
       });
-      expect(createShopResponse.errors?.[0].message).toContain('Siren requier');
+      expect(createShopResponse.errors?.[0].message).toContain('Siret requier');
     });
-    it('Should throw error Category required', async () => {
-      shopFaker.categoriesIds = [];
+    it('should throw error Category required', async () => {
+      shopFaker.shopCategoriesIds = [];
       shopFaker.siretNumber = '56789';
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
@@ -112,9 +141,12 @@ describe('Shop', () => {
         'Category required'
       );
     });
-    it('Should throw error Category not found', async () => {
-      shopFaker.categoriesIds = [2];
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+    it('should throw error Category not found', async () => {
+      shopFaker.shopCategoriesIds = [3];
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker
@@ -125,10 +157,12 @@ describe('Shop', () => {
         'Category not found'
       );
     });
-    it('Should create shop', async () => {
-      shopFaker.categoriesIds = [1];
-
-      const createShopResponse = await gqlHelper<CreateShopMutation>({
+    it('should create shop', async () => {
+      shopFaker.shopCategoriesIds = [1];
+      const createShopResponse = await gqlHelper<
+        CreateShopMutation,
+        CreateShopMutationVariables
+      >({
         source: CreateShopDocument,
         variableValues: {
           createShopInput: shopFaker,
@@ -138,11 +172,39 @@ describe('Shop', () => {
       });
       expect(createShopResponse.data?.createShop?.name).toBe(shopFaker.name);
     });
+    describe('shop query', () => {
+      it('should return nul', async () => {
+        const shopQueryResponse = await gqlHelper<
+          ShopQuery,
+          ShopQueryVariables
+        >({
+          source: ShopDocument,
+          variableValues: {
+            shopId: 3
+          },
+          contextValue: token
+        });
+        expect(shopQueryResponse.data?.shop).toBeNull();
+      });
+      it('should return shop by id', async () => {
+        const shopQueryResponse = await gqlHelper<
+          ShopQuery,
+          ShopQueryVariables
+        >({
+          source: ShopDocument,
+          variableValues: {
+            shopId: 1
+          },
+          contextValue: token
+        });
+        expect(shopQueryResponse.data?.shop?.name).toBe(shopFaker.name);
+      });
+    });
     describe('shops query', () => {
       it('should return shops near artisan zipcode', async () => {
         shopFaker.zipCode = clientFaker.zipCode;
         shopFaker.siretNumber = '456758';
-        const shopResponse = await gqlHelper<CreateShopMutation>({
+        await gqlHelper<CreateShopMutation, CreateShopMutationVariables>({
           source: CreateShopDocument,
           variableValues: {
             createShopInput: shopFaker,
@@ -159,10 +221,10 @@ describe('Shop', () => {
       });
       it('should return shop near client zipcode', async () => {
         await createClient(clientFaker);
-        const tokenClient = await singIn({
+        const tokenClient = await signIn({
           email: clientFaker.email,
           password: clientFaker.password,
-          role: Role.CLIENT
+          role: Role.Client
         });
         const response = await gqlHelper<ShopsQuery>({
           source: ShopsDocument,
@@ -170,6 +232,56 @@ describe('Shop', () => {
         });
         expect(response.data?.shops?.length).toBe(1);
         expect(response.data?.shops?.[0].zipCode).toBe(clientFaker.zipCode);
+      });
+      it('should return shop filtered by category or zipcodes', async () => {
+        const responseFilteredZipCodeArtisan = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              categoriesIds: null,
+              zipcode: [zipCodeArtisan]
+            }
+          },
+          contextValue: token
+        });
+        expect(responseFilteredZipCodeArtisan.data?.shops?.length).toBe(1);
+        expect(responseFilteredZipCodeArtisan.data?.shops?.[0].zipCode).toBe(
+          zipCodeArtisan
+        );
+        const responseFilteredZipCodeArtisanAndCategoriesId = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              categoriesIds: [2],
+              zipcode: [zipCodeArtisan]
+            }
+          },
+          contextValue: token
+        });
+        expect(
+          responseFilteredZipCodeArtisanAndCategoriesId.data?.shops?.length
+        ).toBe(0);
+        const responseFilteredZipCodeArtisanAndClient = await gqlHelper<
+          ShopsQuery,
+          ShopsQueryVariables
+        >({
+          source: ShopsDocument,
+          variableValues: {
+            shopsFiltersInput: {
+              zipcode: [clientFaker.zipCode, artisanFaker.zipCode]
+            }
+          },
+          contextValue: token
+        });
+        expect(
+          responseFilteredZipCodeArtisanAndClient.data?.shops?.length
+        ).toBe(2);
       });
     });
   });

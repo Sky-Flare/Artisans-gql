@@ -5,21 +5,22 @@ import {
   CategoriesShopDocument,
   CategoriesShopQuery,
   CreateCategoryShopDocument,
-  CreateCategoryShopMutation
-} from '../../generated/graphql';
-import { Role } from '@entity/generic/user';
+  CreateCategoryShopMutation,
+  CreateCategoryShopMutationVariables,
+  Role
+} from '@src/generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
-import { createArtisan, singIn } from '@src/__tests__/helpers/registrer';
+import { createArtisan, signIn } from '@src/__tests__/helpers/registrer';
 
 let dataSource: DataSource;
 let token = '';
 beforeAll(async (): Promise<DataSource> => {
   dataSource = await initializeDataSource();
   await createArtisan(artisanFaker);
-  const { response } = await singIn({
+  const { response } = await signIn({
     email: artisanFaker.email,
     password: artisanFaker.password,
-    role: Role.ARTISAN
+    role: Role.Artisan
   });
   token = response.data?.signIn?.accessToken ?? '';
   return dataSource;
@@ -39,19 +40,21 @@ const artisanFaker = {
 afterAll(async () => dataSource.destroy());
 describe('Category_shop', () => {
   describe('createCategoryShop mutation', () => {
-    it('Should create a category_shop', async () => {
+    it('should create a category_shop', async () => {
       const imgUrl = faker.image.url();
-      const creatCategoryShopResponse =
-        await gqlHelper<CreateCategoryShopMutation>({
-          source: CreateCategoryShopDocument,
-          variableValues: {
-            categoryShopInput: {
-              name: 'Boulangerie',
-              picture: imgUrl
-            }
-          },
-          contextValue: token
-        });
+      const creatCategoryShopResponse = await gqlHelper<
+        CreateCategoryShopMutation,
+        CreateCategoryShopMutationVariables
+      >({
+        source: CreateCategoryShopDocument,
+        variableValues: {
+          categoryShopInput: {
+            name: 'Boulangerie',
+            picture: imgUrl
+          }
+        },
+        contextValue: token
+      });
       expect(creatCategoryShopResponse.data?.createCategoryShop.name).toBe(
         'Boulangerie'
       );
@@ -70,7 +73,10 @@ describe('Category_shop', () => {
       expect(categoriesShopResponse.data?.categories_shop[0].name).toBe(
         'Boulangerie'
       );
-      await gqlHelper<CreateCategoryShopMutation>({
+      await gqlHelper<
+        CreateCategoryShopMutation,
+        CreateCategoryShopMutationVariables
+      >({
         source: CreateCategoryShopDocument,
         variableValues: {
           categoryShopInput: {
