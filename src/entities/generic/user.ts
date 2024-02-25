@@ -1,6 +1,5 @@
 import { IsEmail, IsString } from 'class-validator';
 import {
-  Authorized,
   Field,
   InputType,
   ObjectType,

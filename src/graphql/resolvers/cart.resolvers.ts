@@ -8,7 +8,6 @@ import { MyContext } from '@src/graphql/myContext';
 import { ProductRepository } from '@repository/product';
 import { CartRepository } from '@repository/cart';
 import { ClientRepository } from '@repository/client';
-import { SiretRepository } from '@repository/siret';
 
 @Resolver(() => Cart)
 @Service()

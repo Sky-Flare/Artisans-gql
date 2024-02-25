@@ -17,7 +17,6 @@ import { Category_product } from '@entity/category_product';
 import { Category_shop, GetShopCatIdsAndZipCode } from '@entity/category_shop';
 import { Role, StatusModeration } from '@entity/generic/user';
 import { InputHoraireShop } from '@entity/horaire_shop';
-import { Product } from '@entity/product';
 import { CreateShopInput, Shop } from '@entity/shop';
 import { ArtisanRepository } from '@repository/artisan';
 import { Category_productRepository } from '@repository/category_product';

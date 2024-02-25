@@ -2,11 +2,6 @@ import { DataSource } from 'typeorm';
 import { fakerFR as faker } from '@faker-js/faker';
 import { gqlHelper } from '@src/__tests__/helpers/gCall';
 import {
-  ArtisanDocument,
-  ArtisanQuery,
-  ArtisanQueryVariables,
-  ArtisansDocument,
-  ArtisansQuery,
   DeleteArtisanDocument,
   DeleteArtisanMutation,
   MeArtisanDocument,

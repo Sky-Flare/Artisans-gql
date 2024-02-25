@@ -15,15 +15,11 @@ import {
   CreateShopMutation,
   CreateShopMutationVariables,
   Days,
-  Role,
-  ShopsDocument,
-  ShopsQuery,
-  ShopsQueryVariables
+  Role
 } from '../../generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
-  createClient,
   signIn
 } from '@src/__tests__/helpers/registrer';
 

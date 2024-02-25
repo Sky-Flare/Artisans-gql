@@ -18,19 +18,11 @@ import {
   DeleteProductDocument,
   DeleteProductMutation,
   DeleteProductMutationVariables,
-  MutationCreateCategoryProductArgs,
-  Role,
-  ShopDocument,
-  ShopQuery,
-  ShopQueryVariables,
-  ShopsDocument,
-  ShopsQuery,
-  ShopsQueryVariables
+  Role
 } from '../../generated/graphql';
 import { initializeDataSource } from '@src/__tests__/config/dataSource';
 import {
   createArtisan,
-  createClient,
   signIn
 } from '@src/__tests__/helpers/registrer';
 
