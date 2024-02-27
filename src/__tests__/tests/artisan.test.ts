@@ -40,6 +40,7 @@ const artisanFaker = {
 };
 
 afterAll(async () => dataSource.destroy());
+
 describe('Artisan', () => {
   describe('meArtisan query', () => {
     it('should return me artisan', async () => {
